@@ -41,8 +41,9 @@ class Item(pygame.sprite.Sprite):
         offset_y = obj.rect.y - self.rect.y
         collision = self.mask.overlap(obj_mask,(offset_x,offset_y))
         if collision:
-            print('coin collected!')
-            self.kill() # remove the coin from the group
+            if self.item_type == 'coin':
+                print('coin collected!')
+            self.kill() # remove the item from the group once its been interacted with
 
     def animation_handling(self):
         cooldown_time = 60
@@ -62,7 +63,7 @@ class Item(pygame.sprite.Sprite):
 
     def get_animations(self):
         item_path = os.path.join(image_path, self.item_type)
-        animation_scale = {'coin': (int(32 * 0.8), int(32 * 0.9))}
+        animation_scale = {'coin': (int(32 * 2), int(32 * 3))}
         images = os.listdir(item_path)  # get a list of the image names for the animation
         for image in images:
             image = pygame.image.load(os.path.join(item_path, image))
