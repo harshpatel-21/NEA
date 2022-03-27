@@ -1,6 +1,5 @@
 import pygame, sys, os
 x='\\'.join(os.path.abspath(__file__).split('\\')[:-2]) # allow imports from main folder
-print(x)
 sys.path.insert(1,x)
 
 from WINDOW import Display as window
@@ -104,6 +103,7 @@ class Entity(pygame.sprite.Sprite):
 		# horizontal movement
 		if self.bow_attack: # don't allow movement during an attack animation
 			return
+
 		if moving_left:
 			dx = -self.speed
 			self.flip_image = True
@@ -135,16 +135,15 @@ class Entity(pygame.sprite.Sprite):
 
 	def animation_handling(self): # updates the animation frame
 		self.check_alive()
-		self.shoot_cooldown_timer = max(0,self.shoot_cooldown_timer-1) # makes sure the cooldown doesn't go below 0
+		self.shoot_cooldown_timer = max(0, self.shoot_cooldown_timer-1) # makes sure the cooldown doesn't go below 0
 		# update animation based on a timer since last time recorded
 		cooldown_time = 120 # every 120 main game loops change animation frame
 		shoot_projectile = False
 		# update entity image
 		self.image = self.animations[self.current_action][self.animation_pointer]
-		x = self.image.get_rect()
-		x.bottomleft = self.rect.bottomleft
-		# x.topleft = self.rect.topleft
-		self.rect = x
+		image_rect = self.image.get_rect()
+		image_rect.bottomleft = self.rect.bottomleft
+		self.rect = image_rect
 		self.mask = pygame.mask.from_surface(self.image)
 
 		current_time = pygame.time.get_ticks()
@@ -163,20 +162,20 @@ class Entity(pygame.sprite.Sprite):
 					self.bow_attack = False # no longer attacking with a weapon
 
 			elif self.current_action == death_index: # death animation
-				self.animation_pointer = min(len(self.animations[death_index])-1,self.animation_pointer)
+				self.animation_pointer = min(len(self.animations[death_index])-1, self.animation_pointer)
 
 			else: # looping animations
-				self.animation_pointer = (self.animation_pointer)%len(self.animations[self.current_action])
+				self.animation_pointer = self.animation_pointer % len(self.animations[self.current_action])
 
 			self.time1 = pygame.time.get_ticks()
 
 		if shoot_projectile:
-			x = self.shoot()
-			if x:
-				return x
+			arrow = self.shoot()
+			if arrow:
+				return arrow
 
 	def shoot(self):
-		return Arrow(self) # return an instance of an arrow
+		return Arrow(self) # return an Arrow object
 
 	def update_action(self, new_action):
 		# check if the new action is different to the new action
@@ -217,23 +216,23 @@ class Entity(pygame.sprite.Sprite):
 		self.animations += [temp]
 
 	def draw(self, surface):
-		surface.blit(pygame.transform.flip(self.image,(self.flip_image) or self.direction == -1,False),self.rect)
+		surface.blit(pygame.transform.flip(self.image, self.flip_image or self.direction == -1, False), self.rect)
 		# pygame.draw.rect(surface,self.border_color,self.rect,2)
 
-	def check_collision(self,obj): # check for sword attack collision
-		obj_mask = pygame.mask.from_surface(pygame.transform.flip(obj.image,obj.direction==-1,False)) # flips the mask of the image during collision detection
+	def check_collision(self, obj): # check for sword attack collision
+		obj_mask = pygame.mask.from_surface(pygame.transform.flip(obj.image,obj.direction==-1, False)) # flips the mask of the image during collision detection
 		offset_x = obj.rect.x - self.rect.x
 		offset_y = obj.rect.y - self.rect.y
-		current_mask = pygame.mask.from_surface(pygame.transform.flip(self.image,self.direction==-1,False)) # flips the mask of the image during collision detection
-		x = current_mask.overlap(obj_mask,(offset_x,offset_y)) and obj.sword_attack # making sure player is in sword animation
-		if x:
+		current_mask = pygame.mask.from_surface(pygame.transform.flip(self.image, self.direction==-1, False)) # flips the mask of the image during collision detection
+		collision = current_mask.overlap(obj_mask, (offset_x, offset_y)) and obj.sword_attack # making sure player is in sword animation
+		if collision:
 			self.collisions += 1
-		else:
-			if self.collisions: # if collisions occured
+		else: # if no there is no longer any collision
+			if self.collisions: # if there were collisions recorded prior
 				# print(obj.current_weapon, obj.current_weapon_damage.get(obj.current_weapon))
-				self.health -= obj.current_weapon_damage.get(obj.current_weapon) # subtract health based on weaopn equipped
+				self.health -= obj.current_weapon_damage.get(obj.current_weapon) # subtract health based on weapon equipped
 				# print(self.health)
-			self.collisions = 0
+			self.collisions = 0 # reset the collisions counter
 		return x
 
 	def check_alive(self): # check if the entity is alive
