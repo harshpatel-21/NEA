@@ -138,6 +138,8 @@ class Entity(pygame.sprite.Sprite):
 		self.shoot_cooldown_timer = max(0, self.shoot_cooldown_timer-1) # makes sure the cooldown doesn't go below 0
 		# update animation based on a timer since last time recorded
 		cooldown_time = 120 # every 120 main game loops change animation frame
+		if self.current_action in self.combat_animations:
+			cooldown_time = 90
 		shoot_projectile = False
 		# update entity image
 		self.image = self.animations[self.current_action][self.animation_pointer]
@@ -217,6 +219,28 @@ class Entity(pygame.sprite.Sprite):
 
 	def draw(self, surface):
 		surface.blit(pygame.transform.flip(self.image, self.flip_image or self.direction == -1, False), self.rect)
+		# pygame.draw.rect(surface,self.border_color,self.rect,2)
+		x_padding = {
+			'player':10,
+			'player2':13
+		}
+		full_x = 70
+		full_y = 6
+		temp_surface = pygame.Surface((full_x, full_y))
+		# pygame.draw.rect(surface, (255, 0, 0), self.rect, 2) # draw a border around the entity
+		x, y = self.rect.x, self.rect.top - 9
+		if self.direction == 1:
+			x = self.rect.left
+		else:
+			x = self.rect.right - full_x
+		x += x_padding[self.entity_type]*self.direction
+		initial = pygame.Rect(x, y, full_x, full_y)
+		new = pygame.Rect(x, y, max(2, full_x * (self.health/self.max_health)), full_y)
+		border = pygame.Rect(x, y, full_x, full_y)
+		if self.check_alive():
+			pygame.draw.rect(surface, (255, 0, 0), initial)
+			pygame.draw.rect(surface, (0, 255, 0), new)
+			pygame.draw.rect(surface, (0, 0, 0), border, 2)
 		# pygame.draw.rect(surface,self.border_color,self.rect,2)
 
 	def check_collision(self, obj): # check for sword attack collision
