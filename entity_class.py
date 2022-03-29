@@ -93,7 +93,7 @@ class Entity(pygame.sprite.Sprite):
         self.combat_animations = [4, 5]
         self.border_color = (255, 0, 0)
         self.collisions = 0
-        bow_dps = 20
+        bow_dps = 40
         sword_dps = 50
         self.health2 = self.health
         self.difference = self.health - self.health2
