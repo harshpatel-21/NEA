@@ -32,7 +32,7 @@ print(x)
 sys.path.insert(1, x)
 
 # EDIT FOR IMAGES: DIMENSIONS SHOULD BE 17x30
-from entity_class import Entity
+from entity_class import Entity, Enemy
 import pygame, WINDOW
 from Items import Item
 
@@ -76,17 +76,17 @@ def main(level):
     # scale = (60,92) # with sword
     player = Player(100, 100, 'player', scale)
     # enemy = Player(500,100,'enemy',scale,all_animations = ['Idle','Die'],max_health = 50 )
-    player2 = Player(500, 100, 'player2', (int(70 * 2.4), 92), all_animations=['Idle', 'Die'], max_health=50)
-    player3 = Player(700, 100, 'player2', (int(70 * 2.4), 92), all_animations=['Idle', 'Die'], max_health=50)
-
+    enemy_1 = Enemy(500, 100, 'player2', (int(70 * 2.4), 92), all_animations=['Idle', 'Die'], max_health=50)
+    enemy_2 = Enemy(700, 100, 'player2', (int(70 * 2.4), 92), all_animations=['Idle', 'Die'], max_health=50)
+    enemy_3 = Enemy(400, 100, 'player2', (int(70 * 2.4), 92), all_animations=['Idle', 'Die'], max_health=50)
     # sprite groups
     arrows = []
-    enemies = [player2, player3]
+    enemies = [enemy_1, enemy_2, enemy_3]
     coin_group = pygame.sprite.Group()
     for i in range(5):
         coin_group.add(Item('coin', 50 + (i * 50), 50, (32, 32)))
 
-    player2.direction = -1
+    enemy_1.direction = -1
     player.weapon = 1
     while True:
         action_conditions = not player.in_air and player.health  # making sure player isn't in the air and is still alive

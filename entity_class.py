@@ -61,7 +61,6 @@ class Entity(pygame.sprite.Sprite):
 		self.all_animations = all_animations
 		if all_animations is None and entity_type == 'player':
 			self.all_animations = ['Idle2', 'Running2', 'Jumping', 'Falling','Sword','Bow','Die']
-
 		pygame.sprite.Sprite.__init__(self)
 		self.max_health = max_health
 		self.health = self.max_health
@@ -75,7 +74,7 @@ class Entity(pygame.sprite.Sprite):
 			self.get_animations(entity_type, animation, scale)
 		self.image = self.animations[self.current_action][self.animation_pointer]
 		self.rect = self.image.get_rect()
-		self.rect.topleft = (x,y)
+		self.rect.topleft = (x, y)
 		self.speed = speed
 		self.direction = 1 # [1,-1] = [facing right, facing left]
 		self.flip_image = False
@@ -87,8 +86,8 @@ class Entity(pygame.sprite.Sprite):
 		self.shoot_cooldown = 20
 		self.shoot_cooldown_timer = 0
 		self.mask = pygame.mask.from_surface(self.image)
-		self.combat_animations = [4,5]
-		self.border_color = (255,0,0)
+		self.combat_animations = [4, 5]
+		self.border_color = (255, 0, 0)
 		self.collisions = 0
 		bow_dps = 20
 		sword_dps = 50
@@ -235,13 +234,33 @@ class Entity(pygame.sprite.Sprite):
 			x = self.rect.right - full_x
 		x += x_padding[self.entity_type]*self.direction
 		initial = pygame.Rect(x, y, full_x, full_y)
-		new = pygame.Rect(x, y, max(2, full_x * (self.health/self.max_health)), full_y)
+		new = pygame.Rect(x, y, max(2, full_x * (self.health / self.max_health)), full_y)
 		border = pygame.Rect(x, y, full_x, full_y)
 		if self.check_alive():
 			pygame.draw.rect(surface, (255, 0, 0), initial)
 			pygame.draw.rect(surface, (0, 255, 0), new)
 			pygame.draw.rect(surface, (0, 0, 0), border, 2)
 		# pygame.draw.rect(surface,self.border_color,self.rect,2)
+
+	def check_alive(self): # check if the entity is alive
+		if self.health <= 0: # if they've died
+			self.health = 0 # health is back at 0
+			x = self.get_index('Die') # get the index of where the 'Die' animation is
+			self.update_action(x) # update the series of images that contain the death animation
+		return self.health > 0
+
+	def get_index(self,animation): # get the death index from the list of animations
+		index = 0
+		if animation in self.all_animations:
+			index = self.all_animations.index(animation)
+		return index
+
+class Enemy(Entity):
+	def __init__(self, *args, **kwargs):
+		arguments = [args]
+		keywords = [kwargs]
+		print(arguments, keywords)
+		super().__init__(*args, **kwargs)
 
 	def check_collision(self, obj): # check for sword attack collision
 		obj_mask = pygame.mask.from_surface(pygame.transform.flip(obj.image,obj.direction==-1, False)) # flips the mask of the image during collision detection
@@ -258,16 +277,3 @@ class Entity(pygame.sprite.Sprite):
 				# print(self.health)
 			self.collisions = 0 # reset the collisions counter
 		return x
-
-	def check_alive(self): # check if the entity is alive
-		if self.health <= 0: # if they've died
-			self.health = 0 # health is back at 0
-			x = self.get_index('Die') # get the index of where the 'Die' animation is
-			self.update_action(x) # update the series of images that contain the death animation
-		return self.health > 0
-
-	def get_index(self,animation): # get the death index from the list of animations
-		index = 0
-		if animation in self.all_animations:
-			index = self.all_animations.index(animation)
-		return index
