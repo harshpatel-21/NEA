@@ -165,12 +165,7 @@ class Entity(pygame.sprite.Sprite):
                           full_y)
         border = pygame.Rect(health_x, health_y, full_x, full_y)
 
-        if self.increase_health:  # if the health is increasing
-            self.difference = min(self.increase_health,(self.difference + health_bar_dx))  # increase health bar gradually
-            if self.difference >= self.increase_health:
-                self.increase_health = 0
-        else:
-            self.difference = max(0, self.difference + health_bar_dx)  # decrease health bar gradually
+        self.difference = max(0, self.difference + health_bar_dx)  # decrease health bar gradually
 
         if self.health <= 0 and self.difference == 0:  # if the player is dead then don't draw the player
             return

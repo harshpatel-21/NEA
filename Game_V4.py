@@ -75,7 +75,6 @@ def main(level):
     scale = (55, 92)  # for normal
     # scale = (60,92) # with sword
     player = Player(100, 100, 'player', scale)
-    player.health = 1
     # enemy = Player(500,100,'enemy',scale,all_animations = ['Idle','Die'],max_health = 50 )
     enemy_1 = Enemy(500, 100, 'player2', (int(70 * 2.4), 92), all_animations=['Idle', 'Die'], max_health=100)
     enemy_2 = Enemy(700, 100, 'player2', (int(70 * 2.4), 92), all_animations=['Idle', 'Die'], max_health=100)
@@ -113,9 +112,6 @@ def main(level):
 
                 if event.key == pygame.K_h:
                     player.health += 20
-                    player.difference = 0
-                    # player.health += 20
-                    player.increase_health = 20
 
                 # jumping
                 if event.key == pygame.K_w and action_conditions and attack_conditions:
