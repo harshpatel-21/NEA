@@ -49,7 +49,7 @@ class Arrow(pygame.sprite.Sprite):
 		offset_y = obj.rect.y - self.rect.y
 		x = self.mask.overlap(obj_mask,(offset_x,offset_y))
 
-		# change border color if collision with arrow has occured
+		# change border color if collision with arrow has occurred
 		if x:
 			obj.border_color = (0,255,0)
 		else:
@@ -91,7 +91,9 @@ class Entity(pygame.sprite.Sprite):
 		self.collisions = 0
 		bow_dps = 20
 		sword_dps = 50
-		self.current_weapon_damage = {1:sword_dps,2:bow_dps} # sword deals 50 damage, bow deals 20
+		self.health2 = self.health
+		self.difference = self.health - self.health2
+		self.current_weapon_damage = {1 : sword_dps, 2 : bow_dps} # sword deals 50 damage, bow deals 20
 
 	def move(self, moving_left, moving_right): # handle player movement
 		#reset movement variables
@@ -120,7 +122,7 @@ class Entity(pygame.sprite.Sprite):
 			self.in_air = True
 
 		# gravity
-		self.y_vel = min(self.y_vel+GRAVITY,10)
+		self.y_vel = min(self.y_vel+GRAVITY, 10)
 		dy += self.y_vel
 
 		# check collision with floor
@@ -131,6 +133,38 @@ class Entity(pygame.sprite.Sprite):
 		# update player position
 		self.rect.x += dx
 		self.rect.y += dy
+
+	# noinspection PyTypeChecker
+	def draw_health_bar(self, surface):
+		health_bar_dx = 4
+		x_padding = {
+			'player':10,
+			'player2':13
+		}
+		full_x = 70
+		full_y = 6
+		temp_surface = pygame.Surface((full_x, full_y))
+		# pygame.draw.rect(surface, (255, 0, 0), self.rect, 2) # draw a border around the entity
+		x, y = self.rect.x, self.rect.top - 9
+
+		if self.direction == 1:
+			x = self.rect.left
+		else:
+			x = self.rect.right - full_x
+		x += x_padding[self.entity_type]*self.direction
+
+		initial = pygame.Rect(x, y, full_x, full_y)
+		new = pygame.Rect(x, y, max(2, full_x * (min(self.max_health,self.health + self.difference) / self.max_health)), full_y)
+		border = pygame.Rect(x, y, full_x, full_y)
+
+		if self.health <= 0 and self.difference == 0:
+			return
+
+		else:
+			pygame.draw.rect(surface, (255, 0, 0), initial)
+			pygame.draw.rect(surface, (0, 255, 0), new)
+			pygame.draw.rect(surface, (0, 0, 0), border, 2)
+		self.difference = max(0, self.difference - health_bar_dx)
 
 	def animation_handling(self): # updates the animation frame
 		self.check_alive()
@@ -219,27 +253,8 @@ class Entity(pygame.sprite.Sprite):
 	def draw(self, surface):
 		surface.blit(pygame.transform.flip(self.image, self.flip_image or self.direction == -1, False), self.rect)
 		# pygame.draw.rect(surface,self.border_color,self.rect,2)
-		x_padding = {
-			'player':10,
-			'player2':13
-		}
-		full_x = 70
-		full_y = 6
-		temp_surface = pygame.Surface((full_x, full_y))
-		# pygame.draw.rect(surface, (255, 0, 0), self.rect, 2) # draw a border around the entity
-		x, y = self.rect.x, self.rect.top - 9
-		if self.direction == 1:
-			x = self.rect.left
-		else:
-			x = self.rect.right - full_x
-		x += x_padding[self.entity_type]*self.direction
-		initial = pygame.Rect(x, y, full_x, full_y)
-		new = pygame.Rect(x, y, max(2, full_x * (self.health / self.max_health)), full_y)
-		border = pygame.Rect(x, y, full_x, full_y)
-		if self.check_alive():
-			pygame.draw.rect(surface, (255, 0, 0), initial)
-			pygame.draw.rect(surface, (0, 255, 0), new)
-			pygame.draw.rect(surface, (0, 0, 0), border, 2)
+
+		self.draw_health_bar(surface)
 		# pygame.draw.rect(surface,self.border_color,self.rect,2)
 
 	def check_alive(self): # check if the entity is alive
@@ -259,10 +274,12 @@ class Enemy(Entity):
 	def __init__(self, *args, **kwargs):
 		arguments = [args]
 		keywords = [kwargs]
-		print(arguments, keywords)
+		# print(arguments, keywords)
 		super().__init__(*args, **kwargs)
 
 	def check_collision(self, obj): # check for sword attack collision
+		if not self.check_alive():
+			return
 		obj_mask = pygame.mask.from_surface(pygame.transform.flip(obj.image,obj.direction==-1, False)) # flips the mask of the image during collision detection
 		offset_x = obj.rect.x - self.rect.x
 		offset_y = obj.rect.y - self.rect.y
@@ -273,7 +290,9 @@ class Enemy(Entity):
 		else: # if no there is no longer any collision
 			if self.collisions: # if there were collisions recorded prior
 				# print(obj.current_weapon, obj.current_weapon_damage.get(obj.current_weapon))
+				self.health2 = self.health
 				self.health -= obj.current_weapon_damage.get(obj.current_weapon) # subtract health based on weapon equipped
+				self.difference = max(0, self.health2 - self.health)
 				# print(self.health)
 			self.collisions = 0 # reset the collisions counter
 		return x

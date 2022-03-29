@@ -76,9 +76,9 @@ def main(level):
     # scale = (60,92) # with sword
     player = Player(100, 100, 'player', scale)
     # enemy = Player(500,100,'enemy',scale,all_animations = ['Idle','Die'],max_health = 50 )
-    enemy_1 = Enemy(500, 100, 'player2', (int(70 * 2.4), 92), all_animations=['Idle', 'Die'], max_health=50)
-    enemy_2 = Enemy(700, 100, 'player2', (int(70 * 2.4), 92), all_animations=['Idle', 'Die'], max_health=50)
-    enemy_3 = Enemy(400, 100, 'player2', (int(70 * 2.4), 92), all_animations=['Idle', 'Die'], max_health=50)
+    enemy_1 = Enemy(500, 100, 'player2', (int(70 * 2.4), 92), all_animations=['Idle', 'Die'], max_health=100)
+    enemy_2 = Enemy(700, 100, 'player2', (int(70 * 2.4), 92), all_animations=['Idle', 'Die'], max_health=100)
+    enemy_3 = Enemy(400, 100, 'player2', (int(70 * 2.4), 92), all_animations=['Idle', 'Die'], max_health=100)
     # sprite groups
     arrows = []
     enemies = [enemy_1, enemy_2, enemy_3]
