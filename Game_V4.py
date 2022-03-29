@@ -32,7 +32,7 @@ print(x)
 sys.path.insert(1, x)
 
 # EDIT FOR IMAGES: DIMENSIONS SHOULD BE 17x30
-from entity_class import Entity
+from entity_class import Entity, Enemy, Arrow
 import pygame, WINDOW
 from Items import Item
 
@@ -76,17 +76,17 @@ def main(level):
     # scale = (60,92) # with sword
     player = Player(100, 100, 'player', scale)
     # enemy = Player(500,100,'enemy',scale,all_animations = ['Idle','Die'],max_health = 50 )
-    player2 = Player(500, 100, 'player2', (int(70 * 2.4), 92), all_animations=['Idle', 'Die'], max_health=50)
-    player3 = Player(700, 100, 'player2', (int(70 * 2.4), 92), all_animations=['Idle', 'Die'], max_health=50)
-
+    enemy_1 = Enemy(500, 100, 'player2', (int(70 * 2.4), 92), all_animations=['Idle', 'Die'], max_health=100)
+    enemy_2 = Enemy(700, 100, 'player2', (int(70 * 2.4), 92), all_animations=['Idle', 'Die'], max_health=100)
+    enemy_3 = Enemy(400, 100, 'player2', (int(70 * 2.4), 92), all_animations=['Idle', 'Die'], max_health=100)
     # sprite groups
     arrows = []
-    enemies = [player2, player3]
+    enemies = [enemy_1, enemy_2, enemy_3]
     coin_group = pygame.sprite.Group()
     for i in range(5):
         coin_group.add(Item('coin', 50 + (i * 50), 50, (32, 32)))
 
-    player2.direction = -1
+    enemy_1.direction = -1
     player.weapon = 1
     while True:
         action_conditions = not player.in_air and player.health  # making sure player isn't in the air and is still alive
@@ -107,11 +107,19 @@ def main(level):
                     for enemy in enemies:
                         enemy.health = enemy.max_health
                         enemy.update_action(0)
+                    player.health = player.max_health
+                    player.update_action(0)
+
+                if event.key == pygame.K_h:
+                    player.health += 20
 
                 # jumping
                 if event.key == pygame.K_w and action_conditions and attack_conditions:
                     player.jumping = True
                     player.in_air = True
+
+                if event.key == pygame.K_e and enemy_1.check_alive():
+                    arrows += [Arrow(enemy_1)]
 
                 # attacking
                 if event.key == pygame.K_SPACE and action_conditions and attack_conditions:
@@ -172,11 +180,22 @@ def main(level):
                 if arrow.check_collision(enemy):
                     arrow.remove = True
                     arrow.kill()
+                    enemy.health2 = enemy.health
                     enemy.health -= player.current_weapon_damage.get(
                         player.current_weapon)  # do damage based on current weapon
+                    enemy.difference = max(0, enemy.health2 - enemy.health)
                     # print(enemy.health)
                     break  # no need to check collision with other enemies if already collided
-            else:
+
+                if arrow.check_collision(player):
+                    arrow.remove = True
+                    arrow.kill()
+                    player.health2 = player.health
+                    player.health -= enemy.current_weapon_damage.get(
+                        enemy.current_weapon)  # do damage based on current weapon
+                    player.difference = max(0, player.health2 - player.health)
+                    break
+            if not arrow.remove:
                 arrow.update()
 
             if arrow.remove:
