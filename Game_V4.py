@@ -77,9 +77,9 @@ def main(level):
     # scale = (60,92) # with sword
     player = Player(100, 100, 'player', scale)
     # enemy = Player(500,100,'enemy',scale,all_animations = ['Idle','Die'],max_health = 50 )
-    enemy_1 = Enemy(500, 100, 'player2', (int(70 * 2.4), 92), all_animations=['Idle', 'Die'], max_health=100)
-    enemy_2 = Enemy(700, 100, 'player2', (int(70 * 2.4), 92), all_animations=['Idle', 'Die'], max_health=100)
-    enemy_3 = Enemy(400, 100, 'player2', (int(70 * 2.4), 92), all_animations=['Idle', 'Die'], max_health=100)
+    enemy_1 = Enemy(500, 100, 'player2', (int(70 * 2.4), 92), all_animations=['Idle', 'Die', 'Run', 'Attack'], max_health=100, x_vel=2)
+    enemy_2 = Enemy(700, 100, 'player2', (int(70 * 2.4), 92), all_animations=['Idle', 'Die', 'Run', 'Attack'], max_health=100, x_vel=2)
+    enemy_3 = Enemy(400, 100, 'player2', (int(70 * 2.4), 92), all_animations=['Idle', 'Die', 'Run', 'Attack'], max_health=100, x_vel=2)
     # sprite groups
     arrows = []
     enemies = [enemy_1, enemy_2, enemy_3]
@@ -208,8 +208,11 @@ def main(level):
 
         # enemy handling
         for enemy in enemies:  # if enemy has died
-            enemy.check_collision(player)  # check for player collision (mainly whilst in sword animation)
+            # pygame.draw.rect(window.screen, (255,0,0), enemy.shoot_vision, 2)
+            # enemy.check_collision(player)  # check for player collision (mainly whilst in sword animation)
             enemy.draw(window.screen)
+            if enemy.start_attack(player):
+                enemy.update_action(3)
             enemy.animation_handling()
             if enemy.health <= 0:
                 # if enemy.difference <= 0:
@@ -217,7 +220,8 @@ def main(level):
                 #     enemies.remove(enemy)
                 continue  # if the enemy has died, they don't need to check for collision or do movement
 
-            enemy.check_collision(player)  # check for collision with the player
+            enemy.sword_collision(player)  # check for collision with the player
+            player.sword_collision(enemy)
             # enemy.move(True, False)  # move enemy if need be
             enemy.ai()
         # if enemy.check_collision(player): # if enemy is alive and their sprite has collided with player
