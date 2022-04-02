@@ -188,7 +188,11 @@ class Entity(pygame.sprite.Sprite):
         # update entity image
         self.image = self.animations[self.current_action][self.animation_pointer]
         image_rect = self.image.get_rect()
-        image_rect.bottomleft = self.rect.bottomleft # keep the entity on the ground
+        if self.direction == 1:
+            image_rect.bottomleft = self.rect.bottomleft # keep the entity on the ground
+        else:
+            image_rect.bottomright = self.rect.bottomright
+
         self.rect = image_rect
         self.mask = pygame.mask.from_surface(self.image)
         current_time = pygame.time.get_ticks()
