@@ -69,6 +69,7 @@ class Player(Entity):
     def __init__(self, *args, **kwargs):
         Entity.__init__(self, *args, **kwargs)
 
+
 # scale = (60,92) # with sword
 
 def main(level):
@@ -202,8 +203,6 @@ def main(level):
                 arrow.kill()  # free up memory by removing this arrow instance
                 arrows.remove(arrow)  # remove the arrow instance from memory
 
-        # enemies.draw(window.screen)
-
         # draw_map(map_array)
         pygame.draw.line(window.screen, (255, 0, 0), (0, 300), (window.WIDTH, 300))
 
@@ -213,11 +212,14 @@ def main(level):
             enemy.draw(window.screen)
             enemy.animation_handling()
             if enemy.health <= 0:
+                # if enemy.difference <= 0:
+                #     enemy.kill()
+                #     enemies.remove(enemy)
                 continue  # if the enemy has died, they don't need to check for collision or do movement
 
             enemy.check_collision(player)  # check for collision with the player
-            enemy.move(False, False)  # move enemy if need be
-
+            # enemy.move(True, False)  # move enemy if need be
+            enemy.ai()
         # if enemy.check_collision(player): # if enemy is alive and their sprite has collided with player
         # 	# print(enemy.health)
         # 	# enemy.health -= 50

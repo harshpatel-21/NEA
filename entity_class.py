@@ -188,10 +188,9 @@ class Entity(pygame.sprite.Sprite):
         # update entity image
         self.image = self.animations[self.current_action][self.animation_pointer]
         image_rect = self.image.get_rect()
-        image_rect.bottomleft = self.rect.bottomleft
+        image_rect.bottomleft = self.rect.bottomleft # keep the entity on the ground
         self.rect = image_rect
         self.mask = pygame.mask.from_surface(self.image)
-
         current_time = pygame.time.get_ticks()
         death_index = self.get_index('Die')
         hurt_index = self.get_index('Hurt')
@@ -264,7 +263,7 @@ class Entity(pygame.sprite.Sprite):
 
     def draw(self, surface):
         surface.blit(pygame.transform.flip(self.image, self.flip_image or self.direction == -1, False), self.rect)
-        # pygame.draw.rect(surface,self.border_color,self.rect,2)
+        # pygame.draw.rect(surface,self.border_color, self.rect, 2)
 
         self.draw_health_bar(surface)
 
@@ -290,6 +289,7 @@ class Enemy(Entity):
         keywords = [kwargs]
         # print(arguments, keywords)
         super().__init__(*args, **kwargs)
+        self.move_counter = 0
 
     def check_collision(self, obj):  # check for sword attack collision
         if not self.check_alive():
@@ -314,3 +314,17 @@ class Enemy(Entity):
             # print(self.health)
             self.collisions = 0  # reset the collisions counter
         return x
+
+    def ai(self):
+        ai_moving_right = False
+        if self.alive:
+            if self.direction == 1:
+                ai_moving_right = True
+            ai_moving_left = not ai_moving_right
+            self.move(ai_moving_left, ai_moving_right)
+            self.update_action(0)
+            self.move_counter += 1
+
+            if self.move_counter > window.TILE_DIMENSION_X:
+                self.direction *= -1
+                self.move_counter *= -1
