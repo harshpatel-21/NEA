@@ -37,7 +37,7 @@ class Arrow(pygame.sprite.Sprite):
     def draw(self, surface):
         surface.blit(self.image, self.rect)
 
-    def update(self):
+    def update(self, arr):
         self.rect.x += (self.x_vel * self.acceleration) * self.direction
         # self.acceleration -= 0.035*self.acceleration
         self.acceleration *= 0.9
@@ -45,8 +45,21 @@ class Arrow(pygame.sprite.Sprite):
         if (self.rect.left > window.WIDTH) or (self.rect.right < 0) or self.acceleration < 0.08:
             self.remove = True  # set the flag to remove the arrow to true
 
-    def check_collision(self, obj):  # checking for arrow collision from bow_attack
+        if self.remove:
+            # arr.remove(self) # used when arrows were stored in an array
+            self.kill() # frees up memory and removes all instances of this specific arrow from associated groups
+
+    def check_collision(self, objs):  # checking for arrow collision from bow_attack
         # flip the mask of the image during collision detection
+        if isinstance(objs, Group):
+            for obj in objs:
+                if self.mask_collision(obj):
+                    self.remove = True
+        else:
+            if self.mask_collision(objs):
+                self.remove = True
+
+    def mask_collision(self, obj):
         obj_mask = pygame.mask.from_surface(pygame.transform.flip(obj.image, obj.direction == -1, False))
         offset_x = obj.rect.x - self.rect.x
         offset_y = obj.rect.y - self.rect.y
@@ -55,14 +68,19 @@ class Arrow(pygame.sprite.Sprite):
         # change border color if collision with arrow has occurred
         if collision:
             obj.border_color = (0, 255, 0)
+            self.remove = True
+            self.kill()
+            obj.health2 = obj.health
+            obj.health -= self.shooter.current_weapon_damage.get(
+                self.shooter.current_weapon)  # do damage based on current weapon
+            obj.difference = max(0, obj.health2 - obj.health)
             # self.shooter.bow_attack = False
         else:
             obj.border_color = (255, 0, 0)
         return collision
 
-
 class Entity(pygame.sprite.Sprite):
-    def __init__(self, x, y, entity_type, scale, max_health=100, x_vel=5, all_animations=None, bow_dps=20,
+    def __init__(self, x, y, entity_type, scale, max_health=1000, x_vel=5, all_animations=None, bow_dps=20,
                  sword_dps=40):
         self.all_animations = all_animations
         if all_animations is None and entity_type == 'player':
@@ -192,6 +210,7 @@ class Entity(pygame.sprite.Sprite):
         # update entity image
         self.image = self.animations[self.current_action][self.animation_pointer]
         image_rect = self.image.get_rect()
+
         if self.direction == 1:
             image_rect.bottomleft = self.rect.bottomleft  # keep the entity on the ground
         else:
@@ -306,10 +325,11 @@ class Entity(pygame.sprite.Sprite):
         #         self.difference = max(0, self.health2 - self.health)
         #     # print(self.health)
         #     self.collisions = 0  # reset the collisions counter
-        return x
+            return 1
+        return 0
 
     def check_collision(self, obj):
-        if not self.check_alive():
+        if self.health <= 0:
             return
         obj_mask = pygame.mask.from_surface(pygame.transform.flip(obj.image, obj.direction == -1,
                                                                   False))  # flips the mask of the image during collision detection
@@ -321,6 +341,9 @@ class Entity(pygame.sprite.Sprite):
             offset_x, offset_y))  # making sure player is in sword animation
         return bool(collision)
 
+class Player(Entity):
+    def __init__(self, *args, **kwargs):
+        Entity.__init__(self, *args, **kwargs)
 
 class Enemy(Entity):
     def __init__(self, x, y, entity_type, scale, max_health=100, x_vel=5, all_animations=None, attack_radius=150):
@@ -334,7 +357,6 @@ class Enemy(Entity):
         self.wait = 0
 
     def rec_collision(self, obj):
-
         return self.attack_vision.colliderect(obj.rect)
 
     def start_attack(self, obj):
@@ -364,14 +386,15 @@ class Enemy(Entity):
         if self.alive:
             # checking if enemy is not already idling and not falling/jumping
             if random.randint(1, 500) == 1 and not self.idling and not self.in_air:
-                self.set_idling()
+                # self.set_idling()
+                pass
 
             # if the enemy is in idling motion:
-            if self.idling:
-                self.idling_counter -= 1
-                if self.idling_counter <= 0:
-                    self.idling = False
-                return  # don't attempt to move the player in idling animation
+            # if self.idling:
+            #     self.idling_counter -= 1
+            #     if self.idling_counter <= 0:
+            #         self.idling = False
+            #     return  # don't attempt to move the player in idling animation
 
             if self.direction == 1:
                 AI_moving_right = True
@@ -389,4 +412,47 @@ class Enemy(Entity):
         self.idling = True
         self.idling_counter = 50
         self.update_action(0)
+
+    def draw(self, surface): # custom draw method for enemy class
+        debug = 0
+        surface.blit(pygame.transform.flip(self.image, self.flip_image or self.direction == -1, False), self.rect)
+        if debug:
+            pygame.draw.rect(surface, (255, 0, 0), self.attack_vision, 2)
+            pygame.draw.rect(surface, (255, 255, 0), self.rect, 2)
+        self.draw_health_bar(surface)
+
+    def update(self, player, surface):
+        self.animation_handling()
+        # pygame.draw.rect(window.screen, (255, 0, 0), enemy.attack_vision,2)
+        if self.health <= 0:
+            # if enemy.difference <= 0:
+            #     enemy.kill() # free memory space
+            #     enemies.remove(enemy)
+            return  # if the enemy has died, they don't need to check for collision or do movement
+
+        self.start_attack(player) # check if player collision has occurred
+        player.sword_collision(self)
+        self.sword_collision(player)  # check for collision with the player
+        self.AI() # do enemy AI
+
+    def regen(self):
+        self.health = self.max_health
+        self.update_action(0)
+
+class Group(pygame.sprite.Group):
+    def __init__(self, *args):
+        super().__init__()
+        self.add(*args)
+
+    def draw(self, surface):
+        for sprite in self.sprites():
+            # Check if the sprite has a `draw` method.
+            if hasattr(sprite, 'draw'):
+                sprite.draw(surface)
+
+    def regen(self):
+        for sprite in self.sprites():
+            # Check if the sprite has a `regen` method.
+            if hasattr(sprite, 'regen'):
+                sprite.regen()
 

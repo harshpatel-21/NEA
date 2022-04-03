@@ -32,7 +32,8 @@ print(x)
 sys.path.insert(1, x)
 
 # EDIT FOR IMAGES: DIMENSIONS SHOULD BE 17x30
-from entity_class import Entity, Enemy, Arrow
+# if __name__ == 'Game_V4':
+from entity_class import Entity, Enemy, Arrow, Player, Group
 import pygame, WINDOW
 from Items import Item
 
@@ -64,29 +65,27 @@ LEVEL = 1
 
 GRAVITY = 0.75
 
-
-class Player(Entity):
-    def __init__(self, *args, **kwargs):
-        Entity.__init__(self, *args, **kwargs)
-
-
 # scale = (60,92) # with sword
 
 def main(level):
     scale = (55, 92)  # for normal
     # scale = (60,92) # with sword
-    player = Player(100, 100, 'player', scale, sword_dps=22)
+    player = Player(100, 100, 'player', scale, sword_dps=15)
     # enemy = Player(500,100,'enemy',scale,all_animations = ['Idle','Die'],max_health = 50 )
     enemy_1 = Enemy(500, 0, 'player2', (int(70 * 2.4), 92), all_animations=['Idle', 'Die', 'Run', 'Attack'], max_health=100, x_vel=2)
     enemy_2 = Enemy(700, 0, 'player2', (int(70 * 2.4), 92), all_animations=['Idle', 'Die', 'Run', 'Attack'], max_health=100, x_vel=2)
     enemy_3 = Enemy(400, 0, 'player2', (int(70 * 2.4), 92), all_animations=['Idle', 'Die', 'Run', 'Attack'], max_health=100, x_vel=2)
+
     player.current_weapon_damage = {1: 50, 2: 50}
+    # enemy_group.add(enemy_1,enemy_2)
+
     # sprite groups
+    enemy_group = Group(enemy_1, enemy_2)
+    arrow_group = Group()
+    coin_group = Group(*[Item('coin', 50 + (i * 50), 50, (32, 32)) for i in range(5)])
     arrows = []
-    enemies = [enemy_1, enemy_2]
-    coin_group = pygame.sprite.Group()
-    for i in range(5):
-        coin_group.add(Item('coin', 50 + (i * 50), 50, (32, 32)))
+    # enemies = [enemy_1, enemy_2]
+    # coin_group = pygame.sprite.Group()
 
     enemy_1.direction = -1
     player.weapon = 1
@@ -105,15 +104,12 @@ def main(level):
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     return ()
+
                 if event.key == pygame.K_r:
-                    for enemy in enemies:
-                        enemy.health = enemy.max_health
-                        enemy.update_action(0)
-                    player.health = player.max_health
-                    player.update_action(0)
+                    enemy_group.regen()
 
                 if event.key == pygame.K_h:
-                    player.health += 20
+                    player.health += 50
 
                 # jumping
                 if event.key == pygame.K_w and action_conditions and attack_conditions:
@@ -124,7 +120,7 @@ def main(level):
                     arrows += [Arrow(enemy_1)]
 
                 # attacking
-                if event.key == pygame.K_SPACE and action_conditions and attack_conditions:
+                if (event.key == pygame.K_SPACE) and action_conditions and attack_conditions:
                     if player.current_weapon == 1:  # sword selected
                         player.sword_attack = True
                     elif player.current_weapon == 2 and player.shoot_cooldown_timer == 0:  # bow selected
@@ -132,21 +128,16 @@ def main(level):
                         player.shoot_cooldown_timer = player.shoot_cooldown
 
                 # weapon selection
-                if event.key == pygame.K_1:
-                    player.current_weapon = 1
-                if event.key == pygame.K_2:
-                    player.current_weapon = 2
+                value = chr(event.key)
+                if value in ['1', '2']:
+                    player.current_weapon = int(value)
 
             # check for keys that are lifted/ no longer being pressed
             if event.type == pygame.KEYUP:
-                # # player movement
-                # if event.key == pygame.K_a:
-                # 	moving_left = False
-                # if event.key == pygame.K_d:
-                # 	moving_right = False
                 pass
 
         keys = pygame.key.get_pressed()
+
         moving_left = keys[pygame.K_a] and attack_conditions
         moving_right = keys[pygame.K_d] and attack_conditions
 
@@ -168,77 +159,39 @@ def main(level):
             else:
                 player.update_action(0)  # set back to idle animation if no other action is being performed
 
+        # creating an arrow instance if bow animation was activated
         add_arrow = player.animation_handling()
         if add_arrow:
-            arrows += [add_arrow]
+            # arrows += [add_arrow]
+            arrow_group.add(add_arrow)
 
-        for arrow in arrows:
-            arrow.draw(window.screen)
-            # if pygame.sprite.spritecollide(arrow,enemies,True,pygame.sprite.collide_mask):
-            # 	arrow.remove = True
-            for enemy in enemies:
-                if not enemy.check_alive():
-                    continue
-                if arrow.check_collision(enemy):
-                    arrow.remove = True
-                    arrow.kill()
-                    enemy.health2 = enemy.health
-                    enemy.health -= player.current_weapon_damage.get(
-                        player.current_weapon)  # do damage based on current weapon
-                    enemy.difference = max(0, enemy.health2 - enemy.health)
-                    # print(enemy.health)
-                    break  # no need to check collision with other enemies if already collided
-
-                if arrow.check_collision(player):
-                    arrow.remove = True
-                    arrow.kill()
-                    player.health2 = player.health
-                    player.health -= enemy.current_weapon_damage.get(
-                        enemy.current_weapon)  # do damage based on current weapon
-                    player.difference = max(0, player.health2 - player.health)
-                    break
-
-            if not arrow.remove:
-                arrow.update()
-
-            if arrow.remove:
-                arrow.kill()  # free up memory by removing this arrow instance
-                arrows.remove(arrow)  # remove the arrow instance from memory
+        # arrow handling
+        for arrow in arrow_group:
+            arrow.draw(window.screen) # draw the arrow onto the screen
+            arrow.check_collision(enemy_group) # check for collision with enemies
+            arrow.check_collision(player) # check for collision with player
+            arrow.update(arrows) # update the arrow such position and state
 
         # draw_map(map_array)
         pygame.draw.line(window.screen, (255, 0, 0), (0, 300), (window.WIDTH, 300))
 
         # enemy handling
-        for enemy in enemies:  # if enemy has died
-            # pygame.draw.rect(window.screen, (255,0,0), enemy.shoot_vision, 2)
-            # enemy.check_collision(player)  # check for player collision (mainly whilst in sword animation)
-            enemy.draw(window.screen)
-            enemy.start_attack(player) # check if player collision has occurred
-            enemy.animation_handling()
-            # pygame.draw.rect(window.screen, (255, 0, 0), enemy.attack_vision,2)
-            if enemy.health <= 0:
-                # if enemy.difference <= 0:
-                #     enemy.kill() # free memory space
-                #     enemies.remove(enemy)
-                continue  # if the enemy has died, they don't need to check for collision or do movement
+        enemy_group.update(player, window.screen)
+        enemy_group.draw(window.screen)
 
-            player.sword_collision(enemy)
-            enemy.sword_collision(player)  # check for collision with the player
-            enemy.AI() # do enemy AI
-        # if enemy.check_collision(player): # if enemy is alive and their sprite has collided with player
-        # 	# print(enemy.health)
-        # 	# enemy.health -= 50
-        # 	pass
-
+        # coin handling
         coin_group.draw(window.screen)
         coin_group.update(player) # check for player collision
+
+        # player handling
         player.draw(window.screen)
         player.move(moving_left, moving_right)
 
-        window.draw_text(f'weapon: {["Sword", "Bow"][player.current_weapon == 2]}', (10, 7))
+        # display text
+        window.draw_text(f'weapon: {["Sword", "Bow"][player.current_weapon-1]}', (10, 7))
         window.draw_text(f'Press [1] to use Sword, [2] to use Bow', (10, 20))
 
-        pygame.display.update()
+        pygame.display.update() # make all the changes
 
         clock.tick(FPS)
 
