@@ -80,6 +80,7 @@ def main(level):
     enemy_1 = Enemy(500, 100, 'player2', (int(70 * 2.4), 92), all_animations=['Idle', 'Die', 'Run', 'Attack'], max_health=100, x_vel=2)
     enemy_2 = Enemy(700, 100, 'player2', (int(70 * 2.4), 92), all_animations=['Idle', 'Die', 'Run', 'Attack'], max_health=100, x_vel=2)
     enemy_3 = Enemy(400, 100, 'player2', (int(70 * 2.4), 92), all_animations=['Idle', 'Die', 'Run', 'Attack'], max_health=100, x_vel=2)
+    player.current_weapon_damage = {1: 50, 2: 50}
     # sprite groups
     arrows = []
     enemies = [enemy_1, enemy_2, enemy_3]
@@ -196,6 +197,7 @@ def main(level):
                         enemy.current_weapon)  # do damage based on current weapon
                     player.difference = max(0, player.health2 - player.health)
                     break
+
             if not arrow.remove:
                 arrow.update()
 
@@ -211,17 +213,19 @@ def main(level):
             # pygame.draw.rect(window.screen, (255,0,0), enemy.shoot_vision, 2)
             # enemy.check_collision(player)  # check for player collision (mainly whilst in sword animation)
             enemy.draw(window.screen)
-            if enemy.start_attack(player):
+
+            if enemy.start_attack(player): #and enemy.direction != player.direction:
                 enemy.update_action(3)
+
             enemy.animation_handling()
             if enemy.health <= 0:
                 # if enemy.difference <= 0:
                 #     enemy.kill()
                 #     enemies.remove(enemy)
-                continue  # if the enemy has died, they don't need to check for collision or do movement
+                pass  # if the enemy has died, they don't need to check for collision or do movement
 
-            enemy.sword_collision(player)  # check for collision with the player
             player.sword_collision(enemy)
+            enemy.sword_collision(player)  # check for collision with the player
             # enemy.move(True, False)  # move enemy if need be
             enemy.ai()
         # if enemy.check_collision(player): # if enemy is alive and their sprite has collided with player

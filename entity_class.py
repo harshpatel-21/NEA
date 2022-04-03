@@ -94,8 +94,8 @@ class Entity(pygame.sprite.Sprite):
         self.combat_animations = [4, 5]
         self.border_color = (255, 0, 0)
         self.collisions = 0
-        bow_dps = 25
-        sword_dps = 0
+        bow_dps = 50
+        sword_dps = 2
         self.health2 = self.health
         self.difference = self.health - self.health2
         self.current_weapon_damage = {1: sword_dps, 2: bow_dps}  # sword deals 50 damage, bow deals 20
@@ -162,7 +162,7 @@ class Entity(pygame.sprite.Sprite):
 
         initial = pygame.Rect(health_x, health_y, full_x, full_y)
         new = pygame.Rect(health_x, health_y,
-                          max(2, full_x * (min(self.max_health, self.health + self.difference) / self.max_health)),
+                          max(2, full_x * (min(self.max_health, self.health) / self.max_health)),
                           full_y)
         border = pygame.Rect(health_x, health_y, full_x, full_y)
 
@@ -185,6 +185,8 @@ class Entity(pygame.sprite.Sprite):
         cooldown_time = 120  # every 120 main game loops change animation frame
         if self.current_action in self.combat_animations:
             cooldown_time = 90
+        if self.current_action == 4 and self.entity_type == 'player':
+            cooldown_time = 60
         if self.current_action == 2 and self.entity_type == 'player2':
             cooldown_time = 90
         shoot_projectile = False
@@ -293,10 +295,12 @@ class Entity(pygame.sprite.Sprite):
     def sword_collision(self, obj):  # check for sword attack collision
         if not self.check_alive():
             return
-        if self.check_collision(obj):
+        if self.check_collision(obj) and obj.sword_attack:
             self.collisions += 1 and obj.sword_attack and self.direction != obj.direction
+            self.health -= obj.current_weapon_damage.get(
+                    obj.current_weapon) / 10
         else:  # if no there is no longer any collision
-            if self.collisions:  # if there were collisions recorded prior
+            if self.collisions == 1000:  # if there were collisions recorded prior
                 # print(obj.current_weapon, obj.current_weapon_damage.get(obj.current_weapon))
                 self.health2 = self.health
                 self.health -= obj.current_weapon_damage.get(
@@ -332,19 +336,24 @@ class Enemy(Entity):
         self.shoot_vision = pygame.Rect(0, 0, 150, 20)
         self.combat_animations = [3]
         self.attacked = False
+        self.wait = 0
 
     def rec_collision(self, obj):
         return self.shoot_vision.colliderect(obj.rect)
 
     def start_attack(self, obj):
-        if self.check_collision(obj):
+        if self.check_collision(obj) and self.wait == 0:
             self.sword_attack = True
+            self.wait = 100
             return True
         return False
 
     def ai(self):
+        self.wait = max(0, self.wait - 1)
         ai_moving_right = False
         # update enemy vision
+        # if self.sword_attack:
+        #     return
         if self.sword_attack:
             return
 
@@ -360,11 +369,11 @@ class Enemy(Entity):
                 self.idling_counter = 50
                 self.update_action(0)
 
-            if self.idling:
-                self.idling_counter -= 1
-                if self.idling_counter <= 0:
-                    self.idling = False
-                return
+            # if self.idling:
+            #     self.idling_counter -= 1
+            #     if self.idling_counter <= 0:
+            #         self.idling = False
+            #     return
 
             if self.direction == 1:
                 ai_moving_right = True
