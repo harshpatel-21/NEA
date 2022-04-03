@@ -1,4 +1,4 @@
-import pygame, sys, os, random
+import pygame, sys, os, random, inspect
 
 x = '\\'.join(os.path.abspath(__file__).split('\\')[:-2])  # allow imports from main folder
 sys.path.insert(1, x)
@@ -62,7 +62,8 @@ class Arrow(pygame.sprite.Sprite):
 
 
 class Entity(pygame.sprite.Sprite):
-    def __init__(self, x, y, entity_type, scale, max_health=100, x_vel=5, all_animations=None):
+    def __init__(self, x, y, entity_type, scale, max_health=100, x_vel=5, all_animations=None, bow_dps=20,
+                 sword_dps=40):
         self.all_animations = all_animations
         if all_animations is None and entity_type == 'player':
             self.all_animations = ['Idle2', 'Running2', 'Jumping', 'Falling', 'Sword', 'Bow', 'Die']
@@ -94,8 +95,6 @@ class Entity(pygame.sprite.Sprite):
         self.combat_animations = [4, 5]
         self.border_color = (255, 0, 0)
         self.collisions = 0
-        bow_dps = 50
-        sword_dps = 5
         self.health2 = self.health
         self.difference = self.health - self.health2
         self.current_weapon_damage = {1: sword_dps, 2: bow_dps}  # sword deals 50 damage, bow deals 20
@@ -185,8 +184,8 @@ class Entity(pygame.sprite.Sprite):
         cooldown_time = 120  # every 120 main game loops change animation frame
         if self.current_action in self.combat_animations:
             cooldown_time = 90
-        if self.current_action == 4 and self.entity_type == 'player':
-            cooldown_time = 60
+        # if self.current_action == 4 and self.entity_type == 'player':
+        #     cooldown_time = 60
         if self.current_action == 2 and self.entity_type == 'player2':
             cooldown_time = 90
         shoot_projectile = False
@@ -194,7 +193,7 @@ class Entity(pygame.sprite.Sprite):
         self.image = self.animations[self.current_action][self.animation_pointer]
         image_rect = self.image.get_rect()
         if self.direction == 1:
-            image_rect.bottomleft = self.rect.bottomleft # keep the entity on the ground
+            image_rect.bottomleft = self.rect.bottomleft  # keep the entity on the ground
         else:
             image_rect.bottomright = self.rect.bottomright
 
@@ -254,9 +253,10 @@ class Entity(pygame.sprite.Sprite):
                 'Running2': (scale[0] * 1.4, scale[1])
             },
             'player2': {
-                'Idle': (scale[0] * 0.5, scale[1] * 1.15),
+                'Idle': (scale[0] * 0.5, scale[1] * 1),
                 'Die': (scale[0] * 1.2, scale[1] * 0.95),
-                'Run': (scale[0]* 0.5, scale[1])
+                'Run': (scale[0] * 0.5, scale[1]),
+                'Attack': (scale[0] * 1.2, scale[1])
             }
         }
         temp = []
@@ -293,21 +293,19 @@ class Entity(pygame.sprite.Sprite):
         return index
 
     def sword_collision(self, obj):  # check for sword attack collision
-        if not self.check_alive():
-            return
         if self.check_collision(obj) and obj.sword_attack:
             self.collisions += 1 and obj.sword_attack and self.direction != obj.direction
             self.health -= obj.current_weapon_damage.get(
-                    obj.current_weapon) / 10
-        else:  # if no there is no longer any collision
-            if self.collisions == 1000:  # if there were collisions recorded prior
-                # print(obj.current_weapon, obj.current_weapon_damage.get(obj.current_weapon))
-                self.health2 = self.health
-                self.health -= obj.current_weapon_damage.get(
-                    obj.current_weapon)  # subtract health based on weapon equipped
-                self.difference = max(0, self.health2 - self.health)
-            # print(self.health)
-            self.collisions = 0  # reset the collisions counter
+                obj.current_weapon) / 25
+        # else:  # if no there is no longer any collision
+        #     if self.collisions == 1000:  # if there were collisions recorded prior
+        #         # print(obj.current_weapon, obj.current_weapon_damage.get(obj.current_weapon))
+        #         self.health2 = self.health
+        #         self.health -= obj.current_weapon_damage.get(
+        #             obj.current_weapon)  # subtract health based on weapon equipped
+        #         self.difference = max(0, self.health2 - self.health)
+        #     # print(self.health)
+        #     self.collisions = 0  # reset the collisions counter
         return x
 
     def check_collision(self, obj):
@@ -321,65 +319,74 @@ class Entity(pygame.sprite.Sprite):
                                                                       False))  # flips the mask of the image during collision detection
         collision = current_mask.overlap(obj_mask, (
             offset_x, offset_y))  # making sure player is in sword animation
-        return collision
+        return bool(collision)
 
 
 class Enemy(Entity):
-    def __init__(self, *args, **kwargs):
-        arguments = [args]
-        keywords = [kwargs]
-        # print(arguments, keywords)
-        super().__init__(*args, **kwargs)
+    def __init__(self, x, y, entity_type, scale, max_health=100, x_vel=5, all_animations=None, attack_radius=150):
+        super().__init__(x, y, entity_type, scale, max_health, x_vel, all_animations)
         self.move_counter = 0
         self.idling = False
         self.idling_counter = 0
-        self.shoot_vision = pygame.Rect(0, 0, 150, 20)
+        self.attack_vision = pygame.Rect(0, 0, attack_radius, 20)
         self.combat_animations = [3]
         self.attacked = False
         self.wait = 0
 
     def rec_collision(self, obj):
-        return self.shoot_vision.colliderect(obj.rect)
+
+        return self.attack_vision.colliderect(obj.rect)
 
     def start_attack(self, obj):
-        if self.check_collision(obj) and self.wait == 0:
+        if self.wait == 0 and self.rec_collision(obj):
             self.sword_attack = True
-            self.update_action(3) # change the animation to attack animation
+            self.update_action(3)  # change the animation to attack animation
             self.wait = 100
             return True
         return False
 
-    def ai(self):
+    def AI(self):
+        if self.in_air:  # if the enemy is falling
+            self.move(0, 0)  # don't move in any direction
+            return  # don't do anything else related to AI movement
         self.wait = max(0, self.wait - 1)
-        ai_moving_right = False
+
+        AI_moving_right = False
         if self.sword_attack:
             return
 
-        self.shoot_vision.center = self.rect.center
+        self.attack_vision.center = self.rect.center
         if self.direction == 1:
-            self.shoot_vision.left = self.rect.right
+            self.attack_vision.left = self.rect.right
         else:
-            self.shoot_vision.right = self.rect.left
+            self.attack_vision.right = self.rect.left
 
         if self.alive:
-            if random.randint(1, 200) == 1 and not self.idling: # not self.idling prevents endless idling
-                self.idling = True
-                self.idling_counter = 50
-                self.update_action(0)
+            # checking if enemy is not already idling and not falling/jumping
+            if random.randint(1, 500) == 1 and not self.idling and not self.in_air:
+                self.set_idling()
 
-            # if self.idling:
-            #     self.idling_counter -= 1
-            #     if self.idling_counter <= 0:
-            #         self.idling = False
-            #     return
+            # if the enemy is in idling motion:
+            if self.idling:
+                self.idling_counter -= 1
+                if self.idling_counter <= 0:
+                    self.idling = False
+                return  # don't attempt to move the player in idling animation
 
             if self.direction == 1:
-                ai_moving_right = True
-            ai_moving_left = not ai_moving_right
-            self.move(ai_moving_left, ai_moving_right)
+                AI_moving_right = True
+            AI_moving_left = not AI_moving_right
+            self.move(AI_moving_left, AI_moving_right)
             self.update_action(2)
             self.move_counter += 1
 
             if self.move_counter > window.TILE_DIMENSION_X:
                 self.direction *= -1
                 self.move_counter *= -1
+                self.set_idling()
+
+    def set_idling(self):
+        self.idling = True
+        self.idling_counter = 50
+        self.update_action(0)
+

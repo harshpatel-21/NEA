@@ -75,15 +75,15 @@ class Player(Entity):
 def main(level):
     scale = (55, 92)  # for normal
     # scale = (60,92) # with sword
-    player = Player(100, 100, 'player', scale)
+    player = Player(100, 100, 'player', scale, sword_dps=22)
     # enemy = Player(500,100,'enemy',scale,all_animations = ['Idle','Die'],max_health = 50 )
-    enemy_1 = Enemy(500, 100, 'player2', (int(70 * 2.4), 92), all_animations=['Idle', 'Die', 'Run', 'Attack'], max_health=100, x_vel=2)
-    enemy_2 = Enemy(700, 100, 'player2', (int(70 * 2.4), 92), all_animations=['Idle', 'Die', 'Run', 'Attack'], max_health=100, x_vel=2)
-    enemy_3 = Enemy(400, 100, 'player2', (int(70 * 2.4), 92), all_animations=['Idle', 'Die', 'Run', 'Attack'], max_health=100, x_vel=2)
+    enemy_1 = Enemy(500, 0, 'player2', (int(70 * 2.4), 92), all_animations=['Idle', 'Die', 'Run', 'Attack'], max_health=100, x_vel=2)
+    enemy_2 = Enemy(700, 0, 'player2', (int(70 * 2.4), 92), all_animations=['Idle', 'Die', 'Run', 'Attack'], max_health=100, x_vel=2)
+    enemy_3 = Enemy(400, 0, 'player2', (int(70 * 2.4), 92), all_animations=['Idle', 'Die', 'Run', 'Attack'], max_health=100, x_vel=2)
     player.current_weapon_damage = {1: 50, 2: 50}
     # sprite groups
     arrows = []
-    enemies = [enemy_1, enemy_2, enemy_3]
+    enemies = [enemy_1, enemy_2]
     coin_group = pygame.sprite.Group()
     for i in range(5):
         coin_group.add(Item('coin', 50 + (i * 50), 50, (32, 32)))
@@ -215,6 +215,7 @@ def main(level):
             enemy.draw(window.screen)
             enemy.start_attack(player) # check if player collision has occurred
             enemy.animation_handling()
+            # pygame.draw.rect(window.screen, (255, 0, 0), enemy.attack_vision,2)
             if enemy.health <= 0:
                 # if enemy.difference <= 0:
                 #     enemy.kill() # free memory space
@@ -223,8 +224,7 @@ def main(level):
 
             player.sword_collision(enemy)
             enemy.sword_collision(player)  # check for collision with the player
-            # enemy.move(True, False)  # move enemy if need be
-            enemy.ai()
+            enemy.AI() # do enemy AI
         # if enemy.check_collision(player): # if enemy is alive and their sprite has collided with player
         # 	# print(enemy.health)
         # 	# enemy.health -= 50
