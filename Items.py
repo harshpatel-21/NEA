@@ -15,7 +15,7 @@ pygame.init()
 
 class Item(pygame.sprite.Sprite):
     def __init__(self, item_type, x, y, scale):
-        super().__init__()
+        pygame.sprite.Sprite.__init__(self)
         self.item_type = item_type
         self.x, self.y = x, y
         self.animation = []
@@ -68,3 +68,18 @@ class Item(pygame.sprite.Sprite):
         for image in images:
             image = pygame.image.load(os.path.join(item_path, image))
             self.animation += [pygame.transform.scale(image, animation_scale.get(self.item_type))]
+
+class Decoration(pygame.sprite.Sprite):
+    def __init__(self, img, x, y):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = img
+        self.rect = self.image.get_rect()
+        self.rect.midtop = (x + (Display.TILE_DIMENSION_X)//2, y + (Display.TILE_DIMENSION_Y - self.rect.h))
+
+
+class Water(pygame.sprite.Sprite):
+    def __init__(self, img, x, y):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = img
+        self.rect = self.image.get_rect()
+        self.rect.midtop = (x + (Display.TILE_DIMENSION_X//2), y + (Display.TILE_DIMENSION_Y - self.rect.h))

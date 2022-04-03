@@ -34,9 +34,9 @@ background = pygame.transform.scale(pygame.image.load(WINDOW.get_path('backgroun
 tile_num = 16
 tiles = []
 
-for i in range(1,tile_num + 1):
+for i in range(tile_num):
 	img = pygame.transform.scale(pygame.image.load(get_path(f'images/tiles/{theme}/{i}.png')).convert_alpha(),(46,46))
-	if i in [12,16] : img = pygame.transform.flip(img,False,True)
+	if i in [11,15] : img = pygame.transform.flip(img, False, True)
 	tiles += [img]
 
 player_tile = pygame.transform.scale(pygame.image.load(f'images/player/Idle/1.png'),(46,92))
@@ -195,7 +195,7 @@ def main():
 
 		# draw buttons
 		button_count = 0 # default selected button
-		for button_count,button in enumerate(buttons):
+		for button_count, button in enumerate(buttons):
 			if button.draw(window.screen):
 				current_tile = button_count
 

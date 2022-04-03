@@ -386,15 +386,15 @@ class Enemy(Entity):
         if self.alive:
             # checking if enemy is not already idling and not falling/jumping
             if random.randint(1, 500) == 1 and not self.idling and not self.in_air:
-                # self.set_idling()
+                self.set_idling()
                 pass
 
-            # if the enemy is in idling motion:
-            # if self.idling:
-            #     self.idling_counter -= 1
-            #     if self.idling_counter <= 0:
-            #         self.idling = False
-            #     return  # don't attempt to move the player in idling animation
+            #if the enemy is in idling motion:
+            if self.idling:
+                self.idling_counter -= 1
+                if self.idling_counter <= 0:
+                    self.idling = False
+                return  # don't attempt to move the player in idling animation
 
             if self.direction == 1:
                 AI_moving_right = True
@@ -449,6 +449,8 @@ class Group(pygame.sprite.Group):
             # Check if the sprite has a `draw` method.
             if hasattr(sprite, 'draw'):
                 sprite.draw(surface)
+            else:
+                surface.blit(sprite.image, sprite.rect)
 
     def regen(self):
         for sprite in self.sprites():
