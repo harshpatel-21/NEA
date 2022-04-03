@@ -217,7 +217,7 @@ def main(level):
             enemy.animation_handling()
             if enemy.health <= 0:
                 # if enemy.difference <= 0:
-                #     enemy.kill()
+                #     enemy.kill() # free memory space
                 #     enemies.remove(enemy)
                 continue  # if the enemy has died, they don't need to check for collision or do movement
 
