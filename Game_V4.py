@@ -213,16 +213,13 @@ def main(level):
             # pygame.draw.rect(window.screen, (255,0,0), enemy.shoot_vision, 2)
             # enemy.check_collision(player)  # check for player collision (mainly whilst in sword animation)
             enemy.draw(window.screen)
-
-            if enemy.start_attack(player): #and enemy.direction != player.direction:
-                enemy.update_action(3)
-
+            enemy.start_attack(player) # check if player collision has occurred
             enemy.animation_handling()
             if enemy.health <= 0:
                 # if enemy.difference <= 0:
                 #     enemy.kill()
                 #     enemies.remove(enemy)
-                pass  # if the enemy has died, they don't need to check for collision or do movement
+                continue  # if the enemy has died, they don't need to check for collision or do movement
 
             player.sword_collision(enemy)
             enemy.sword_collision(player)  # check for collision with the player

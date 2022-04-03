@@ -95,7 +95,7 @@ class Entity(pygame.sprite.Sprite):
         self.border_color = (255, 0, 0)
         self.collisions = 0
         bow_dps = 50
-        sword_dps = 2
+        sword_dps = 5
         self.health2 = self.health
         self.difference = self.health - self.health2
         self.current_weapon_damage = {1: sword_dps, 2: bow_dps}  # sword deals 50 damage, bow deals 20
@@ -344,6 +344,7 @@ class Enemy(Entity):
     def start_attack(self, obj):
         if self.check_collision(obj) and self.wait == 0:
             self.sword_attack = True
+            self.update_action(3) # change the animation to attack animation
             self.wait = 100
             return True
         return False
@@ -351,9 +352,6 @@ class Enemy(Entity):
     def ai(self):
         self.wait = max(0, self.wait - 1)
         ai_moving_right = False
-        # update enemy vision
-        # if self.sword_attack:
-        #     return
         if self.sword_attack:
             return
 
