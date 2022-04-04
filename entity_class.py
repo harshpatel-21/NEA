@@ -411,7 +411,7 @@ class Enemy(Entity):
         return self.attack_vision.colliderect(obj.rect)
 
     def start_attack(self, obj):
-        if self.wait == 0 and self.rec_collision(obj):
+        if self.wait == 0 and self.rec_collision(obj) and self.check_alive():
             self.sword_attack = True
             self.update_action(3)  # change the animation to attack animation
             self.wait = 100
@@ -435,7 +435,7 @@ class Enemy(Entity):
         else:
             self.attack_vision.right = self.rect.left
 
-        if self.alive:
+        if self.check_alive():
             # checking if enemy is not already idling and not falling/jumping
             if random.randint(1, 500) == 1 and not self.idling and not self.in_air:
                 self.set_idling()
@@ -483,15 +483,14 @@ class Enemy(Entity):
     def update(self, player, surface, world, scroll):
         self.animation_handling()
         # pygame.draw.rect(Display.screen, (255, 0, 0), enemy.attack_vision,2)
-        if self.health <= 0:
+        if self.health > 0:
             # if enemy.difference <= 0:
             #     enemy.kill() # free memory space
             #     enemies.remove(enemy)
-            return  # if the enemy has died, they don't need to check for collision or do movement
+            self.start_attack(player) # check if player collision has occurred
+            player.sword_collision(self)
+            self.sword_collision(player)  # check for collision with the player
 
-        self.start_attack(player) # check if player collision has occurred
-        player.sword_collision(self)
-        self.sword_collision(player)  # check for collision with the player
         self.AI(world, scroll) # do enemy AI
 
     def regen(self):

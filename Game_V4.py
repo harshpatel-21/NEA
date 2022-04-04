@@ -239,7 +239,7 @@ def main(level):
 
         # player handling
         player.draw(window.screen)
-        player.move(moving_left, moving_right, world)
+        screen_scroll = player.move(moving_left, moving_right, world)
 
         # enemy handling
         enemy_group.update(player, window.screen, world, screen_scroll)
