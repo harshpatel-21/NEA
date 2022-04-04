@@ -287,9 +287,9 @@ class Entity(pygame.sprite.Sprite):
                 'Idle3': (scale[0] * 5, scale[1]),
                 'Idle2': (scale[0] * 1.4, scale[1]),
                 'Die': (scale[0] * 1, scale[1] * 0.8),
-                'Running2': (scale[0] * 1.4, scale[1])
-                # 'Jumping': (scale[0]*1.4, scale[1]),
-                # 'Falling': (scale[0]*1.4, scale[1])
+                'Running2': (scale[0] * 1.4, scale[1]),
+                'Jumping': (scale[0]*1.4, scale[1]),
+                'Falling': (scale[0]*1.4, scale[1])
             },
             'player2': {
                 'Idle': (scale[0] * 0.5, scale[1] * 1),
