@@ -35,7 +35,7 @@ sys.path.insert(1, x)
 # if __name__ == 'Game_V4':
 from entity_class import Entity, Enemy, Projectile, Player, Group
 import pygame, WINDOW
-from Items import Item, Decoration, Water
+from Items import Item, Decoration, DeathBlock
 from level_editor import load_level, draw_grid
 
 pygame.init()
@@ -60,7 +60,7 @@ for i in range(TILE_TYPES):
     if i in [16]: img = pygame.transform.scale(img, (46,92))
     img_list += [img]
 
-background = pygame.transform.scale(pygame.image.load(WINDOW.get_path('backgrounds/background_1.png')),window.SIZE)
+background = pygame.transform.scale(pygame.image.load(WINDOW.get_path('backgrounds/background_1.png')),window.SIZE).convert_alpha()
 # window.background = background
 
 # player_right = []
@@ -81,6 +81,7 @@ scale = (55, 92)  # for normal
 class World:
     def __init__(self):
         self.obstacle_list = []
+        self.death_blocks = []
 
     def process_data(self, data):
         # iterate through each value in level data file
@@ -101,18 +102,19 @@ class World:
                     self.obstacle_list.append(tile_data)
                 elif 11 <= tile <= 13: # grass / no collision decoration
                     decorations.append(Decoration(img, img_rect.x, img_rect.y))
-                elif 13 <= tile <= 15: #water
-                    waters.append(Water(img, img_rect.x, img_rect.y))
+                elif 13 <= tile <= 15: # water
+                    waters.append(DeathBlock(img, img_rect.x, img_rect.y))
                 elif tile == 16: # coin
                     coins += [Item('coin', img_rect.x, img_rect.y, (32, 32))]
-                elif tile == 17: #create player
+                elif tile == 17: # create player
                     player = Player(img_rect.x, img_rect.y, 'player', scale, sword_dps=15)
         return player, decorations, waters, enemies, coins
 
-    def draw(self, background, scroll=0):
+    def draw(self, background, scroll=0, bg_scroll=0):
         background_width = background.get_width()
+
         for i in range(4):
-            window.screen.blit(background,((i * background_width) + scroll,0))
+            window.screen.blit(background,((i * background_width) + bg_scroll, 0))
 
         for tile in self.obstacle_list:
             tile[1].x += scroll
@@ -150,13 +152,14 @@ def main(level):
     enemy_1.direction = -1
     player.weapon = 1
 
-    screen_scroll = 0
+    screen_scroll = 0 # respective to player movement
+    background_scroll = 0 # cumulative value
     while True:
         action_conditions = not player.in_air and player.health  # making sure player isn't in the air and is still alive
         attack_conditions = not (
                 player.sword_attack or player.bow_attack)  # only allow attacking if not already in attack animation -> ADD INTO ITERATIVE DEVELOPMENT
         window.refresh()
-        world.draw(background, screen_scroll)
+        world.draw(background, screen_scroll, background_scroll)
         # draw_grid(0)
 
         player.check_alive()
@@ -248,21 +251,20 @@ def main(level):
         arrow_group.update(window.screen, world, enemy_group, player)
 
         # coin handling
-        coin_group.draw(window.screen)
+        coin_group.draw(window.screen, screen_scroll)
         coin_group.update(player)  # check for player collision
 
-
         # tile groups
-        decoration_group.draw(window.screen)
+        decoration_group.draw(window.screen, screen_scroll)
         decoration_group.update()
 
-        waters_group.draw(window.screen)
-        waters_group.update()
+        waters_group.draw(window.screen, screen_scroll)
+        # waters_group.update()
 
         # display text
         window.draw_text(f'weapon: {["Sword", "Bow"][player.current_weapon - 1]}', (10, 7))
         window.draw_text(f'Press [1] to use Sword, [2] to use Bow', (10, 20))
-
+        background_scroll += screen_scroll
         pygame.display.update()  # make all the changes
 
         clock.tick(FPS)

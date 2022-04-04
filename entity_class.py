@@ -39,7 +39,7 @@ class Projectile(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
         self.remove = False
 
-    def draw(self, surface):
+    def draw(self, surface, scroll=0):
         surface.blit(self.image, self.rect)
 
     def update(self, surface, world, enemy_group, player, arr=None):
@@ -200,7 +200,7 @@ class Entity(pygame.sprite.Sprite):
         # update scroll based on player position
         if isinstance(self, Player):
             # print(self.obj_type)
-            if (self.rect.right > Display.WIDTH - scroll_threshold) or (self.rect.left <= 140):
+            if (self.rect.right > Display.WIDTH - scroll_threshold) or (self.rect.left <= scroll_threshold):
                 self.rect.x -= dx # move player back
                 screen_scroll = -dx
         return screen_scroll
@@ -337,10 +337,10 @@ class Entity(pygame.sprite.Sprite):
                 scale_data = scale_info.get(animation)
                 if scale_data: scale2 = [*map(int, scale_data)]
             scale2 = [*map(int,(scale2[0]*0.8,scale2[1]*0.8))]
-            temp += [pygame.transform.scale(pygame.image.load(f'images/{obj_type}/{animation}/{images[i]}'), scale2)]
+            temp += [pygame.transform.scale(pygame.image.load(f'images/{obj_type}/{animation}/{images[i]}'), scale2).convert_alpha()]
         self.animations += [temp]
 
-    def draw(self, surface):
+    def draw(self, surface, scroll=0):
         surface.blit(pygame.transform.flip(self.image, self.flip_image or self.direction == -1, False), self.rect)
         # pygame.draw.rect(surface,self.border_color, self.rect, 2)
 
@@ -472,7 +472,7 @@ class Enemy(Entity):
         self.idling_counter = 50
         self.update_action(0)
 
-    def draw(self, surface): # custom draw method for enemy class
+    def draw(self, surface, scroll=0): # custom draw method for enemy class
         debug = 0
         surface.blit(pygame.transform.flip(self.image, self.flip_image or self.direction == -1, False), self.rect)
         if debug:
@@ -502,11 +502,11 @@ class Group(pygame.sprite.Group):
         super().__init__()
         self.add(*args)
 
-    def draw(self, surface):
+    def draw(self, surface, scroll=0):
         for sprite in self.sprites():
             # Check if the sprite has a `draw` method.
             if hasattr(sprite, 'draw'):
-                sprite.draw(surface)
+                sprite.draw(surface, scroll)
             else:
                 surface.blit(sprite.image, sprite.rect)
 
