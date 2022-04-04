@@ -31,16 +31,17 @@ FLOOR_BLOCK = 1
 background = pygame.transform.scale(pygame.image.load(WINDOW.get_path('backgrounds/background_1.png')),window.SIZE)
 
 # load tiles
-tile_num = 16
+tile_num = 18
 tiles = []
 
 for i in range(tile_num):
 	img = pygame.transform.scale(pygame.image.load(get_path(f'images/tiles/{theme}/{i}.png')).convert_alpha(),(46,46))
 	if i in [11,15] : img = pygame.transform.flip(img, False, True)
+	if i == 17: img = pygame.transform.scale(pygame.image.load(f'images/player/Idle/1.png'),(46, 92))
 	tiles += [img]
 
-player_tile = pygame.transform.scale(pygame.image.load(f'images/player/Idle/1.png'),(46,92))
-tiles += [player_tile]
+# player_tile = pygame.transform.scale(pygame.image.load(f'images/player/Idle/1.png'),(46,92))
+# tiles += [player_tile]
 tiles_1d = tiles.copy()
 
 # create buttons

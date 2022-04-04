@@ -29,14 +29,17 @@ class Item(pygame.sprite.Sprite):
         self.initial_time = pygame.time.get_ticks()
 
     def draw(self, surface):
+        midtop = self.rect.midtop
+        self.rect.midtop = (midtop[0] - (Display.TILE_DIMENSION_X - self.rect.w)//2 - 2, midtop[1])
         surface.blit(self.image, self.rect.midtop)
 
-    def update(self,obj=None):
+    def update(self, obj=None):
         # do the animation handling
         self.animation_handling()
         # check for collision
         if not obj: return # if no object is passed then return
-        obj_mask = pygame.mask.from_surface(pygame.transform.flip(obj.image, obj.direction==-1, False)) # flips the mask of the image during collision detection
+        # flips the mask of the image during collision detection
+        obj_mask = pygame.mask.from_surface(pygame.transform.flip(obj.image, obj.direction==-1, False))
         offset_x = obj.rect.x - self.rect.x
         offset_y = obj.rect.y - self.rect.y
         collision = self.mask.overlap(obj_mask,(offset_x,offset_y))
@@ -74,8 +77,7 @@ class Decoration(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.image = img
         self.rect = self.image.get_rect()
-        self.rect.midtop = (x + (Display.TILE_DIMENSION_X)//2, y + (Display.TILE_DIMENSION_Y - self.rect.h))
-
+        self.rect.midtop = (x + Display.TILE_DIMENSION_X // 2 - 2, y + (Display.TILE_DIMENSION_Y - self.rect.h))
 
 class Water(pygame.sprite.Sprite):
     def __init__(self, img, x, y):

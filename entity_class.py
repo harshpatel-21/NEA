@@ -12,8 +12,13 @@ from WINDOW import Display
 pygame.init()
 GRAVITY = 0.75
 
-
-class Arrow(pygame.sprite.Sprite):
+class Tile:
+    def __init__(self, image, rect, mask):
+        self.rect = rect
+        self.mask = mask
+        self.image = image
+        self.direction = 0
+class Projectile(pygame.sprite.Sprite):
     def __init__(self, shooter, image='Arrow04'):
         pygame.sprite.Sprite.__init__(self)
         self.shooter = shooter
@@ -52,7 +57,9 @@ class Arrow(pygame.sprite.Sprite):
             # self.direction *= -1
 
         # check for tile collision
-        # for
+        for tile in world.obstacle_list:
+            if self.mask_collision(Tile(*tile)):
+                self.remove = True
 
         if self.remove:
             # arr.remove(self) # used when arrows were stored in an array
@@ -62,21 +69,15 @@ class Arrow(pygame.sprite.Sprite):
         # flip the mask of the image during collision detection
         if isinstance(objs, Group):
             for obj in objs:
-                if self.mask_collision(obj):
+                if self.entity_collision(obj):
                     self.remove = True
-        else:
-            if self.mask_collision(objs):
+
+        elif isinstance(objs, Player):
+            if self.entity_collision(objs):
                 self.remove = True
 
-    def mask_collision(self, obj):
-        if hasattr(obj, 'check_alive'):
-            if not obj.check_alive(): return
-
-        obj_mask = pygame.mask.from_surface(pygame.transform.flip(obj.image, obj.direction == -1, False))
-        offset_x = obj.rect.x - self.rect.x
-        offset_y = obj.rect.y - self.rect.y
-        collision = self.mask.overlap(obj_mask, (offset_x, offset_y))
-
+    def entity_collision(self, obj):
+        collision = self.mask_collision(obj)
         # change border color if collision with arrow has occurred
         if collision:
             obj.border_color = (0, 255, 0)
@@ -91,23 +92,30 @@ class Arrow(pygame.sprite.Sprite):
             obj.border_color = (255, 0, 0)
         return collision
 
+    def mask_collision(self, obj):
+        obj_mask = pygame.mask.from_surface(pygame.transform.flip(obj.image, obj.direction == -1, False))
+        offset_x = obj.rect.x - self.rect.x
+        offset_y = obj.rect.y - self.rect.y
+        collision = self.mask.overlap(obj_mask, (offset_x, offset_y))
+        return collision
+
 class Entity(pygame.sprite.Sprite):
-    def __init__(self, x, y, entity_type, scale, max_health=1000, x_vel=5, all_animations=None, bow_dps=20,
+    def __init__(self, x, y, obj_type, scale, max_health=1000, x_vel=5, all_animations=None, bow_dps=20,
                  sword_dps=40):
         self.all_animations = all_animations
-        if all_animations is None and entity_type == 'player':
+        if all_animations is None and obj_type == 'player':
             self.all_animations = ['Idle2', 'Running2', 'Jumping', 'Falling', 'Sword', 'Bow', 'Die']
         pygame.sprite.Sprite.__init__(self)
         self.max_health = max_health
         self.health = self.max_health
         self.y_vel = 0
-        self.entity_type = entity_type
+        self.obj_type = obj_type
         self.animations = []
         self.animation_pointer = 0
         self.current_action = 0
         self.time1 = pygame.time.get_ticks()
         for animation in self.all_animations:
-            self.get_animations(entity_type, animation, scale)
+            self.get_animations(obj_type, animation, scale)
         self.image = self.animations[self.current_action][self.animation_pointer]
         self.rect = self.image.get_rect()
         self.rect.topleft = (x, y)
@@ -131,28 +139,30 @@ class Entity(pygame.sprite.Sprite):
         self.increase_health = 0
 
     def move(self, moving_left, moving_right, world):  # handle player movement
+        scroll_threshold = 200
+        screen_scroll = 0
         # reset movement variables
         dx = dy = 0
-
+        check = True
         if not self.check_alive():
-            return
+            check = False
         # horizontal movement
         if self.bow_attack:  # don't allow movement during an attack animation
-            return
+            check = False
 
-        if moving_left:
+        if moving_left and check:
             dx = -self.x_vel
             self.flip_image = True
             self.direction = -1
 
-        if moving_right:
+        if moving_right and check:
             dx = self.x_vel
             self.flip_image = False
             self.direction = 1
 
         # jumping/vertical movement
-        if self.jumping and (not self.in_air):
-            self.y_vel = -13
+        if self.jumping and (not self.in_air) and check:
+            self.y_vel = -14
             self.jumping = False
             self.in_air = True
 
@@ -187,6 +197,15 @@ class Entity(pygame.sprite.Sprite):
         self.rect.x += dx
         self.rect.y += dy
 
+        # update scroll based on player position
+        if isinstance(self, Player):
+            # print(self.obj_type)
+            if (self.rect.right > Display.WIDTH - scroll_threshold) or (self.rect.left <= 140):
+                print('here')
+                self.rect.x -= dx # move player back
+                screen_scroll = -dx
+        return screen_scroll
+
     # noinspection PyTypeChecker
     def draw_health_bar(self, surface):
         health_bar_dx = 4 * [-1, 1][self.increase_health > 0]
@@ -205,7 +224,7 @@ class Entity(pygame.sprite.Sprite):
             entity_x = self.rect.left
         else:
             health_x = self.rect.right - full_x
-        health_x += x_padding[self.entity_type] * self.direction
+        health_x += x_padding[self.obj_type] * self.direction
 
         initial = pygame.Rect(health_x, health_y, full_x, full_y)
         new = pygame.Rect(health_x, health_y,
@@ -232,9 +251,9 @@ class Entity(pygame.sprite.Sprite):
         cooldown_time = 120  # every 120 main game loops change animation frame
         if self.current_action in self.combat_animations:
             cooldown_time = 90
-        # if self.current_action == 4 and self.entity_type == 'player':
+        # if self.current_action == 4 and self.obj_type == 'player':
         #     cooldown_time = 60
-        if self.current_action == 2 and self.entity_type == 'player2':
+        if self.current_action == 2 and self.obj_type == 'player2':
             cooldown_time = 90
         shoot_projectile = False
         # update entity image
@@ -278,7 +297,7 @@ class Entity(pygame.sprite.Sprite):
                 return arrow
 
     def shoot(self):
-        return Arrow(self)  # return an Arrow object
+        return Projectile(self)  # return an Projectile object
 
     def update_action(self, new_action):
         # check if the new action is different to the new action
@@ -291,7 +310,7 @@ class Entity(pygame.sprite.Sprite):
             self.animation_pointer = 0
             self.time1 = pygame.time.get_ticks()
 
-    def get_animations(self, entity_type, animation, scale):  # add animations for this sprite into a list
+    def get_animations(self, obj_type, animation, scale):  # add animations for this sprite into a list
         animation_scale = {
             'player': {
                 'Bow': (scale[0] * 1.6, scale[1]),
@@ -311,15 +330,15 @@ class Entity(pygame.sprite.Sprite):
             }
         }
         temp = []
-        images = os.listdir(f'images/{entity_type}/{animation}')  # get a list of the image names for the animation
+        images = os.listdir(f'images/{obj_type}/{animation}')  # get a list of the image names for the animation
         scale2 = scale
         for i in range(len(images)):
-            scale_info = animation_scale.get(entity_type)
+            scale_info = animation_scale.get(obj_type)
             if scale_info:
                 scale_data = scale_info.get(animation)
                 if scale_data: scale2 = [*map(int, scale_data)]
             scale2 = [*map(int,(scale2[0]*0.8,scale2[1]*0.8))]
-            temp += [pygame.transform.scale(pygame.image.load(f'images/{entity_type}/{animation}/{images[i]}'), scale2)]
+            temp += [pygame.transform.scale(pygame.image.load(f'images/{obj_type}/{animation}/{images[i]}'), scale2)]
         self.animations += [temp]
 
     def draw(self, surface):
@@ -378,8 +397,8 @@ class Player(Entity):
         Entity.__init__(self, *args, **kwargs)
 
 class Enemy(Entity):
-    def __init__(self, x, y, entity_type, scale, max_health=100, x_vel=5, all_animations=None, attack_radius=150):
-        super().__init__(x, y, entity_type, scale, max_health, x_vel, all_animations)
+    def __init__(self, x, y, obj_type, scale, max_health=100, x_vel=5, all_animations=None, attack_radius=150):
+        super().__init__(x, y, obj_type, scale, max_health, x_vel, all_animations)
         self.move_counter = 0
         self.idling = False
         self.idling_counter = 0
@@ -400,7 +419,7 @@ class Enemy(Entity):
             return True
         return False
 
-    def AI(self, world):
+    def AI(self, world, scroll):
         if self.in_air:  # if the enemy is falling
             self.move(0, 0, world)  # don't move in any direction
             return  # don't do anything else related to AI movement
@@ -444,6 +463,8 @@ class Enemy(Entity):
             if self.move_counter > Display.TILE_DIMENSION_X:
                 self.change_direction = True
                 self.set_idling()
+        # scroll
+        if scroll: self.rect.x += scroll
 
     def set_idling(self):
         self.idling = True
@@ -458,7 +479,7 @@ class Enemy(Entity):
             pygame.draw.rect(surface, (255, 255, 0), self.rect, 2)
         self.draw_health_bar(surface)
 
-    def update(self, player, surface, world):
+    def update(self, player, surface, world, scroll):
         self.animation_handling()
         # pygame.draw.rect(Display.screen, (255, 0, 0), enemy.attack_vision,2)
         if self.health <= 0:
@@ -470,7 +491,7 @@ class Enemy(Entity):
         self.start_attack(player) # check if player collision has occurred
         player.sword_collision(self)
         self.sword_collision(player)  # check for collision with the player
-        self.AI(world) # do enemy AI
+        self.AI(world, scroll) # do enemy AI
 
     def regen(self):
         self.health = self.max_health
