@@ -224,12 +224,9 @@ def main(level):
             # arrows += [add_arrow]
             arrow_group.add(add_arrow)
 
-        # arrow handling
-        for arrow in arrow_group:
-            arrow.draw(window.screen)  # draw the arrow onto the screen
-            arrow.check_collision(enemy_group)  # check for collision with enemies
-            arrow.check_collision(player)  # check for collision with player
-            arrow.update(arrows)  # update the arrow such position and state
+
+        # for arrow in arrow_group:
+        #     arrow.update(arrows)  # update the arrow such position and state
 
         # draw_map(map_array)
         pygame.draw.line(window.screen, (255, 0, 0), (0, 300), (window.WIDTH, 300))
@@ -237,6 +234,8 @@ def main(level):
         # enemy handling
         enemy_group.update(player, window.screen, world)
         enemy_group.draw(window.screen)
+        # arrow handling
+        arrow_group.update(window.screen, world, enemy_group, player)
 
         # coin handling
         coin_group.draw(window.screen)
@@ -249,13 +248,13 @@ def main(level):
         # tile groups
         decoration_group.draw(window.screen)
         decoration_group.update()
+
         waters_group.draw(window.screen)
         waters_group.update()
 
         # display text
         window.draw_text(f'weapon: {["Sword", "Bow"][player.current_weapon - 1]}', (10, 7))
         window.draw_text(f'Press [1] to use Sword, [2] to use Bow', (10, 20))
-
 
         pygame.display.update()  # make all the changes
 

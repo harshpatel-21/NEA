@@ -3,7 +3,7 @@ import pygame, sys, os, random, inspect
 x = '\\'.join(os.path.abspath(__file__).split('\\')[:-2])  # allow imports from main folder
 sys.path.insert(1, x)
 
-from WINDOW import Display as window
+from WINDOW import Display
 
 # websites:
 # https://www.piskelapp.com/
@@ -14,10 +14,10 @@ GRAVITY = 0.75
 
 
 class Arrow(pygame.sprite.Sprite):
-    def __init__(self, shooter):
+    def __init__(self, shooter, image='Arrow04'):
         pygame.sprite.Sprite.__init__(self)
         self.shooter = shooter
-        self.image = pygame.image.load('images/Arrow04.png').convert_alpha()
+        self.image = pygame.image.load(f'images/{image}.png').convert_alpha()
         self.image = pygame.transform.flip(self.image, shooter.direction == -1, False)
         self.rect = self.image.get_rect()
         self.rect.topleft = (shooter.rect.x, shooter.rect.y)
@@ -28,7 +28,7 @@ class Arrow(pygame.sprite.Sprite):
         else:
             self.rect.x -= self.rect.w
 
-        self.rect.y = shooter.rect.y + 32
+        self.rect.y = shooter.rect.center[1] - 5
         self.x_vel = 18
         self.acceleration = 2.5
         self.mask = pygame.mask.from_surface(self.image)
@@ -37,13 +37,22 @@ class Arrow(pygame.sprite.Sprite):
     def draw(self, surface):
         surface.blit(self.image, self.rect)
 
-    def update(self, arr):
-        self.rect.x += (self.x_vel * self.acceleration) * self.direction
+    def update(self, surface, world, enemy_group, player, arr=None):
+        self.draw(surface)  # draw the arrow onto the screen
+        self.check_collision(enemy_group)  # check for collision with enemies
+        self.check_collision(player)  # check for collision with player
+
+        if not self.remove: self.rect.x += (self.x_vel * self.acceleration) * self.direction
         # self.acceleration -= 0.035*self.acceleration
         self.acceleration *= 0.9
 
-        if (self.rect.left > window.WIDTH) or (self.rect.right < 0) or self.acceleration < 0.08:
+        # check if the arrow has gone off the screen or low acceleration
+        if (self.rect.left > Display.WIDTH) or (self.rect.right < 0) or self.acceleration < 0.08:
             self.remove = True  # set the flag to remove the arrow to true
+            # self.direction *= -1
+
+        # check for tile collision
+        # for
 
         if self.remove:
             # arr.remove(self) # used when arrows were stored in an array
@@ -60,6 +69,9 @@ class Arrow(pygame.sprite.Sprite):
                 self.remove = True
 
     def mask_collision(self, obj):
+        if hasattr(obj, 'check_alive'):
+            if not obj.check_alive(): return
+
         obj_mask = pygame.mask.from_surface(pygame.transform.flip(obj.image, obj.direction == -1, False))
         offset_x = obj.rect.x - self.rect.x
         offset_y = obj.rect.y - self.rect.y
@@ -375,6 +387,7 @@ class Enemy(Entity):
         self.combat_animations = [3]
         self.attacked = False
         self.wait = 0
+        self.change_direction = False
 
     def rec_collision(self, obj):
         return self.attack_vision.colliderect(obj.rect)
@@ -414,18 +427,22 @@ class Enemy(Entity):
                 self.idling_counter -= 1
                 if self.idling_counter <= 0:
                     self.idling = False
+                    if self.change_direction:
+                        self.direction *= -1
+                        self.move_counter *= -1
                 return  # don't attempt to move the player in idling animation
 
             if self.direction == 1:
                 AI_moving_right = True
+
             AI_moving_left = not AI_moving_right
             self.move(AI_moving_left, AI_moving_right, world)
             self.update_action(2)
             self.move_counter += 1
 
-            if self.move_counter > window.TILE_DIMENSION_X:
-                self.direction *= -1
-                self.move_counter *= -1
+            self.change_direction = False
+            if self.move_counter > Display.TILE_DIMENSION_X:
+                self.change_direction = True
                 self.set_idling()
 
     def set_idling(self):
@@ -443,7 +460,7 @@ class Enemy(Entity):
 
     def update(self, player, surface, world):
         self.animation_handling()
-        # pygame.draw.rect(window.screen, (255, 0, 0), enemy.attack_vision,2)
+        # pygame.draw.rect(Display.screen, (255, 0, 0), enemy.attack_vision,2)
         if self.health <= 0:
             # if enemy.difference <= 0:
             #     enemy.kill() # free memory space
