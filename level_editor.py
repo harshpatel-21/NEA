@@ -31,13 +31,13 @@ FLOOR_BLOCK = 1
 background = pygame.transform.scale(pygame.image.load(WINDOW.get_path('backgrounds/background_1.png')),window.SIZE)
 
 # load tiles
-tile_num = 18
+tile_num = 19
 tiles = []
 
 for i in range(tile_num):
 	img = pygame.transform.scale(pygame.image.load(get_path(f'images/tiles/{theme}/{i}.png')).convert_alpha(),(46,46))
 	if i in [11,15] : img = pygame.transform.flip(img, False, True)
-	if i == 17: img = pygame.transform.scale(pygame.image.load(f'images/player/Idle/1.png'),(46, 92))
+	if i in [17,18]: img = pygame.transform.scale(img,(46, 92))
 	tiles += [img]
 
 # player_tile = pygame.transform.scale(pygame.image.load(f'images/player/Idle/1.png'),(46,92))
@@ -132,7 +132,8 @@ def main():
 	level = 1
 
 	x=0
-
+	delete = False
+	place = False
 	while True:
 		window.refresh()
 
@@ -151,9 +152,13 @@ def main():
 				if event.key == pygame.K_UP:
 					level += 1
 				if event.key == pygame.K_DOWN:
-					level = max(level-1,1)
+					level = max(level-1, 1)
 				if event.key == pygame.K_r: # r key maps to resetting the map
 					map_array = generate_new_map()
+				if event.key == pygame.K_d:
+					delete=True
+				if event.key == pygame.K_LSHIFT:
+					place = True
 
 			if event.type == pygame.KEYUP:
 				if event.key == pygame.K_LEFT:
@@ -162,6 +167,10 @@ def main():
 					scroll_right = False
 				if event.key == pygame.K_LSHIFT:
 					scroll_speed = 2
+				if event.key == pygame.K_d:
+					delete= False
+				if event.key == pygame.K_LSHIFT:
+					place = False
 
 			if event.type == pygame.MOUSEBUTTONDOWN:
 				if save_button.check_click(pygame.mouse.get_pos()):
@@ -206,6 +215,12 @@ def main():
 		# add tiles to map
 		mouse_press = pygame.mouse.get_pressed()
 
+		x,y = pygame.mouse.get_pos()
+		if x < 1012: # making sure that the user has clicked on grid and not area for buttons
+			arr_x = (x-scroll)//46
+			arr_y = y//46
+			if delete: map_array[arr_y][arr_x] = -1
+			if place: map_array[arr_y][arr_x] = current_tile
 		if mouse_press[0] or mouse_press[2]: # if left or right mousebutton have been clicked
 			x,y = pygame.mouse.get_pos()
 			if x < 1012: # making sure that the user has clicked on grid and not area for buttons
@@ -231,7 +246,7 @@ def main():
 		window.draw_text(f'level:{level}',(1200,500),'medlarge')
 		window.draw_text('Press UP or DOWN keys to change levels',(1020,550),'small')
 		window.draw_text('Press [ r ] key to reset the level',(1055,570),'small')
-
+		window.draw_text('Hold [LSHIFT/d] and hover to place/delete',(1020,600),'small')
 		# alpha_counter += 1
 		pygame.display.update()
 		clock.tick(FPS)

@@ -82,6 +82,7 @@ class World:
     def __init__(self):
         self.obstacle_list = []
         self.death_blocks = []
+        self.bg_scroll = 0
 
     def process_data(self, data):
         # iterate through each value in level data file
@@ -114,7 +115,7 @@ class World:
         background_width = background.get_width()
 
         for i in range(4):
-            window.screen.blit(background,((i * background_width) + bg_scroll, 0))
+            window.screen.blit(background,((i * background_width) - self.bg_scroll, 0))
 
         for tile in self.obstacle_list:
             tile[1].x += scroll
@@ -137,6 +138,7 @@ def main(level):
                     max_health=100, x_vel=2)
 
     player.current_weapon_damage = {1: 50, 2: 50}
+    player.x_vel = 20
     # enemy_group.add(enemy_1,enemy_2)
 
     # sprite groups
@@ -159,8 +161,8 @@ def main(level):
         attack_conditions = not (
                 player.sword_attack or player.bow_attack)  # only allow attacking if not already in attack animation -> ADD INTO ITERATIVE DEVELOPMENT
         window.refresh()
-        world.draw(background, screen_scroll, background_scroll)
-        # draw_grid(0)
+        world.draw(background, screen_scroll)
+        draw_grid(0)
 
         player.check_alive()
         for event in pygame.event.get():
@@ -264,7 +266,7 @@ def main(level):
         # display text
         window.draw_text(f'weapon: {["Sword", "Bow"][player.current_weapon - 1]}', (10, 7))
         window.draw_text(f'Press [1] to use Sword, [2] to use Bow', (10, 20))
-        background_scroll += screen_scroll
+        world.bg_scroll -= screen_scroll
         pygame.display.update()  # make all the changes
 
         clock.tick(FPS)

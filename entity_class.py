@@ -175,6 +175,11 @@ class Entity(pygame.sprite.Sprite):
             # check collision in x direction
             if tile[1].colliderect(self.rect.x + dx, self.rect.y, self.rect.w, self.rect.h):
                 dx = 0
+                # If AI collision with wall, turn em around
+                if isinstance(self, Enemy):
+                    # self.direction *= -1
+                    # self.move_counter *= -1
+                    self.wall_collision = True
 
             if tile[1].colliderect(self.rect.x, self.rect.y + dy, self.rect.w, self.rect.h):
                 dy = 0
@@ -189,9 +194,15 @@ class Entity(pygame.sprite.Sprite):
                     self.in_air = False
                     # tile[1].top = self.rect.bottom
                     self.rect.bottom = tile[1].top
+        if self.rect.left + screen_scroll <= 0 and self.direction == -1: dx=0
         # if self.rect.bottom + dy > 300:
         #     dy = 300 - self.rect.bottom  # add the remaining distance between floor and player
         #     self.in_air = False
+
+        # check if going off the sides
+        if isinstance(self, Player):
+            if self.rect.left + dx < 0 or self.rect.right + dx > Display.WIDTH:
+                dx = 0
 
         # update player position
         self.rect.x += dx
@@ -200,7 +211,9 @@ class Entity(pygame.sprite.Sprite):
         # update scroll based on player position
         if isinstance(self, Player):
             # print(self.obj_type)
-            if (self.rect.right > Display.WIDTH - scroll_threshold) or (self.rect.left <= scroll_threshold):
+            check_1 = world.bg_scroll < (Display.MAX_BLOCKS_X*Display.TILE_DIMENSION_X-Display.WIDTH)
+            check_2 = world.bg_scroll > abs(dx)
+            if (self.rect.right > Display.WIDTH - scroll_threshold and check_1) or (self.rect.left <= scroll_threshold and check_2):
                 self.rect.x -= dx # move player back
                 screen_scroll = -dx
         return screen_scroll
@@ -396,7 +409,7 @@ class Player(Entity):
         Entity.__init__(self, *args, **kwargs)
 
 class Enemy(Entity):
-    def __init__(self, x, y, obj_type, scale, max_health=100, x_vel=5, all_animations=None, attack_radius=150):
+    def __init__(self, x, y, obj_type, scale, max_health=100, x_vel=5, all_animations=None, attack_radius=100, move_radius=3):
         super().__init__(x, y, obj_type, scale, max_health, x_vel, all_animations)
         self.move_counter = 0
         self.idling = False
@@ -406,6 +419,8 @@ class Enemy(Entity):
         self.attacked = False
         self.wait = 0
         self.change_direction = False
+        self.wall_collision = False
+        self.move_radius = move_radius
 
     def rec_collision(self, obj):
         return self.attack_vision.colliderect(obj.rect)
@@ -443,6 +458,7 @@ class Enemy(Entity):
 
             #if the enemy is in idling motion:
             if self.idling:
+                # self.update_action(0)
                 self.idling_counter -= 1
                 if self.idling_counter <= 0:
                     self.idling = False
@@ -461,9 +477,10 @@ class Enemy(Entity):
             self.move_counter += 1
 
             self.change_direction = False
-            if self.move_counter > Display.TILE_DIMENSION_X:
+            if self.move_counter > (self.move_radius * Display.TILE_DIMENSION_X)/self.x_vel or self.wall_collision:
                 self.change_direction = True
                 self.set_idling()
+                self.wall_collision = False
         # scroll
         if scroll: self.rect.x += scroll
 
