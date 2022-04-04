@@ -118,7 +118,7 @@ class Entity(pygame.sprite.Sprite):
         self.current_weapon_damage = {1: sword_dps, 2: bow_dps}  # sword deals 50 damage, bow deals 20
         self.increase_health = 0
 
-    def move(self, moving_left, moving_right):  # handle player movement
+    def move(self, moving_left, moving_right, world):  # handle player movement
         # reset movement variables
         dx = dy = 0
 
@@ -140,7 +140,7 @@ class Entity(pygame.sprite.Sprite):
 
         # jumping/vertical movement
         if self.jumping and (not self.in_air):
-            self.y_vel = -15
+            self.y_vel = -13
             self.jumping = False
             self.in_air = True
 
@@ -149,9 +149,27 @@ class Entity(pygame.sprite.Sprite):
         dy += self.y_vel
 
         # check collision with floor
-        if self.rect.bottom + dy > 300:
-            dy = 300 - self.rect.bottom  # add the remaining distance between floor and player
-            self.in_air = False
+        for tile in world.obstacle_list:
+            # check collision in x direction
+            if tile[1].colliderect(self.rect.x + dx, self.rect.y, self.rect.w, self.rect.h):
+                dx = 0
+
+            if tile[1].colliderect(self.rect.x, self.rect.y + dy, self.rect.w, self.rect.h):
+                dy = 0
+                # check if jumping and below ground
+                if self.y_vel < 0:
+                    self.y_vel = 0
+                    # tile[1].bottom = self.rect.top
+                    # self.rect.top = tile[1].bottom
+
+                elif self.y_vel >= 0:
+                    self.y_vel = 0
+                    self.in_air = False
+                    # tile[1].top = self.rect.bottom
+                    self.rect.bottom = tile[1].top
+        # if self.rect.bottom + dy > 300:
+        #     dy = 300 - self.rect.bottom  # add the remaining distance between floor and player
+        #     self.in_air = False
 
         # update player position
         self.rect.x += dx
@@ -270,6 +288,8 @@ class Entity(pygame.sprite.Sprite):
                 'Idle2': (scale[0] * 1.4, scale[1]),
                 'Die': (scale[0] * 1, scale[1] * 0.8),
                 'Running2': (scale[0] * 1.4, scale[1])
+                # 'Jumping': (scale[0]*1.4, scale[1]),
+                # 'Falling': (scale[0]*1.4, scale[1])
             },
             'player2': {
                 'Idle': (scale[0] * 0.5, scale[1] * 1),
@@ -286,7 +306,7 @@ class Entity(pygame.sprite.Sprite):
             if scale_info:
                 scale_data = scale_info.get(animation)
                 if scale_data: scale2 = [*map(int, scale_data)]
-
+            scale2 = [*map(int,(scale2[0]*0.8,scale2[1]*0.8))]
             temp += [pygame.transform.scale(pygame.image.load(f'images/{entity_type}/{animation}/{images[i]}'), scale2)]
         self.animations += [temp]
 
@@ -367,9 +387,9 @@ class Enemy(Entity):
             return True
         return False
 
-    def AI(self):
+    def AI(self, world):
         if self.in_air:  # if the enemy is falling
-            self.move(0, 0)  # don't move in any direction
+            self.move(0, 0, world)  # don't move in any direction
             return  # don't do anything else related to AI movement
         self.wait = max(0, self.wait - 1)
 
@@ -399,7 +419,7 @@ class Enemy(Entity):
             if self.direction == 1:
                 AI_moving_right = True
             AI_moving_left = not AI_moving_right
-            self.move(AI_moving_left, AI_moving_right)
+            self.move(AI_moving_left, AI_moving_right, world)
             self.update_action(2)
             self.move_counter += 1
 
@@ -421,7 +441,7 @@ class Enemy(Entity):
             pygame.draw.rect(surface, (255, 255, 0), self.rect, 2)
         self.draw_health_bar(surface)
 
-    def update(self, player, surface):
+    def update(self, player, surface, world):
         self.animation_handling()
         # pygame.draw.rect(window.screen, (255, 0, 0), enemy.attack_vision,2)
         if self.health <= 0:
@@ -433,7 +453,7 @@ class Enemy(Entity):
         self.start_attack(player) # check if player collision has occurred
         player.sword_collision(self)
         self.sword_collision(player)  # check for collision with the player
-        self.AI() # do enemy AI
+        self.AI(world) # do enemy AI
 
     def regen(self):
         self.health = self.max_health

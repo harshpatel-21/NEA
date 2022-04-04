@@ -169,7 +169,7 @@ def main(level):
                 # jumping
                 if event.key == pygame.K_w and action_conditions and attack_conditions:
                     player.jumping = True
-                    player.in_air = True
+                    # player.in_air = True
 
                 if event.key == pygame.K_e and enemy_1.check_alive():
                     arrows += [Arrow(enemy_1)]
@@ -189,6 +189,10 @@ def main(level):
 
             # check for keys that are lifted/ no longer being pressed
             if event.type == pygame.KEYUP:
+                # if event.key == pygame.K_a:
+                #     moving_left = False
+                # if event.key == pygame.K_d:
+                #     moving_right = False
                 pass
 
         keys = pygame.key.get_pressed()
@@ -231,7 +235,7 @@ def main(level):
         pygame.draw.line(window.screen, (255, 0, 0), (0, 300), (window.WIDTH, 300))
 
         # enemy handling
-        enemy_group.update(player, window.screen)
+        enemy_group.update(player, window.screen, world)
         enemy_group.draw(window.screen)
 
         # coin handling
@@ -240,7 +244,7 @@ def main(level):
 
         # player handling
         player.draw(window.screen)
-        player.move(moving_left, moving_right)
+        player.move(moving_left, moving_right, world)
 
         # tile groups
         decoration_group.draw(window.screen)
