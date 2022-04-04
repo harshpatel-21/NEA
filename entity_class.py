@@ -194,7 +194,7 @@ class Entity(pygame.sprite.Sprite):
                     self.in_air = False
                     # tile[1].top = self.rect.bottom
                     self.rect.bottom = tile[1].top
-        if self.rect.left + screen_scroll <= 0 and self.direction == -1: dx=0
+        if self.rect.left + screen_scroll <= 0 and self.direction == -1 and isinstance(self, Player): dx=0
         # if self.rect.bottom + dy > 300:
         #     dy = 300 - self.rect.bottom  # add the remaining distance between floor and player
         #     self.in_air = False

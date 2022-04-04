@@ -55,10 +55,12 @@ TILE_TYPES = len(os.listdir(f'images/tiles/{1}'))
 img_list = []
 TILE_SCALE = (window.TILE_DIMENSION_X, window.TILE_DIMENSION_Y)
 
+flip_images = [15]
+entities = [17, 18]
 for i in range(TILE_TYPES):
     img = pygame.transform.scale(pygame.image.load(WINDOW.get_path(f'images/tiles/{LEVEL}/{i}.png')).convert_alpha(), TILE_SCALE)
-    if i in [15]: img = pygame.transform.flip(img, False, True)
-    if i in [16]: img = pygame.transform.scale(img, (46,92))
+    if i in flip_images: img = pygame.transform.flip(img, False, True)
+    if i in entities: img = pygame.transform.scale(img, (46,92))
     img_list += [img]
 
 background = pygame.transform.scale(pygame.image.load(WINDOW.get_path('backgrounds/background_1.png')),window.SIZE).convert_alpha()
@@ -106,6 +108,7 @@ class World:
                 for x, tile in enumerate(row):
                     if tile == -1:
                         continue
+
                     img = img_list[tile] # get the image from the list of images
                     img_rect = img.get_rect()
                     img_rect.topleft = (x * window.TILE_DIMENSION_X, y * window.TILE_DIMENSION_Y)
@@ -115,15 +118,16 @@ class World:
                         self.obstacle_list.append(tile_data)
                     elif tile in decoration_range: # grass / no collision decoration
                         decorations.append(Decoration(img, img_rect.x, img_rect.y))
-                    elif kill_block_range: # water
+                    elif tile in kill_block_range: # water
                         waters.append(DeathBlock(img, img_rect.x, img_rect.y))
                     elif tile == coin_index: # coin
                         coins += [Item('coin', img_rect.x, img_rect.y, (32, 32))]
                     elif tile == player_index: # create player
                         player = Player(img_rect.x, img_rect.y, 'player', scale, sword_dps=15)
-                    elif tile == enemy_index:
-                        enemies += [Enemy(img_rect.x,img_rect.y, enemy_scale, all_animations=['Idle', 'Die', 'Run', 'Attack'],
+                    elif tile == 18:
+                        enemies += [Enemy(img_rect.x, img_rect.y,'player2', enemy_scale, all_animations=['Idle', 'Die', 'Run', 'Attack'],
                                     max_health=100, x_vel=2)]
+        # print(enemies)
         return player, decorations, waters, enemies, coins
 
     def draw(self, background, scroll=0, bg_scroll=0):
@@ -145,13 +149,14 @@ def main(level):
     # player = Player(100, 100, 'player', scale, sword_dps=15)
     # enemy = Player(500,100,'enemy',scale,all_animations = ['Idle','Die'],max_health = 50 )
     player, decorations, waters, enemies, coins = world.process_data(game_level)
-    print(decorations)
-    enemy_1 = Enemy(500, 0, 'player2', (int(70 * 2.4), 92), all_animations=['Idle', 'Die', 'Run', 'Attack'],
-                    max_health=100, x_vel=2)
-    enemy_2 = Enemy(700, 0, 'player2', (int(70 * 2.4), 92), all_animations=['Idle', 'Die', 'Run', 'Attack'],
-                    max_health=100, x_vel=2)
-    enemy_3 = Enemy(400, 0, 'player2', (int(70 * 2.4), 92), all_animations=['Idle', 'Die', 'Run', 'Attack'],
-                    max_health=100, x_vel=2)
+    print(enemies)
+    # print(decorations)
+    # enemy_1 = Enemy(500, 0, 'player2', (int(70 * 2.4), 92), all_animations=['Idle', 'Die', 'Run', 'Attack'],
+    #                 max_health=100, x_vel=2)
+    # enemy_2 = Enemy(700, 0, 'player2', (int(70 * 2.4), 92), all_animations=['Idle', 'Die', 'Run', 'Attack'],
+    #                 max_health=100, x_vel=2)
+    # enemy_3 = Enemy(400, 0, 'player2', (int(70 * 2.4), 92), all_animations=['Idle', 'Die', 'Run', 'Attack'],
+    #                 max_health=100, x_vel=2)
 
     player.current_weapon_damage = {1: 50, 2: 50}
     player.x_vel = 5
@@ -160,14 +165,15 @@ def main(level):
     # sprite groups
     decoration_group = Group(*decorations)
     waters_group = Group(*waters)
-    enemy_group = Group(enemy_1, enemy_2)
+    enemy_group = Group(*enemies)
     arrow_group = Group()
     coin_group = Group(*coins)
+    print(enemy_group)
     arrows = []
     # enemies = [enemy_1, enemy_2]
     # coin_group = pygame.sprite.Group()
 
-    enemy_1.direction = -1
+    # enemy_1.direction = -1
     player.weapon = 1
 
     screen_scroll = 0 # respective to player movement
