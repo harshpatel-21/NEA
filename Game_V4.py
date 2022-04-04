@@ -82,13 +82,14 @@ scale = (55, 92)  # for normal
 # scale = (60,92) # with sword
 # load in game data
 
-obstacle_range = range(11)
-decoration_range = range(11, 14)
-kill_block_range = range(14, 16)
+obstacle_range = [*map(int, '0 1 2 3 4 5 6 7 8 9 10 11'.split())]
+decoration_range = [*map(int, '11 12 13 19'.split())]
+kill_block_range = [*map(int, '14 15'.split())]
 coin_index = 16
 player_index = 17
 enemy_index = 18
 enemy_scale = (int(70 * 2.4), 92)
+move_radii = [1, 3]
 class World:
     def __init__(self):
         self.obstacle_list = []
@@ -96,10 +97,11 @@ class World:
         self.bg_scroll = 0
 
     def process_data(self, data):
+        enemy_counter = 0
         player = Player(500,500, 'player', scale, sword_dps=15)
         # iterate through each value in level data file
         decorations = []
-        waters = []
+        death_blocks = []
         enemies = []
         coins = []
         for layer in data.values():
@@ -119,16 +121,17 @@ class World:
                     elif tile in decoration_range: # grass / no collision decoration
                         decorations.append(Decoration(img, img_rect.x, img_rect.y))
                     elif tile in kill_block_range: # water
-                        waters.append(DeathBlock(img, img_rect.x, img_rect.y))
+                        death_blocks.append(DeathBlock(img, img_rect.x, img_rect.y))
                     elif tile == coin_index: # coin
                         coins += [Item('coin', img_rect.x, img_rect.y, (32, 32))]
                     elif tile == player_index: # create player
                         player = Player(img_rect.x, img_rect.y, 'player', scale, sword_dps=15)
                     elif tile == 18:
                         enemies += [Enemy(img_rect.x, img_rect.y,'player2', enemy_scale, all_animations=['Idle', 'Die', 'Run', 'Attack'],
-                                    max_health=100, x_vel=2)]
+                                    max_health=100, x_vel=2, move_radius = move_radii[enemy_counter])]
+                        enemy_counter += 1
         # print(enemies)
-        return player, decorations, waters, enemies, coins
+        return player, decorations, death_blocks, enemies, coins
 
     def draw(self, background, scroll=0, bg_scroll=0):
         background_width = background.get_width()
@@ -148,7 +151,7 @@ def main(level):
     # scale = (60,92) # with sword
     # player = Player(100, 100, 'player', scale, sword_dps=15)
     # enemy = Player(500,100,'enemy',scale,all_animations = ['Idle','Die'],max_health = 50 )
-    player, decorations, waters, enemies, coins = world.process_data(game_level)
+    player, decorations, death_blocks, enemies, coins = world.process_data(game_level)
     print(enemies)
     # print(decorations)
     # enemy_1 = Enemy(500, 0, 'player2', (int(70 * 2.4), 92), all_animations=['Idle', 'Die', 'Run', 'Attack'],
@@ -164,7 +167,7 @@ def main(level):
 
     # sprite groups
     decoration_group = Group(*decorations)
-    waters_group = Group(*waters)
+    death_blocks_group = Group(*death_blocks)
     enemy_group = Group(*enemies)
     arrow_group = Group()
     coin_group = Group(*coins)
@@ -266,7 +269,7 @@ def main(level):
 
         # player handling
         player.draw(window.screen)
-        screen_scroll = player.move(moving_left, moving_right, world)
+        screen_scroll = player.move(moving_left, moving_right, world, death_blocks)
 
         # enemy handling
         enemy_group.update(player, window.screen, world, screen_scroll)
@@ -282,8 +285,9 @@ def main(level):
         decoration_group.draw(window.screen, screen_scroll)
         decoration_group.update()
 
-        # waters_group.draw(window.screen, screen_scroll)
-        # waters_group.update()
+        death_blocks_group.draw(window.screen, screen_scroll)
+        death_blocks_group.update(enemy_group) # do death block checking for enemies
+        death_blocks_group.update(player) # do death block checking for player
 
         # display text
         window.draw_text(f'weapon: {["Sword", "Bow"][player.current_weapon - 1]}', (10, 7))

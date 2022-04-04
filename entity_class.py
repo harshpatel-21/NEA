@@ -138,7 +138,7 @@ class Entity(pygame.sprite.Sprite):
         self.current_weapon_damage = {1: sword_dps, 2: bow_dps}  # sword deals 50 damage, bow deals 20
         self.increase_health = 0
 
-    def move(self, moving_left, moving_right, world):  # handle player movement
+    def move(self, moving_left, moving_right, world, death_blocks=0):  # handle player movement
         scroll_threshold = 200
         screen_scroll = 0
         # reset movement variables
@@ -194,6 +194,8 @@ class Entity(pygame.sprite.Sprite):
                     self.in_air = False
                     # tile[1].top = self.rect.bottom
                     self.rect.bottom = tile[1].top
+
+
         if self.rect.left + screen_scroll <= 0 and self.direction == -1 and isinstance(self, Player): dx=0
         # if self.rect.bottom + dy > 300:
         #     dy = 300 - self.rect.bottom  # add the remaining distance between floor and player
@@ -532,4 +534,7 @@ class Group(pygame.sprite.Group):
             # Check if the sprite has a `regen` method.
             if hasattr(sprite, 'regen'):
                 sprite.regen()
+
+
+
 

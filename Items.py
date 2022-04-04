@@ -6,6 +6,7 @@ import os
 # sys.path.insert(1,x)
 
 from WINDOW import Display
+from entity_class import Group
 
 current_path = os.path.dirname(__file__)  # Where your .py file is located
 image_path = os.path.join(current_path, 'images','items') # The image folder path
@@ -81,7 +82,7 @@ class Decoration(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.image = img
         self.rect = self.image.get_rect()
-        self.rect.midtop = (x + Display.TILE_DIMENSION_X // 2 - 2, y + (Display.TILE_DIMENSION_Y - self.rect.h))
+        self.rect.midtop = (x + Display.TILE_DIMENSION_X // 2, y + (Display.TILE_DIMENSION_Y - self.rect.h))
 
     def draw(self, surface, scroll=0):
         self.rect.x += scroll
@@ -103,3 +104,21 @@ class DeathBlock(pygame.sprite.Sprite):
         # self.rect.midtop = (midtop[0] - (Display.TILE_DIMENSION_X - self.rect.w)//2 - 2, midtop[1])
         # surface.blit(self.image, self.rect.midtop)
         surface.blit(self.image, self.rect)
+
+    def collision(self, objs):
+        if isinstance(objs, Group):
+            for obj in objs:
+                collision = self.mask_collision(obj)
+                if collision:
+                    obj.health = 0
+        else:
+            collision = self.mask_collision(objs)
+            if collision: objs.health = 0
+
+    def update(self, objs):
+        self.collision(objs)
+
+    def mask_collision(self, obj):
+        mask = pygame.mask.from_surface(self.image)
+        offset = (obj.rect.x - self.rect.x, obj.rect.y - self.rect.y)
+        return mask.overlap(obj.mask,offset)

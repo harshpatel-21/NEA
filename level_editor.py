@@ -31,10 +31,11 @@ FLOOR_BLOCK = 1
 background = pygame.transform.scale(pygame.image.load(WINDOW.get_path('backgrounds/background_1.png')),window.SIZE)
 
 # load tiles
-tile_num = 19
+tile_num = 20
 tiles = []
 flip_images = [15]
 entities = [17,18]
+
 for i in range(tile_num):
 	img = pygame.transform.scale(pygame.image.load(get_path(f'images/tiles/{theme}/{i}.png')).convert_alpha(),(46,46))
 	if i in flip_images: img = pygame.transform.flip(img, False, True)
@@ -182,9 +183,9 @@ def main():
 					delete=True
 				if event.key == pygame.K_LSHIFT: # placement mode
 					place = True
-				if event.key == pygame.K_w: # go up layers
+				if event.key == pygame.K_s: # go up layers
 					current_layer = max(0, current_layer-1)
-				if event.key == pygame.K_s: # go down layers
+				if event.key == pygame.K_w: # go down layers
 					current_layer += 1
 					layers.setdefault(current_layer, generate_new_map(fill_floor=False))
 
