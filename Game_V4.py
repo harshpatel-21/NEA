@@ -54,9 +54,10 @@ LEVEL = 1
 TILE_TYPES = len(os.listdir(f'images/tiles/{1}'))
 img_list = []
 TILE_SCALE = (window.TILE_DIMENSION_X, window.TILE_DIMENSION_Y)
+
 for i in range(TILE_TYPES):
     img = pygame.transform.scale(pygame.image.load(WINDOW.get_path(f'images/tiles/{LEVEL}/{i}.png')).convert_alpha(), TILE_SCALE)
-    if i in [11, 15]: img = pygame.transform.flip(img, False, True)
+    if i in [15]: img = pygame.transform.flip(img, False, True)
     if i in [16]: img = pygame.transform.scale(img, (46,92))
     img_list += [img]
 
@@ -78,6 +79,14 @@ GRAVITY = 0.75
 scale = (55, 92)  # for normal
 # scale = (60,92) # with sword
 # load in game data
+
+obstacle_range = range(11)
+decoration_range = range(11, 14)
+kill_block_range = range(14, 16)
+coin_index = 16
+player_index = 17
+enemy_index = 18
+enemy_scale = (int(70 * 2.4), 92)
 class World:
     def __init__(self):
         self.obstacle_list = []
@@ -85,30 +94,36 @@ class World:
         self.bg_scroll = 0
 
     def process_data(self, data):
+        player = Player(500,500, 'player', scale, sword_dps=15)
         # iterate through each value in level data file
         decorations = []
         waters = []
         enemies = []
         coins = []
-        for y, row in enumerate(data):
-            for x, tile in enumerate(row):
-                if tile == -1:
-                    continue
-                img = img_list[tile] # get the image from the list of images
-                img_rect = img.get_rect()
-                img_rect.topleft = (x * window.TILE_DIMENSION_X, y * window.TILE_DIMENSION_Y)
-                img_mask = pygame.mask.from_surface(img)
-                tile_data = (img, img_rect, img_mask)
-                if 0 <= tile <= 10:
-                    self.obstacle_list.append(tile_data)
-                elif 11 <= tile <= 13: # grass / no collision decoration
-                    decorations.append(Decoration(img, img_rect.x, img_rect.y))
-                elif 13 <= tile <= 15: # water
-                    waters.append(DeathBlock(img, img_rect.x, img_rect.y))
-                elif tile == 16: # coin
-                    coins += [Item('coin', img_rect.x, img_rect.y, (32, 32))]
-                elif tile == 17: # create player
-                    player = Player(img_rect.x, img_rect.y, 'player', scale, sword_dps=15)
+        for layer in data.values():
+            # print(layer)
+            for y, row in enumerate(layer):
+                for x, tile in enumerate(row):
+                    if tile == -1:
+                        continue
+                    img = img_list[tile] # get the image from the list of images
+                    img_rect = img.get_rect()
+                    img_rect.topleft = (x * window.TILE_DIMENSION_X, y * window.TILE_DIMENSION_Y)
+                    img_mask = pygame.mask.from_surface(img)
+                    tile_data = (img, img_rect, img_mask)
+                    if tile in obstacle_range:
+                        self.obstacle_list.append(tile_data)
+                    elif tile in decoration_range: # grass / no collision decoration
+                        decorations.append(Decoration(img, img_rect.x, img_rect.y))
+                    elif kill_block_range: # water
+                        waters.append(DeathBlock(img, img_rect.x, img_rect.y))
+                    elif tile == coin_index: # coin
+                        coins += [Item('coin', img_rect.x, img_rect.y, (32, 32))]
+                    elif tile == player_index: # create player
+                        player = Player(img_rect.x, img_rect.y, 'player', scale, sword_dps=15)
+                    elif tile == enemy_index:
+                        enemies += [Enemy(img_rect.x,img_rect.y, enemy_scale, all_animations=['Idle', 'Die', 'Run', 'Attack'],
+                                    max_health=100, x_vel=2)]
         return player, decorations, waters, enemies, coins
 
     def draw(self, background, scroll=0, bg_scroll=0):
@@ -130,6 +145,7 @@ def main(level):
     # player = Player(100, 100, 'player', scale, sword_dps=15)
     # enemy = Player(500,100,'enemy',scale,all_animations = ['Idle','Die'],max_health = 50 )
     player, decorations, waters, enemies, coins = world.process_data(game_level)
+    print(decorations)
     enemy_1 = Enemy(500, 0, 'player2', (int(70 * 2.4), 92), all_animations=['Idle', 'Die', 'Run', 'Attack'],
                     max_health=100, x_vel=2)
     enemy_2 = Enemy(700, 0, 'player2', (int(70 * 2.4), 92), all_animations=['Idle', 'Die', 'Run', 'Attack'],
@@ -138,7 +154,7 @@ def main(level):
                     max_health=100, x_vel=2)
 
     player.current_weapon_damage = {1: 50, 2: 50}
-    player.x_vel = 20
+    player.x_vel = 5
     # enemy_group.add(enemy_1,enemy_2)
 
     # sprite groups
@@ -162,7 +178,7 @@ def main(level):
                 player.sword_attack or player.bow_attack)  # only allow attacking if not already in attack animation -> ADD INTO ITERATIVE DEVELOPMENT
         window.refresh()
         world.draw(background, screen_scroll)
-        draw_grid(0)
+        # draw_grid(0)
 
         player.check_alive()
         for event in pygame.event.get():
@@ -260,7 +276,7 @@ def main(level):
         decoration_group.draw(window.screen, screen_scroll)
         decoration_group.update()
 
-        waters_group.draw(window.screen, screen_scroll)
+        # waters_group.draw(window.screen, screen_scroll)
         # waters_group.update()
 
         # display text
