@@ -201,7 +201,6 @@ class Entity(pygame.sprite.Sprite):
         if isinstance(self, Player):
             # print(self.obj_type)
             if (self.rect.right > Display.WIDTH - scroll_threshold) or (self.rect.left <= 140):
-                print('here')
                 self.rect.x -= dx # move player back
                 screen_scroll = -dx
         return screen_scroll
@@ -427,6 +426,7 @@ class Enemy(Entity):
 
         AI_moving_right = False
         if self.sword_attack:
+            if scroll: self.rect.x += scroll
             return
 
         self.attack_vision.center = self.rect.center
@@ -449,6 +449,7 @@ class Enemy(Entity):
                     if self.change_direction:
                         self.direction *= -1
                         self.move_counter *= -1
+                if scroll: self.rect.x += scroll
                 return  # don't attempt to move the player in idling animation
 
             if self.direction == 1:
