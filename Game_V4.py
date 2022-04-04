@@ -50,8 +50,8 @@ coin_path = os.path.join(image_path, 'coin')
 FPS = 60
 clock = pygame.time.Clock()
 window = WINDOW.Display(new_window=True)
-LEVEL = 1
-TILE_TYPES = len(os.listdir(f'images/tiles/{1}'))
+LEVEL = 2
+TILE_TYPES = len(os.listdir(f'images/tiles/{2}'))
 img_list = []
 TILE_SCALE = (window.TILE_DIMENSION_X, window.TILE_DIMENSION_Y)
 
@@ -143,11 +143,23 @@ class World:
             tile[1].x += scroll
             window.screen.blit(tile[0], tile[1])
 
-game_level = load_level(1)
+def load_level(level):
+    layers = {}
+    path = f'levels/level{level}'
+    files = os.listdir(path)
+    for index, file in enumerate(files):
+        with open(os.path.join(path, file),'r') as file:
+            data = file.read()
+            x = [*map(lambda i: map(int, i.split(',')), data.split('\n'))]
+            print(len(x))
+            # sys.exit()
+    pass
+game_level = load_level(2)
 print(game_level)
 world = World()
 
 def main(level):
+    print('here')
     # scale = (60,92) # with sword
     # player = Player(100, 100, 'player', scale, sword_dps=15)
     # enemy = Player(500,100,'enemy',scale,all_animations = ['Idle','Die'],max_health = 50 )
