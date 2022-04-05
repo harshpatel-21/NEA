@@ -36,7 +36,6 @@ sys.path.insert(1, x)
 from entity_class import Entity, Enemy, Projectile, Player, Group
 import pygame, WINDOW
 from Items import Item, Decoration, DeathBlock, Obstacle
-from level_editor import load_level, draw_grid
 
 pygame.init()
 
@@ -51,35 +50,46 @@ FPS = 60
 clock = pygame.time.Clock()
 window = WINDOW.Display(new_window=True)
 LEVEL = 2
-TILE_TYPES = os.listdir(f'images/tiles/{2}')
+TILE_TYPES = os.listdir(f'images/tiles/{2}/Tiles')
 img_list = []
 TILE_SCALE = (window.TILE_DIMENSION_X, window.TILE_DIMENSION_Y)
 tile_x,tile_y = TILE_SCALE
+ENEMY = 'samurai'
+PLAYER = 'player'
+ENEMY_IMG = pygame.image.load(f'images/{ENEMY}/default.png')
+PLAYER_IMG = pygame.image.load(f'images/{PLAYER}/default.png')
+
 # flip_images = [15]
 # entities = [17, 18]
-img_list = {}
-for i in TILE_TYPES:
-    img = pygame.transform.scale(pygame.image.load(WINDOW.get_path(f'images/tiles/{LEVEL}/{i}')).convert_alpha(), TILE_SCALE)
-    # if i in flip_images: img = pygame.transform.flip(img, False, True)
-    # if i in entities: img = pygame.transform.scale(img, (46,92))
-    name = i[:i.index('.')]
-    img_list[name] = img
 
 background = pygame.transform.scale(pygame.image.load(WINDOW.get_path('backgrounds/background_2.png')),window.SIZE).convert_alpha()
 
 GRAVITY = 0.75
 
-scale = (55, 92)  # for normal
 # scale = (60,92) # with sword
 # load in game data
-obstacle_range = '0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20'.split()
-decoration_range = [*map(int, '11 12 13 19'.split())]
-kill_block_range = [*map(int, '14 15'.split())]
-coin_index = 16
-player_index = 17
-enemy_index = 18
+tile_info = {
+    'obstacle': '0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21',
+    'decoration': '',
+    'kill_block': '',
+    'coin': '',
+    'player': '',
+    'enemy': '',
+}
+player_index = '1'
+enemy_index = '0'
 enemy_scale = (int(70 * 2.4), 92)
+player_scale = (50, 83)
 move_radii = [1, 3]
+
+img_list = {}
+for i in TILE_TYPES:
+    img = pygame.transform.scale(pygame.image.load(WINDOW.get_path(f'images/tiles/{LEVEL}/Tiles/{i}')).convert_alpha(), TILE_SCALE)
+    # img.set_colorkey((0,0,0))
+    # if i in flip_images: img = pygame.transform.flip(img, False, True)
+    # if i in entities: img = pygame.transform.scale(img, (46,92))
+    name = i[:i.index('.')]
+    img_list[name] = img
 
 class World:
     def __init__(self):
@@ -89,18 +99,19 @@ class World:
 
     def process_data(self, data):
         enemy_counter = 0
-        player = Player(500,500, 'player', scale, sword_dps=15)
+        player = Player(500,500, 'player', player_scale, sword_dps=15)
         # iterate through each value in level data file
-        decorations = []
+        decorations = [] # add in all the tiles that don't need to be checked for collision
         death_blocks = []
         enemies = []
         coins = []
-        for layer in data.values():
+        for ind,layer in enumerate(data.values()):
             # print(layer)
             for y, row in enumerate(layer):
                 for x, tile in enumerate(row):
                     if tile == '-1':
                         continue
+
 
                     img = img_list[tile] # get the image from the list of images
                     img_rect = img.get_rect()
@@ -108,22 +119,19 @@ class World:
                     img_mask = pygame.mask.from_surface(img)
                     tile_data = (img, img_rect, img_mask)
 
-                    if tile in obstacle_range:
+                    if tile in tile_info['obstacle']:
                         self.obstacle_list.append(Obstacle(tile, img, img_rect))
-                    elif tile in decoration_range: # grass / no collision decoration
+                    elif tile in tile_info['decoration']: # grass / no collision decoration
                         decorations.append(Decoration(img, img_rect.x, img_rect.y))
-                    elif tile in kill_block_range: # water
+                    elif tile in tile_info['kill_block']: # water
                         death_blocks.append(DeathBlock(img, img_rect.x, img_rect.y))
-                    elif tile == coin_index: # coin
+                    elif tile == tile_info['coin']: # coin
                         coins += [Item('coin', img_rect.x, img_rect.y, (32, 32))]
-                    elif tile == player_index: # create player
-                        player = Player(img_rect.x, img_rect.y, 'player', scale, sword_dps=15)
-                    elif tile == 18:
-                        enemies += [Enemy(img_rect.x, img_rect.y,'player2', enemy_scale, all_animations=['Idle', 'Die', 'Run', 'Attack'],
+                    elif tile == tile_info['player']: # create player if there's one on the map
+                        player = Player(img_rect.x, img_rect.y, 'player', player_scale, sword_dps=15)
+                    elif tile == tile_info['enemy']:
+                        enemies += [Enemy(img_rect.x, img_rect.y,'enemy', enemy_scale, all_animations=['Idle', 'Die', 'Run', 'Attack'],
                                     max_health=100, x_vel=2, move_radius = move_radii[enemy_counter])]
-                        enemy_counter += 1
-                    x+=1
-        # print(enemies)
         return player, decorations, death_blocks, enemies, coins
 
     def draw(self, background, scroll=0):
@@ -139,13 +147,17 @@ def load_level(level):
     layers = {}
     path = f'levels/level{level}'
     files = os.listdir(path)
+    entities = files[-1] # extract the top most layer which will contain ONLY entities
     ordered = sorted(files, key = lambda i: int(i.split('_')[1][:i.split('_')[1].index('.')]))
-    print(ordered)
-
+    files = ordered # sort the tiles such that highest layer is prioritised/ blitted over the other layers
+    # print(ordered)
     for index, file in enumerate(files):
         with open(os.path.join(path, file)) as file:
             level = csv.reader(file, delimiter=',')
             layers[index] = [*level]
+    with open(os.path.join(path,entities)) as file:
+        level = csv.reader(file, delimiter=',')
+        layers[len(layers)] =[*level]
         # sys.exit()
     return layers
 
@@ -160,13 +172,13 @@ def main(level):
     # enemy = Player(500,100,'enemy',scale,all_animations = ['Idle','Die'],max_health = 50 )
     player, decorations, death_blocks, enemies, coins = world.process_data(game_level)
     print(world.obstacle_list)
-    print(enemies)
+    # print(enemies)
     # print(decorations)
-    # enemy_1 = Enemy(500, 0, 'player2', (int(70 * 2.4), 92), all_animations=['Idle', 'Die', 'Run', 'Attack'],
+    # enemy_1 = Enemy(500, 0, 'enemy', (int(70 * 2.4), 92), all_animations=['Idle', 'Die', 'Run', 'Attack'],
     #                 max_health=100, x_vel=2)
-    # enemy_2 = Enemy(700, 0, 'player2', (int(70 * 2.4), 92), all_animations=['Idle', 'Die', 'Run', 'Attack'],
+    # enemy_2 = Enemy(700, 0, 'enemy', (int(70 * 2.4), 92), all_animations=['Idle', 'Die', 'Run', 'Attack'],
     #                 max_health=100, x_vel=2)
-    # enemy_3 = Enemy(400, 0, 'player2', (int(70 * 2.4), 92), all_animations=['Idle', 'Die', 'Run', 'Attack'],
+    # enemy_3 = Enemy(400, 0, 'enemy', (int(70 * 2.4), 92), all_animations=['Idle', 'Die', 'Run', 'Attack'],
     #                 max_health=100, x_vel=2)
 
     player.current_weapon_damage = {1: 50, 2: 50}
@@ -186,11 +198,12 @@ def main(level):
 
     # enemy_1.direction = -1
     player.weapon = 1
-
+    # player.x_vel = 0
     screen_scroll = 0 # respective to player movement
     background_scroll = 0 # cumulative value
+    moving_left=moving_right=False
     while True:
-        action_conditions = not player.in_air and player.health  # making sure player isn't in the air and is still alive
+        action_conditions = not player.in_air and player.health # making sure player isn't in the air and is still alive
         attack_conditions = not (
                 player.sword_attack or player.bow_attack)  # only allow attacking if not already in attack animation -> ADD INTO ITERATIVE DEVELOPMENT
         window.refresh()
@@ -198,6 +211,7 @@ def main(level):
         # draw_grid(0)
 
         player.check_alive()
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -214,9 +228,15 @@ def main(level):
                 if event.key == pygame.K_h:
                     player.health += 50
 
+                if event.key == pygame.K_a and attack_conditions:
+                    moving_left = True
+                if event.key == pygame.K_d and attack_conditions:
+                    moving_right = True
+
                 # jumping
-                if event.key == pygame.K_w and action_conditions and attack_conditions:
+                if event.key == pygame.K_w and action_conditions and attack_conditions and not player.jump_lock:
                     player.jumping = True
+                    player.jump_lock = True
                     # player.in_air = True
 
                 # attacking
@@ -234,10 +254,10 @@ def main(level):
 
             # check for keys that are lifted/ no longer being pressed
             if event.type == pygame.KEYUP:
-                # if event.key == pygame.K_a:
-                #     moving_left = False
-                # if event.key == pygame.K_d:
-                #     moving_right = False
+                if event.key == pygame.K_a:
+                    moving_left = False
+                if event.key == pygame.K_d:
+                    moving_right = False
                 pass
 
         keys = pygame.key.get_pressed()
@@ -255,7 +275,7 @@ def main(level):
                     player.update_action(3)
                     pass
             elif player.sword_attack:  # if player is attacking with sword
-                player.update_action(4)
+                player.update_action(4, world)
             elif player.bow_attack:  # if player is attacking with a bow
                 player.update_action(5)
             elif moving_right or moving_left:
@@ -269,8 +289,8 @@ def main(level):
             # arrows += [add_arrow]
             arrow_group.add(add_arrow)
 
-        # for arrow in arrow_group:
-        #     arrow.update(arrows)  # update the arrow such position and state
+        for arrow in arrow_group:
+            arrow.update(arrows, world, enemy_group, player)  # update the arrow such position and state
 
         # draw_map(map_array)
         # pygame.draw.line(window.screen, (255, 0, 0), (0, 300), (window.WIDTH, 300))

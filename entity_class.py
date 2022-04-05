@@ -18,6 +18,7 @@ class Tile:
         self.mask = mask
         self.image = image
         self.direction = 0
+
 class Projectile(pygame.sprite.Sprite):
     def __init__(self, shooter, image='Arrow04'):
         pygame.sprite.Sprite.__init__(self)
@@ -43,7 +44,6 @@ class Projectile(pygame.sprite.Sprite):
         surface.blit(self.image, self.rect)
 
     def update(self, surface, world, enemy_group, player, arr=None):
-        self.draw(surface)  # draw the arrow onto the screen
         self.check_collision(enemy_group)  # check for collision with enemies
         self.check_collision(player)  # check for collision with player
 
@@ -58,7 +58,7 @@ class Projectile(pygame.sprite.Sprite):
 
         # check for tile collision
         for tile in world.obstacle_list:
-            if self.mask_collision(Tile(*tile)):
+            if self.mask_collision(tile):
                 self.remove = True
 
         if self.remove:
@@ -104,7 +104,7 @@ class Entity(pygame.sprite.Sprite):
                  sword_dps=40):
         self.all_animations = all_animations
         if all_animations is None and obj_type == 'player':
-            self.all_animations = ['Idle2', 'Running', 'Jumping', 'Falling', 'Sword', 'Bow', 'Die']
+            self.all_animations = ['Idle', 'Running', 'Jumping', 'Falling', 'Sword', 'Bow', 'Die']
         pygame.sprite.Sprite.__init__(self)
         self.max_health = max_health
         self.health = self.max_health
@@ -137,6 +137,7 @@ class Entity(pygame.sprite.Sprite):
         self.difference = self.health - self.health2
         self.current_weapon_damage = {1: sword_dps, 2: bow_dps}  # sword deals 50 damage, bow deals 20
         self.increase_health = 0
+        self.jump_lock = True
 
     def move(self, moving_left, moving_right, world, death_blocks=0):  # handle player movement
         scroll_threshold = 400
@@ -162,7 +163,7 @@ class Entity(pygame.sprite.Sprite):
 
         # jumping/vertical movement
         if self.jumping and (not self.in_air) and check:
-            self.y_vel = -14
+            self.y_vel = -17
             self.jumping = False
             self.in_air = True
 
@@ -183,6 +184,7 @@ class Entity(pygame.sprite.Sprite):
 
             if tile.rect.colliderect(self.rect.x, self.rect.y + dy, self.rect.w, self.rect.h):
                 dy = 0
+
                 # check if jumping and below ground
                 if self.y_vel < 0:
                     self.y_vel = 0
@@ -192,8 +194,10 @@ class Entity(pygame.sprite.Sprite):
                 elif self.y_vel >= 0:
                     self.y_vel = 0
                     self.in_air = False
+                    self.jump_lock = False
                     # tile[1].top = self.rect.bottom
                     self.rect.bottom = tile.rect.top
+
 
 
         if self.rect.left + screen_scroll <= 0 and self.direction == -1 and isinstance(self, Player): dx=0
@@ -262,12 +266,12 @@ class Entity(pygame.sprite.Sprite):
         self.check_alive()
         self.shoot_cooldown_timer = max(0, self.shoot_cooldown_timer - 1)  # makes sure the cooldown doesn't go below 0
         # update animation based on a timer since last time recorded
-        cooldown_time = 120  # every 120 main game loops change animation frame
+        cooldown_time = 90  # every 120 main game loops change animation frame
         if self.current_action in self.combat_animations:
             cooldown_time = 90
         # if self.current_action == 4 and self.obj_type == 'player':
         #     cooldown_time = 60
-        if self.current_action == 2 and self.obj_type == 'player2':
+        if self.current_action == 2 and self.obj_type == 'samurai':
             cooldown_time = 90
         shoot_projectile = False
         # update entity image
@@ -313,16 +317,34 @@ class Entity(pygame.sprite.Sprite):
     def shoot(self):
         return Projectile(self)  # return an Projectile object
 
-    def update_action(self, new_action):
+    def update_action(self, new_action, world=None):
         # check if the new action is different to the new action
         # if the new action is the same as the old action, it would set animation pointer to 0 every time so only the
         # first frame of the animation would be shown. By adding this check, it makes it so that the animation pointer and animation is changed/reset
         # only if there is a change in the player action.
+        sword_index = self.get_index('Sword')
+        if new_action == sword_index:
+            images = self.animations[sword_index]
+            if not any(self.check_image_collision(image, world) for image in images):
+                self.sword_attack = False
+                return
         if new_action != self.current_action:
             self.current_action = new_action
             # reset the index at which the animation for the specific action starts at
             self.animation_pointer = 0
             self.time1 = pygame.time.get_ticks()
+
+    def check_image_collision(self,image, world):
+        image_rect = image.get_rect()
+        if self.direction == 1:
+            image_rect.bottomleft = self.rect.bottomleft  # keep the entity on the ground
+        else:
+            image_rect.bottomright = self.rect.bottomright
+
+        for tile in world.obstacle_list:
+            if image_rect.colliderect(tile.rect):
+                return False
+        return True
 
     def get_animations(self, obj_type, animation, scale):  # add animations for this sprite into a list
         animation_scale = {
@@ -331,13 +353,14 @@ class Entity(pygame.sprite.Sprite):
                 'Sword': (scale[0] * 1.4, scale[1]),
                 'Idle3': (scale[0] * 5, scale[1]),
                 'Idle2': (scale[0] * 1.4, scale[1]),
+                'Idle': (scale[0] , scale[1]*1),
                 'Die': (scale[0] * 1, scale[1] * 0.8),
                 'Running2': (scale[0] * 1.4, scale[1]),
-                'Running':(scale[0] * 1.4, scale[1]),
-                'Jumping': (scale[0]*1.4, scale[1]),
-                'Falling': (scale[0]*1.4, scale[1])
+                'Running':(scale[0], scale[1]),
+                'Jumping': (scale[0], scale[1]),
+                'Falling': (scale[0] , scale[1])
             },
-            'player2': {
+            'samurai': {
                 'Idle': (scale[0] * 0.5, scale[1] * 1),
                 'Die': (scale[0] * 1.2, scale[1] * 0.95),
                 'Run': (scale[0] * 0.5, scale[1]),
@@ -358,7 +381,7 @@ class Entity(pygame.sprite.Sprite):
 
     def draw(self, surface, scroll=0):
         surface.blit(pygame.transform.flip(self.image, self.flip_image or self.direction == -1, False), self.rect)
-        # pygame.draw.rect(surface,self.border_color, self.rect, 2)
+        pygame.draw.rect(surface,self.border_color, self.rect, 2)
 
         self.draw_health_bar(surface)
 

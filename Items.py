@@ -83,6 +83,7 @@ class Decoration(pygame.sprite.Sprite):
         self.value = value
         self.image = image
         self.rect = rect
+        self.direction = 0
         # self.rect.midtop = (x + Display.TILE_DIMENSION_X // 2, y + (Display.TILE_DIMENSION_Y - self.rect.h))
 
     def draw(self, surface, scroll=0):
@@ -98,6 +99,7 @@ class DeathBlock(pygame.sprite.Sprite):
         self.value = value
         self.image = image
         self.rect = rect
+        self.direction = 0
         # self.rect.midtop = (x + (Display.TILE_DIMENSION_X//2), y + (Display.TILE_DIMENSION_Y - self.rect.h))
 
     def draw(self, surface, scroll=0):
@@ -132,6 +134,7 @@ class Obstacle(pygame.sprite.Sprite):
         self.image = image
         self.rect = rect
         self.mask = pygame.mask.from_surface(self.image)
+        self.direction = 0
 
     def draw(self, surface, scroll):
         self.rect.x += scroll
