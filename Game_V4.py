@@ -1,4 +1,4 @@
-import os, sys
+import os, sys, csv
 
 # v3:
 # - made it so that the player cannot hit with a sword whilst in bow animation and making sure the player is alive
@@ -51,38 +51,26 @@ FPS = 60
 clock = pygame.time.Clock()
 window = WINDOW.Display(new_window=True)
 LEVEL = 2
-TILE_TYPES = len(os.listdir(f'images/tiles/{2}'))
+TILE_TYPES = os.listdir(f'images/tiles/{2}')
 img_list = []
 TILE_SCALE = (window.TILE_DIMENSION_X, window.TILE_DIMENSION_Y)
-
-flip_images = [15]
-entities = [17, 18]
-for i in range(TILE_TYPES):
-    img = pygame.transform.scale(pygame.image.load(WINDOW.get_path(f'images/tiles/{LEVEL}/{i}.png')).convert_alpha(), TILE_SCALE)
-    if i in flip_images: img = pygame.transform.flip(img, False, True)
-    if i in entities: img = pygame.transform.scale(img, (46,92))
+print(TILE_TYPES)
+# flip_images = [15]
+# entities = [17, 18]
+for i in TILE_TYPES:
+    img = pygame.transform.scale(pygame.image.load(WINDOW.get_path(f'images/tiles/{LEVEL}/{i}')).convert_alpha(), TILE_SCALE)
+    # if i in flip_images: img = pygame.transform.flip(img, False, True)
+    # if i in entities: img = pygame.transform.scale(img, (46,92))
     img_list += [img]
 
 background = pygame.transform.scale(pygame.image.load(WINDOW.get_path('backgrounds/background_1.png')),window.SIZE).convert_alpha()
-# window.background = background
-
-# player_right = []
-# player_left = []
-
-# for j in range(1,4):
-# 	img = pygame.image.load(f'images/char_idle/idle_{j}.png')
-# 	img = pygame.transform.scale(img,(46,92))
-# 	player_right += [img]
-# 	player_left += [pygame.transform.flip(img,True,False)]
-
 
 GRAVITY = 0.75
 
 scale = (55, 92)  # for normal
 # scale = (60,92) # with sword
 # load in game data
-
-obstacle_range = [*map(int, '0 1 2 3 4 5 6 7 8 9 10 11'.split())]
+obstacle_range = [*map(int, '0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21'.split())]
 decoration_range = [*map(int, '11 12 13 19'.split())]
 kill_block_range = [*map(int, '14 15'.split())]
 coin_index = 16
@@ -90,6 +78,17 @@ player_index = 17
 enemy_index = 18
 enemy_scale = (int(70 * 2.4), 92)
 move_radii = [1, 3]
+
+class Tile:
+    def __init__(self, value, image, rect):
+        self.value = value
+        self.image = image
+        self.rect = rect
+        self.mask = pygame.mask.from_surface(self.image)
+
+    def draw(self):
+        window.screen.blit(self.image, self.rect)
+
 class World:
     def __init__(self):
         self.obstacle_list = []
@@ -116,6 +115,7 @@ class World:
                     img_rect.topleft = (x * window.TILE_DIMENSION_X, y * window.TILE_DIMENSION_Y)
                     img_mask = pygame.mask.from_surface(img)
                     tile_data = (img, img_rect, img_mask)
+                    tile_obj = Tile(tile, img, img_rect)
                     if tile in obstacle_range:
                         self.obstacle_list.append(tile_data)
                     elif tile in decoration_range: # grass / no collision decoration
@@ -130,6 +130,7 @@ class World:
                         enemies += [Enemy(img_rect.x, img_rect.y,'player2', enemy_scale, all_animations=['Idle', 'Die', 'Run', 'Attack'],
                                     max_health=100, x_vel=2, move_radius = move_radii[enemy_counter])]
                         enemy_counter += 1
+                    x+=1
         # print(enemies)
         return player, decorations, death_blocks, enemies, coins
 
@@ -147,13 +148,16 @@ def load_level(level):
     layers = {}
     path = f'levels/level{level}'
     files = os.listdir(path)
+    ordered = sorted(files, key = lambda i: int(i.split('_')[1][:i.split('_')[1].index('.')]))
+    print(ordered)
+
     for index, file in enumerate(files):
-        with open(os.path.join(path, file),'r') as file:
-            data = file.read()
-            x = [*map(lambda i: map(int, i.split(',')), data.split('\n'))]
-            print(len(x))
-            # sys.exit()
-    pass
+        with open(os.path.join(path, file)) as file:
+            level = csv.reader(file, delimiter=',')
+            layers[index] = [*level]
+        # sys.exit()
+    return layers
+
 game_level = load_level(2)
 print(game_level)
 world = World()
