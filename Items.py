@@ -9,7 +9,7 @@ from WINDOW import Display
 from entity_class import Group
 
 current_path = os.path.dirname(__file__)  # Where your .py file is located
-image_path = os.path.join(current_path, 'images','items') # The image folder path
+image_path = os.path.join(current_path, 'images', 'items') # The image folder path
 # print(image_path)
 pygame.init()
 
@@ -78,11 +78,12 @@ class Item(pygame.sprite.Sprite):
             self.animation += [pygame.transform.scale(image, animation_scale.get(self.item_type)).convert_alpha()]
 
 class Decoration(pygame.sprite.Sprite):
-    def __init__(self, img, x, y):
+    def __init__(self, value, image, rect):
         pygame.sprite.Sprite.__init__(self)
-        self.image = img
-        self.rect = self.image.get_rect()
-        self.rect.midtop = (x + Display.TILE_DIMENSION_X // 2, y + (Display.TILE_DIMENSION_Y - self.rect.h))
+        self.value = value
+        self.image = image
+        self.rect = rect
+        # self.rect.midtop = (x + Display.TILE_DIMENSION_X // 2, y + (Display.TILE_DIMENSION_Y - self.rect.h))
 
     def draw(self, surface, scroll=0):
         self.rect.x += scroll
@@ -92,11 +93,12 @@ class Decoration(pygame.sprite.Sprite):
         surface.blit(self.image, self.rect)
 
 class DeathBlock(pygame.sprite.Sprite):
-    def __init__(self, img, x, y):
+    def __init__(self, value, image, rect):
         pygame.sprite.Sprite.__init__(self)
-        self.image = img
-        self.rect = self.image.get_rect()
-        self.rect.midtop = (x + (Display.TILE_DIMENSION_X//2), y + (Display.TILE_DIMENSION_Y - self.rect.h))
+        self.value = value
+        self.image = image
+        self.rect = rect
+        # self.rect.midtop = (x + (Display.TILE_DIMENSION_X//2), y + (Display.TILE_DIMENSION_Y - self.rect.h))
 
     def draw(self, surface, scroll=0):
         self.rect.x += scroll
@@ -122,3 +124,15 @@ class DeathBlock(pygame.sprite.Sprite):
         mask = pygame.mask.from_surface(self.image)
         offset = (obj.rect.x - self.rect.x, obj.rect.y - self.rect.y)
         return mask.overlap(obj.mask,offset)
+
+class Obstacle(pygame.sprite.Sprite):
+    def __init__(self, value, image, rect):
+        pygame.sprite.Sprite.__init__(self)
+        self.value = value
+        self.image = image
+        self.rect = rect
+        self.mask = pygame.mask.from_surface(self.image)
+
+    def draw(self, surface, scroll):
+        self.rect.x += scroll
+        surface.blit(self.image, self.rect)

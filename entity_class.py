@@ -104,7 +104,7 @@ class Entity(pygame.sprite.Sprite):
                  sword_dps=40):
         self.all_animations = all_animations
         if all_animations is None and obj_type == 'player':
-            self.all_animations = ['Idle2', 'Running2', 'Jumping', 'Falling', 'Sword', 'Bow', 'Die']
+            self.all_animations = ['Idle2', 'Running', 'Jumping', 'Falling', 'Sword', 'Bow', 'Die']
         pygame.sprite.Sprite.__init__(self)
         self.max_health = max_health
         self.health = self.max_health
@@ -139,7 +139,7 @@ class Entity(pygame.sprite.Sprite):
         self.increase_health = 0
 
     def move(self, moving_left, moving_right, world, death_blocks=0):  # handle player movement
-        scroll_threshold = 200
+        scroll_threshold = 400
         screen_scroll = 0
         # reset movement variables
         dx = dy = 0
@@ -173,7 +173,7 @@ class Entity(pygame.sprite.Sprite):
         # check collision with floor
         for tile in world.obstacle_list:
             # check collision in x direction
-            if tile[1].colliderect(self.rect.x + dx, self.rect.y, self.rect.w, self.rect.h):
+            if tile.rect.colliderect(self.rect.x + dx, self.rect.y, self.rect.w, self.rect.h):
                 dx = 0
                 # If AI collision with wall, turn em around
                 if isinstance(self, Enemy):
@@ -181,7 +181,7 @@ class Entity(pygame.sprite.Sprite):
                     # self.move_counter *= -1
                     self.wall_collision = True
 
-            if tile[1].colliderect(self.rect.x, self.rect.y + dy, self.rect.w, self.rect.h):
+            if tile.rect.colliderect(self.rect.x, self.rect.y + dy, self.rect.w, self.rect.h):
                 dy = 0
                 # check if jumping and below ground
                 if self.y_vel < 0:
@@ -193,7 +193,7 @@ class Entity(pygame.sprite.Sprite):
                     self.y_vel = 0
                     self.in_air = False
                     # tile[1].top = self.rect.bottom
-                    self.rect.bottom = tile[1].top
+                    self.rect.bottom = tile.rect.top
 
 
         if self.rect.left + screen_scroll <= 0 and self.direction == -1 and isinstance(self, Player): dx=0
@@ -333,6 +333,7 @@ class Entity(pygame.sprite.Sprite):
                 'Idle2': (scale[0] * 1.4, scale[1]),
                 'Die': (scale[0] * 1, scale[1] * 0.8),
                 'Running2': (scale[0] * 1.4, scale[1]),
+                'Running':(scale[0] * 1.4, scale[1]),
                 'Jumping': (scale[0]*1.4, scale[1]),
                 'Falling': (scale[0]*1.4, scale[1])
             },
