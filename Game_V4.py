@@ -50,17 +50,14 @@ FPS = 60
 clock = pygame.time.Clock()
 window = WINDOW.Display(new_window=True)
 LEVEL = 2
-TILE_TYPES = os.listdir(f'images/tiles/{2}/Tiles')
+TILE_TYPES = os.listdir(f'images/level_images/{2}/Tiles')
 img_list = []
 TILE_SCALE = (window.TILE_DIMENSION_X, window.TILE_DIMENSION_Y)
-tile_x,tile_y = TILE_SCALE
+tile_x, tile_y = TILE_SCALE
 ENEMY = 'samurai'
 PLAYER = 'player'
-ENEMY_IMG = pygame.image.load(f'images/{ENEMY}/default.png')
-PLAYER_IMG = pygame.image.load(f'images/{PLAYER}/default.png')
-
-# flip_images = [15]
-# entities = [17, 18]
+# ENEMY_IMG = 'samurai'
+# PLAYER_IMG = pygame.image.load(f'images/mobs/{PLAYER}/default.png')
 
 background = pygame.transform.scale(pygame.image.load(WINDOW.get_path('backgrounds/background_2.png')),window.SIZE).convert_alpha()
 
@@ -69,12 +66,12 @@ GRAVITY = 0.75
 # scale = (60,92) # with sword
 # load in game data
 tile_info = {
-    'obstacle': '0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21',
-    'decoration': '',
-    'kill_block': '',
+    'obstacle': '0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 22 23',
+    'decoration': '21 28',
+    'kill_block': '26 27',
     'coin': '',
-    'player': '',
-    'enemy': '',
+    'player': '24',
+    'enemy': '25',
 }
 player_index = '1'
 enemy_index = '0'
@@ -84,7 +81,7 @@ move_radii = [1, 3]
 
 img_list = {}
 for i in TILE_TYPES:
-    img = pygame.transform.scale(pygame.image.load(WINDOW.get_path(f'images/tiles/{LEVEL}/Tiles/{i}')).convert_alpha(), TILE_SCALE)
+    img = pygame.image.load(WINDOW.get_path(f'images/level_images/{LEVEL}/Tiles/{i}')).convert_alpha()
     # img.set_colorkey((0,0,0))
     # if i in flip_images: img = pygame.transform.flip(img, False, True)
     # if i in entities: img = pygame.transform.scale(img, (46,92))
@@ -94,44 +91,50 @@ for i in TILE_TYPES:
 class World:
     def __init__(self):
         self.obstacle_list = []
-        self.death_blocks = []
         self.bg_scroll = 0
+        self.no_collide = [] # blocks that shouldn't be checked for collision
 
     def process_data(self, data):
         enemy_counter = 0
-        player = Player(500,500, 'player', player_scale, sword_dps=15)
+        player = Player(500, 500, 'player', player_scale, melee_dps=25)
         # iterate through each value in level data file
-        decorations = [] # add in all the tiles that don't need to be checked for collision
+        decorations = []  # add in all the tiles that don't need to be checked for collision
         death_blocks = []
         enemies = []
         coins = []
-        for ind,layer in enumerate(data.values()):
+        for ind, layer in enumerate(data.values()):
             # print(layer)
             for y, row in enumerate(layer):
                 for x, tile in enumerate(row):
                     if tile == '-1':
                         continue
 
-
-                    img = img_list[tile] # get the image from the list of images
+                    # if 24 <= int(tile) <= 25:
+                    #     tile = str(int(tile) - 2)
+                    img = img_list[tile]  # get the image from the list of images
                     img_rect = img.get_rect()
                     img_rect.topleft = (x * window.TILE_DIMENSION_X, y * window.TILE_DIMENSION_Y)
+                    img_rect.bottomleft = (x * window.TILE_DIMENSION_X, y * window.TILE_DIMENSION_Y + 46)
                     img_mask = pygame.mask.from_surface(img)
                     tile_data = (img, img_rect, img_mask)
-
+                    obs = Obstacle(img, img_rect)
                     if tile in tile_info['obstacle']:
-                        self.obstacle_list.append(Obstacle(tile, img, img_rect))
-                    elif tile in tile_info['decoration']: # grass / no collision decoration
-                        decorations.append(Decoration(img, img_rect.x, img_rect.y))
-                    elif tile in tile_info['kill_block']: # water
-                        death_blocks.append(DeathBlock(img, img_rect.x, img_rect.y))
-                    elif tile == tile_info['coin']: # coin
+                        self.obstacle_list.append(obs)
+                    elif tile in tile_info['decoration']:  # grass / no collision decoration
+                        # decorations.append(Decoration(img, img_rect))
+                        self.obstacle_list.append(obs) # add them onto the obstacle draw list
+                        self.no_collide.append(obs) # but also add them into the no collision list
+                    elif tile in tile_info['kill_block']:  # water
+                        death_blocks.append(DeathBlock(img, img_rect))
+                    elif tile == tile_info['coin']:  # coin
                         coins += [Item('coin', img_rect.x, img_rect.y, (32, 32))]
-                    elif tile == tile_info['player']: # create player if there's one on the map
-                        player = Player(img_rect.x, img_rect.y, 'player', player_scale, sword_dps=15)
+                    elif tile == tile_info['player']:  # create player if there's one on the map
+                        # print('player')
+                        player = Player(img_rect.x, img_rect.y, PLAYER, player_scale, melee_dps=30)
                     elif tile == tile_info['enemy']:
-                        enemies += [Enemy(img_rect.x, img_rect.y,'enemy', enemy_scale, all_animations=['Idle', 'Die', 'Run', 'Attack'],
-                                    max_health=100, x_vel=2, move_radius = move_radii[enemy_counter])]
+                        enemies += [Enemy(img_rect.x, img_rect.y, ENEMY, enemy_scale,
+                                          all_animations=['Idle', 'Die', 'Running', 'Attack'],
+                                          max_health=100, x_vel=2, move_radius=move_radii[enemy_counter])]
         return player, decorations, death_blocks, enemies, coins
 
     def draw(self, background, scroll=0):
@@ -143,55 +146,80 @@ class World:
             tile.rect.x += scroll
             window.screen.blit(tile.image, tile.rect)
 
+# noinspection PyAssignmentToLoopOrWithParameter
 def load_level(level):
     layers = {}
     path = f'levels/level{level}'
     files = os.listdir(path)
-    entities = files[-1] # extract the top most layer which will contain ONLY entities
-    ordered = sorted(files, key = lambda i: int(i.split('_')[1][:i.split('_')[1].index('.')]))
-    files = ordered # sort the tiles such that highest layer is prioritised/ blitted over the other layers
-    # print(ordered)
+    entities = []
+    for file in files:
+        if 'Entities' in file:
+            entities = file
+            files.remove(file)
+    ordered = sorted(files, key=lambda i: int(i.split('_')[1][:i.split('_')[1].index('.')])) # sort layers based on numbers
+    files = ordered  # sort the tiles such that highest layer is prioritised/ blitted over the other layers
+
     for index, file in enumerate(files):
         with open(os.path.join(path, file)) as file:
             level = csv.reader(file, delimiter=',')
             layers[index] = [*level]
-    with open(os.path.join(path,entities)) as file:
+
+    with open(os.path.join(path, entities)) as file: # at the very last layer, store the players
         level = csv.reader(file, delimiter=',')
-        layers[len(layers)] =[*level]
+        layers[len(layers)] = [*level]
         # sys.exit()
     return layers
+
 
 game_level = load_level(2)
 print(game_level)
 world = World()
 
+
+def draw_grid(scroll):
+    tiles_x, tiles_y = window.TILE_DIMENSION_X, window.TILE_DIMENSION_Y
+    lines_x = background.get_width() // tiles_x
+    lines_y = background.get_height() // tiles_y
+
+    # vertical lines
+    for j in range(window.MAX_BLOCKS_X + 1):
+        x = (j * tiles_x)
+        pygame.draw.line(window.screen, (200, 200, 200), (x + scroll, 0), (x + scroll, background.get_height()))
+
+    # horizontal liens
+    for i in range(lines_y + 1):
+        y = (i * tiles_y)
+        pygame.draw.line(window.screen, (200, 200, 200), (0 + scroll, y), (window.WIDTH * 4 + scroll, y))
+
+
 def main(level):
     print('here')
     # scale = (60,92) # with sword
-    # player = Player(100, 100, 'player', scale, sword_dps=15)
+    # player = Player(100, 100, 'player', scale, melee_dps=15)
     # enemy = Player(500,100,'enemy',scale,all_animations = ['Idle','Die'],max_health = 50 )
     player, decorations, death_blocks, enemies, coins = world.process_data(game_level)
     print(world.obstacle_list)
     # print(enemies)
     # print(decorations)
-    # enemy_1 = Enemy(500, 0, 'enemy', (int(70 * 2.4), 92), all_animations=['Idle', 'Die', 'Run', 'Attack'],
-    #                 max_health=100, x_vel=2)
-    # enemy_2 = Enemy(700, 0, 'enemy', (int(70 * 2.4), 92), all_animations=['Idle', 'Die', 'Run', 'Attack'],
-    #                 max_health=100, x_vel=2)
+    enemy_1 = Enemy(500, 0, 'samurai', (int(70 * 2.4), 92), all_animations=['Idle', 'Die', 'Running', 'Attack'],
+                    max_health=100, x_vel=2)
+    enemy_2 = Enemy(700, 0, 'knight', player_scale, all_animations=['Idle', 'Running', 'Attack', 'Die'],max_health=10, x_vel=2)
     # enemy_3 = Enemy(400, 0, 'enemy', (int(70 * 2.4), 92), all_animations=['Idle', 'Die', 'Run', 'Attack'],
     #                 max_health=100, x_vel=2)
-
-    player.current_weapon_damage = {1: 50, 2: 50}
+    enemy_1.move_radius = 2
+    enemy_2.move_radius = 5
+    player.current_weapon_damage = {1: 35, 2: 50}
     player.x_vel = 5
     # enemy_group.add(enemy_1,enemy_2)
-
+    enemies.append(enemy_1)
+    # enemies.append(enemy_2)
     # sprite groups
     decoration_group = Group(*decorations)
     death_blocks_group = Group(*death_blocks)
     enemy_group = Group(*enemies)
     arrow_group = Group()
     coin_group = Group(*coins)
-    print(enemy_group)
+    print(enemy_group,decoration_group,death_blocks_group)
     arrows = []
     # enemies = [enemy_1, enemy_2]
     # coin_group = pygame.sprite.Group()
@@ -199,11 +227,12 @@ def main(level):
     # enemy_1.direction = -1
     player.weapon = 1
     # player.x_vel = 0
-    screen_scroll = 0 # respective to player movement
-    background_scroll = 0 # cumulative value
-    moving_left=moving_right=False
+    screen_scroll = 0  # respective to player movement
+    background_scroll = 0  # cumulative value
+    moving_left = moving_right = False
+    dust_pos = ()
     while True:
-        action_conditions = not player.in_air and player.health # making sure player isn't in the air and is still alive
+        action_conditions = not player.in_air and player.health  # making sure player isn't in the air and is still alive
         attack_conditions = not (
                 player.sword_attack or player.bow_attack)  # only allow attacking if not already in attack animation -> ADD INTO ITERATIVE DEVELOPMENT
         window.refresh()
@@ -211,7 +240,7 @@ def main(level):
         # draw_grid(0)
 
         player.check_alive()
-
+        draw_dust = False
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -226,7 +255,7 @@ def main(level):
                     enemy_group.regen()
 
                 if event.key == pygame.K_h:
-                    player.health += 50
+                    player.health = player.max_health
 
                 if event.key == pygame.K_a and attack_conditions:
                     moving_left = True
@@ -234,9 +263,11 @@ def main(level):
                     moving_right = True
 
                 # jumping
-                if event.key == pygame.K_w and action_conditions and attack_conditions and not player.jump_lock:
+                if event.key == pygame.K_w and action_conditions and attack_conditions and not player.in_air:
+                    # print(pygame.time.get_ticks())
                     player.jumping = True
-                    player.jump_lock = True
+                    draw_dust = True
+                    player.particle_counter = 0 # trigger dust animation
                     # player.in_air = True
 
                 # attacking
@@ -265,23 +296,7 @@ def main(level):
         moving_left = keys[pygame.K_a] and attack_conditions
         moving_right = keys[pygame.K_d] and attack_conditions
 
-        # update player animations
-        if player.health:  # if the player is alive
-            if player.in_air:  # if jumping
-                if player.y_vel < 0:  # if going upwards
-                    player.update_action(2)
-                    pass
-                else:  # if falling
-                    player.update_action(3)
-                    pass
-            elif player.sword_attack:  # if player is attacking with sword
-                player.update_action(4, world)
-            elif player.bow_attack:  # if player is attacking with a bow
-                player.update_action(5)
-            elif moving_right or moving_left:
-                player.update_action(1)  # set the animation to run
-            else:
-                player.update_action(0)  # set back to idle animation if no other action is being performed
+        player.update(moving_left, moving_right, world)
 
         # creating an arrow instance if bow animation was activated
         add_arrow = player.animation_handling()
@@ -300,27 +315,35 @@ def main(level):
         screen_scroll = player.move(moving_left, moving_right, world, death_blocks)
 
         # enemy handling
-        # enemy_group.update(player, window.screen, world, screen_scroll)
-        # enemy_group.draw(window.screen)
-        # # arrow handling
-        # arrow_group.update(window.screen, world, enemy_group, player)
+        enemy_group.update(player, window.screen, world, screen_scroll)
+        enemy_group.draw(window.screen)
+        # arrow handling
+        arrow_group.update(window.screen, world, enemy_group, player)
+        arrow_group.draw(window.screen)
         #
         # # coin handling
         # coin_group.draw(window.screen, screen_scroll)
         # coin_group.update(player)  # check for player collision
         #
-        # # tile groups
-        # decoration_group.draw(window.screen, screen_scroll)
-        # decoration_group.update()
+
+        # tile groups
+        decoration_group.draw(window.screen, screen_scroll)
+        decoration_group.update()
         #
-        # death_blocks_group.draw(window.screen, screen_scroll)
+        death_blocks_group.draw(window.screen, screen_scroll)
+        death_blocks_group.update(player) # do death block checking for player
+
         # death_blocks_group.update(enemy_group) # do death block checking for enemies
-        # death_blocks_group.update(player) # do death block checking for player
 
         # display text
         window.draw_text(f'weapon: {["Sword", "Bow"][player.current_weapon - 1]}', (10, 7))
         window.draw_text(f'Press [1] to use Sword, [2] to use Bow', (10, 20))
         world.bg_scroll -= screen_scroll
+        # if draw_dust:
+        #     print('jumping')
+        if player.particle_counter == 0:
+            dust_pos = (player.rect.x, (player.rect.y//46)*46 + 92)
+        player.draw_dust(window.screen, dust_pos)
         pygame.display.update()  # make all the changes
 
         clock.tick(FPS)

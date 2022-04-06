@@ -78,9 +78,8 @@ class Item(pygame.sprite.Sprite):
             self.animation += [pygame.transform.scale(image, animation_scale.get(self.item_type)).convert_alpha()]
 
 class Decoration(pygame.sprite.Sprite):
-    def __init__(self, value, image, rect):
+    def __init__(self, image, rect):
         pygame.sprite.Sprite.__init__(self)
-        self.value = value
         self.image = image
         self.rect = rect
         self.direction = 0
@@ -94,9 +93,8 @@ class Decoration(pygame.sprite.Sprite):
         surface.blit(self.image, self.rect)
 
 class DeathBlock(pygame.sprite.Sprite):
-    def __init__(self, value, image, rect):
+    def __init__(self, image, rect):
         pygame.sprite.Sprite.__init__(self)
-        self.value = value
         self.image = image
         self.rect = rect
         self.direction = 0
@@ -128,9 +126,8 @@ class DeathBlock(pygame.sprite.Sprite):
         return mask.overlap(obj.mask,offset)
 
 class Obstacle(pygame.sprite.Sprite):
-    def __init__(self, value, image, rect):
+    def __init__(self, image, rect):
         pygame.sprite.Sprite.__init__(self)
-        self.value = value
         self.image = image
         self.rect = rect
         self.mask = pygame.mask.from_surface(self.image)
