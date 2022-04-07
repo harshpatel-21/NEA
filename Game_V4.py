@@ -137,7 +137,7 @@ class World:
                     elif tile == tile_info['enemy']:
                         enemies += [Enemy(img_rect.x, img_rect.y, ENEMY, enemy_scale,
                                           all_animations=['Idle', 'Die', 'Running', 'Attack'],
-                                          max_health=100, x_vel=2, move_radius=0)]
+                                          max_health=100, x_vel=2, move_radius=1)]
                     if obj: self.all_tiles.append(obj)
         return player, decorations, death_blocks, enemies, coins
 

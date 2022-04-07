@@ -273,13 +273,15 @@ class Entity(pygame.sprite.Sprite):
         # self.current_action = self.get_index('Idle')
         # if self.animation_pointer == len(self.all_animations[self.get_index('Die')])-1:self.kill()
         return
+
     def draw_health_bar(self, surface, target):
-        self.health_rect.center = self.rect.center
+        # self.health_rect.center = self.rect.center
         # self.health_rect.y -= self.rect.h//2 + 10
-        temp = self.rect.copy()
+        temp = self.rect.copy() # copy the rect of the current entity
+
         temp.x = temp.x - target.rect.x + Display.WIDTH/2.0
         temp.y = temp.y - target.rect.y + Display.HEIGHT//2 - 10
-        # self.health.rect.y
+
         health_bar_dx = 4 * [-1, 1][self.increase_health > 0]
         x_padding = {
             'player': 10,
@@ -287,7 +289,11 @@ class Entity(pygame.sprite.Sprite):
         }
         if not self.check_alive(): # if the entity is dead, don't draw a health bar
             return
-        self.health_rect.topleft = temp.topleft
+
+        self.health_rect.midtop = temp.midtop
+        if self.direction == -1: # adjusts the position of the health bar if need be
+            self.health_rect.topright = temp.topright
+
         pygame.draw.rect(surface, (255, 0, 0), self.health_rect)
         current_health = self.health_rect.copy()
         current_health.w = (self.health / self.max_health)*self.health_rect.w # the % of health * full width
