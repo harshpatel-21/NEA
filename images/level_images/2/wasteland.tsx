@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.8" tiledversion="1.8.4" name="wasteland" tilewidth="231" tileheight="92" tilecount="29" columns="0">
+<tileset version="1.8" tiledversion="1.8.4" name="wasteland" tilewidth="231" tileheight="92" tilecount="30" columns="0">
  <grid orientation="orthogonal" width="1" height="1"/>
  <tile id="0">
   <image width="46" height="46" source="Tiles/0.png"/>
@@ -74,10 +74,10 @@
   <image width="46" height="46" source="Tiles/23.png"/>
  </tile>
  <tile id="24">
-  <image width="17" height="30" source="Tiles/x.png"/>
+  <image width="17" height="30" source="Tiles/24.png"/>
  </tile>
  <tile id="25">
-  <image width="34" height="57" source="Tiles/y.png"/>
+  <image width="34" height="57" source="Tiles/25.png"/>
  </tile>
  <tile id="26">
   <image width="46" height="46" source="Tiles/26.png"/>
@@ -87,5 +87,8 @@
  </tile>
  <tile id="28">
   <image width="46" height="46" source="Tiles/28.png"/>
+ </tile>
+ <tile id="29">
+  <image width="46" height="46" source="Tiles/29.png"/>
  </tile>
 </tileset>

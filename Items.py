@@ -29,12 +29,13 @@ class Item(pygame.sprite.Sprite):
                 Display.TILE_DIMENSION_Y - self.image.get_height()))  # make it so that its at the center of a tile, even if the size isn't the same
         self.initial_time = pygame.time.get_ticks()
 
-    def draw(self, surface, scroll=0):
-        self.rect.x += scroll
+    def draw(self, surface, target):
+        temp = self.rect.copy()
+        temp.x -= target.rect.x
         # midtop = self.rect.midtop
         # self.rect.midtop = (midtop[0] - (Display.TILE_DIMENSION_X - self.rect.w)//2 - 2, midtop[1])
         pos = self.rect
-        surface.blit(self.image, pos)
+        surface.blit(self.image, temp)
 
     def update(self, obj=None):
         # do the animation handling
@@ -136,3 +137,8 @@ class Obstacle(pygame.sprite.Sprite):
     def draw(self, surface, scroll):
         self.rect.x += scroll
         surface.blit(self.image, self.rect)
+
+    def mask_collision(self, rect, mask):
+        x = rect.x - self.rect.x
+        y = rect.y - self.rect.y
+        return self.mask.overlap(mask, (x,y))
