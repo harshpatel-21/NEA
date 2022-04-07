@@ -11,7 +11,6 @@ from WINDOW import Display
 
 pygame.init()
 JUMP_Y = 15
-GRAVITY = 15/20
 
 
 class Tile:
@@ -109,6 +108,7 @@ class Projectile(pygame.sprite.Sprite):
 class Entity(pygame.sprite.Sprite):
     def __init__(self, x, y, obj_type, scale, max_health=100, x_vel=2, all_animations=None, combat_animations=None, bow_dps=20,
                  melee_dps=33):
+        self.GRAVITY = JUMP_Y/20
         self.all_animations = all_animations
         self.combat_animations = combat_animations
         if all_animations is None and obj_type == 'player':
@@ -187,7 +187,7 @@ class Entity(pygame.sprite.Sprite):
 
         # gravity/ downward acceleration
         y1 = self.y_vel
-        self.y_vel = min(self.y_vel + GRAVITY, 10)
+        self.y_vel = min(self.y_vel + self.GRAVITY, 10)
         dy += self.y_vel
 
         if y1<0 and self.y_vel > 0: # if the player was jumping and is now falling, after landing dust should show
@@ -231,10 +231,11 @@ class Entity(pygame.sprite.Sprite):
         #     self.in_air = False
 
         # check if going off the sides
-        if self.rect.y > world.layers*46:
+        if self.rect.y > world.layers*46: # if the player is off screen
             # print('here')
             self.remove = True
-            self.health = 0
+            self.kill()
+            self.update_action(self.get_index('Die'))
             return
 
         if isinstance(self, Player):
@@ -270,8 +271,8 @@ class Entity(pygame.sprite.Sprite):
 
     def reset(self):
         # self.current_action = self.get_index('Idle')
-        if self.animation_pointer == len(self.all_animations[self.get_index('Die')])-1:self.kill()
-
+        # if self.animation_pointer == len(self.all_animations[self.get_index('Die')])-1:self.kill()
+        return
     def draw_health_bar(self, surface, target):
         self.health_rect.center = self.rect.center
         # self.health_rect.y -= self.rect.h//2 + 10
@@ -377,7 +378,7 @@ class Entity(pygame.sprite.Sprite):
     def update(self, moving_right, moving_left, world):
         # update player animations
         if self.obj_type == 'player':
-            if self.in_air or self.y_vel > GRAVITY:  # if jumping or falling the 0.75 is due to gravity
+            if self.in_air or self.y_vel > self.GRAVITY:  # if jumping or falling the 0.75 is due to gravity
                 if self.y_vel < 0:  # if going upwards
                     self.update_action(self.get_index('Jumping'))
                     pass
