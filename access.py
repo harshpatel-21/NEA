@@ -1,7 +1,7 @@
 try:
     import pygame,os
     from WINDOW import Display
-    from boxes import Textbox, Inputbox
+    from boxes import Textbox
     import re,json
     import WINDOW
 except ImportError as error:
@@ -31,13 +31,12 @@ def read(path):
 
 def write(data,path):
     details = get_path(path)
-    with open(details,'w') as file:
+    with open(details, 'w') as file:
         file.seek(0)
         json.dump(data,file)
 #----------------------------------- Login -----------------------------------#
 def check_details(username, password, state):
     data = read('user_info/users.json')
-
     if state=='login':
         info = data.get(username)
         if info: return info.get("password") == password
@@ -46,12 +45,18 @@ def check_details(username, password, state):
         if username in data.keys():
             return -1
         else:
-            data[username] = {"password": "", "coins": 0, "1.1": 0, "1.2": 0, "1.3": 0, "1.4": 0, "1.5": 0, "2.1": 0, "2.2": 0}
-            data[username]['password'] = password
-            write(data, 'user_info/users.json')
+            add_info(data, username, password)
             return 1
     return 0
 
+def add_info(data, username, password):
+    data[username] = {"password": "", "coins": 0, "1.1": 0, "1.2": 0, "1.3": 0, "1.4": 0, "1.5": 0, "2":0}
+    data[username]['password'] = password
+
+    write(data, 'user_info/users.json')
+
+    questions = os.listdir('Questions json')
+    print(questions)
 
 def validate_character(string, click, character):
     # Only allow characters, numbers and certain symbols
@@ -75,10 +80,10 @@ def input_information(state):
     username_click = False
     password_click = False
     
-    random_box = Inputbox(100,200,text='j',text_size='medlarge',padding=(0,0),limit=False)
+    random_box = Textbox(100,200,text='j',text_size='medlarge',padding=(0,0),limit=False)
     
-    username_box = Inputbox(100,460,text=fill_text.center(15),text_size='medlarge',padding=(0,0),size=(300,60))
-    password_box = Inputbox(100,530,text=fillpass_text.center(15),text_size='medlarge',size=(300,60))
+    username_box = Textbox(100,460,text=fill_text.center(15),text_size='medlarge',padding=(0,0),size=(300,60))
+    password_box = Textbox(100,530,text=fillpass_text.center(15),text_size='medlarge',size=(300,60))
 
     continue_button = Textbox(100,635,text='Continue',size=(150,50),text_size='medlarge')
     continue_button.create_rect()

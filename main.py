@@ -3,7 +3,7 @@
 try:
     import pygame,os
     from WINDOW import Display
-    from boxes import Textbox, Inputbox
+    from boxes import Textbox
     import re,json
     from access import input_information
     import WINDOW
@@ -97,10 +97,8 @@ def main():
         if login_result:
             selected_topic = 2.1
             username, id = login_result
-            Game_V4.main(username,id,selected_topic)
-            login_result = False
-
-
+            # Game_V4.main(username,id,selected_topic)
+            login_result = False # if come back to main menu, they should no longer be logged in
 
         pygame.display.update()
         clock.tick()

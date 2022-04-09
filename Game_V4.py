@@ -49,8 +49,8 @@ coin_path = os.path.join(image_path, 'coin')
 FPS = 60
 clock = pygame.time.Clock()
 window = WINDOW.Display(new_window=True)
-LEVEL = 2.1
-TILE_TYPES = os.listdir(f'images/level_images/{2.1}/Tiles')
+LEVEL = 2
+TILE_TYPES = os.listdir(f'images/level_images/{LEVEL}/Tiles')
 img_list = []
 TILE_SCALE = (window.TILE_DIMENSION_X, window.TILE_DIMENSION_Y)
 tile_x, tile_y = TILE_SCALE
@@ -89,12 +89,12 @@ class World:
         self.obstacle_list = []
         self.bg_scroll = 0
         self.no_collide = [] # blocks that shouldn't be checked for collision
-        self.layers = None
+        self.height = 0
         self.all_tiles = []
 
     def process_data(self, data):
         enemy_counter = 0
-        player = Player(500, 500, 'player', player_scale, melee_dps=25)
+        player = Player(500, 500, 'player', player_scale, melee_dps=50)
         # iterate through each value in level data file
         decorations = []  # add in all the tiles that don't need to be checked for collision
         death_blocks = []
@@ -102,9 +102,8 @@ class World:
         coins = []
 
         for ind, layer in enumerate(data.values()):
-            # print(layer)
             for y, row in enumerate(layer):
-                world.layers = len(layer)
+                world.height = len(layer)
                 for x, tile in enumerate(row):
                     if tile == '-1':
                         continue
@@ -120,7 +119,7 @@ class World:
                     obj = None
                     if tile in tile_info['obstacle']:
                         obj = Obstacle(img, img_rect)
-                        self.obstacle_list.append(obj)
+                        if ind != 0: self.obstacle_list.append(obj)
                     elif tile in tile_info['decoration']:  # grass / no collision decoration
                         obj = Decoration(img, img_rect)
                         # decorations.append(Decoration(img, img_rect))
@@ -159,6 +158,7 @@ def load_level(level):
     layers = {}
     path = f'levels/{level}'
     files = os.listdir(path)
+    print(files)
     entities = []
     for file in files:
         if 'Entities' in file:
@@ -167,20 +167,15 @@ def load_level(level):
 
     ordered = sorted(files, key=lambda i: int(i.split('_')[1][:i.split('_')[1].index('.')])) # sort layers based on numbers
     files = ordered  # sort the tiles such that highest layer is prioritised/ blitted over the other layers
-
     for index, file in enumerate(files):
         with open(os.path.join(path, file)) as file:
             level = csv.reader(file, delimiter=',')
             layers[index] = [*level]
-
-    with open(os.path.join(path, entities)) as file: # at the very last layer, store the players
-        level = csv.reader(file, delimiter=',')
-        layers[len(layers)] = [*level]
         # sys.exit()
     return layers
 
 
-game_level = load_level(2.1)
+game_level = load_level(LEVEL)
 # print(game_level)
 world = World()
 
@@ -205,8 +200,7 @@ class Camera:
         self.rect = target.rect.copy()
         self.x, self.y = target.rect.topleft
 
-    def update(self, target):
-
+    def update(self, target, world):
         if target.current_action not in target.combat_animations:
             # make sure the camera doesn't jitter after switching animations. Keeps the camera in place
             if target.direction == 1:
@@ -238,7 +232,7 @@ def play_level(username, user_id, level):
     while True:
         if player.remove:
             return
-        camera.update(player)
+        camera.update(player, world)
         # only perform actions based on these conditions
         move_conditions = not player.in_air and (player.health) and (player.y_vel <= player.GRAVITY)  # making sure player isn't in the air and is still alive
         
@@ -316,7 +310,9 @@ def play_level(username, user_id, level):
         player.update(moving_left, moving_right, world)
 
         # enemy handling
-        enemy_group.update(player, window.screen, world)
+        dead = enemy_group.update(player, window.screen, world)
+        if dead:
+            print('Killed')
         enemy_group.draw(window.screen, camera)
         # arrow handling
         arrow_group.update(window.screen, world, enemy_group, player)
@@ -350,21 +346,22 @@ def play_level(username, user_id, level):
         clock.tick(FPS)
 
 def main(player, user_id, level):
-    while 1:
-        window.refresh()
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                break
+    # while 1:
+    #     window.refresh()
+    #     for event in pygame.event.get():
+    #         if event.type == pygame.QUIT:
+    #             pygame.quit()
+    #             break
+    #
+    #         if event.type == pygame.KEYDOWN:
+    #             if chr(event.key) == 'r' or chr(event.key)=='s':
+    #                 play_level(player,user_id, level)
+    #             if event.key == pygame.K_ESCAPE:
+    #                 pygame.quit()
+    #                 break
+    #
+    #     pygame.display.update()
+    play_level(player,user_id, level)
 
-            if event.type == pygame.KEYDOWN:
-                if chr(event.key) == 'r' or chr(event.key)=='s':
-                    play_level(player,user_id, level)
-                if event.key == pygame.K_ESCAPE:
-                    pygame.quit()
-                    break
-
-        pygame.display.update()
-        # if inp == 'r':
-        #     main(LEVEL)
-main('harsh',0,2.1)
+if __name__ == '__main__':
+    main('harsh', 0, 2)

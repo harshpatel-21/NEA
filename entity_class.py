@@ -106,7 +106,7 @@ class Projectile(pygame.sprite.Sprite):
 
 
 class Entity(pygame.sprite.Sprite):
-    def __init__(self, x, y, obj_type, scale, max_health=100, x_vel=7, all_animations=None, combat_animations=None, bow_dps=20,
+    def __init__(self, x, y, obj_type, scale, max_health=100, x_vel=6, all_animations=None, combat_animations=None, bow_dps=20,
                  melee_dps=33):
         self.GRAVITY = JUMP_Y/20
         self.all_animations = all_animations
@@ -221,19 +221,12 @@ class Entity(pygame.sprite.Sprite):
                     if self.ground==1 or self.dust: self.particle_counter = 0; self.dust=False # after landing, don't
 
         # check if going off the sides
-        if self.rect.y > world.layers*46: # if the player is off screen
+        if self.rect.y > (world.height)*46-self.rect.h: # if the player is off screen
             # print('here')
             self.remove = True
             self.kill()
             self.update_action(self.get_index('Die'))
             return
-
-        if isinstance(self, Player):
-            if dx + self.rect.x + (Display.WIDTH/2.0) < 0 and self.direction == -1:
-                dx = 0
-                # self.rect.x = 1
-            if dx + self.rect.x >= 111*46: # cannot go over the edge
-                dx = 0
 
         # update player position
         self.rect.x += dx
@@ -249,6 +242,7 @@ class Entity(pygame.sprite.Sprite):
         return
 
     def draw_health_bar(self, surface, target):
+
         # self.health_rect.center = self.rect.center
         # self.health_rect.y -= self.rect.h//2 + 10
         temp = self.rect.copy() # copy the rect of the current entity
@@ -623,6 +617,7 @@ class Enemy(Entity):
             self.sword_collision(player)  # check for collision with the player
         elif self.remove:
             self.kill() # remove enemy from enemy group and free up memory space
+            return 1
 
         self.AI(world, player)  # do enemy AI
 

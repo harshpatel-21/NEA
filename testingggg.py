@@ -1,6 +1,9 @@
-# import os, sys, csv
+import os, sys, csv, json
+from WINDOW import get_path
+from openpyxl import load_workbook
+from boxes import Textbox
 # from entity_class import Entity, Enemy, Projectile, Player, Group
-# import pygame, WINDOW
+import pygame, WINDOW
 # from Items import Item, Decoration, DeathBlock
 # from level_editor import load_level, draw_grid
 #
@@ -85,6 +88,92 @@
 # #         window.screen.blit(tile.image,tile.rect)
 # #     pygame.display.update()
 # #     clock.tick(FPS)
-for i in range(1,3):
-    with open(f'Questions/2.{i}.xlsx','w+') as file:
+# ---------------------------- Loading and storing Excel stuff -----------------------------
+# book = load_workbook('questions.xlsx')
+# current_sheet = book['1.1']
+# questions = {
+#     1:{
+#         'right':1,
+#         'wrong':3
+#     }
+# }
+# id = 1
+# print(current_sheet['A'])
+# for question, row in enumerate(current_sheet):
+#     print(row)
+#     for index, cell in enumerate(row):
+#         # changing values after questions completed:
+#
+#         if not current_sheet[f'A{question+1}'].value in questions:
+#             continue
+#         # print(cell.value)
+#         right_ind = 5+(id*2)
+#         wrong_ind = right_ind + 1
+#         if index == right_ind:
+#             cell.value = questions[question+1]['right']
+#         elif index == wrong_ind:
+#             cell.value = questions[question+1]['wrong']
+#
+#         pass
+#
+# book.save('Questions/questions.xlsx')
+# print(questions)
+
+# --------------------------- text boxes -----------------------------------
+pygame.init()
+
+x, y = WINDOW.x, WINDOW.y
+os.environ['SDL_VIDEO_WINDOW_POS'] = f"{x},{y}"
+
+FPS = 60
+clock = pygame.time.Clock()
+window = WINDOW.Display(new_window=True,caption='Question Display')
+
+class QuestionBox(Textbox):
+    LARGE_FONT = pygame.font.SysFont('Sans', 35)
+    MEDLARGE_FONT = pygame.font.SysFont('Sans', 30)
+    MEDIUM_FONT = pygame.font.SysFont('Sans', 25)
+    SMALL_FONT = pygame.font.SysFont('Sans', 15)
+    def __init__(self, x, y, size):
+        # inherit a few methods
+        super().__init__(x, y)
+        # self.check_hover = Textbox.check_hover
+        # self.check_click = Textbox.check_click
+        self.x,self.y = x,y
+        self.rect = pygame.Rect(x,y,*size)
+        self.surface = pygame.Surface(self.rect.size)
+        self.background = (0,0,0)
+        text_rect_size = [*map(lambda i: i*0.8,self.rect.size)] # create a padding
+        dx = text_rect_size[0]
+        self.text_rect = pygame.Rect((self.rect + ()))
+
+    def show(self, surface):
+        self.surface.fill((0,0,0))
+        pygame.draw.rect(self.surface, self.background, (0, 0, self.rect.w, self.rect.h))
+        surface.blit(self.surface,(self.x,self.y))
+
+    def add_text(self, text):
         pass
+
+center = [*window.screen.get_rect().center]
+a = QuestionBox(center[0]-50,center[1]-50,(100,100))
+
+text = 'Hello'
+while 1:
+    window.refresh()
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                pygame.quit()
+                sys.exit()
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            print(a.check_click(pygame.mouse.get_pos())) # only check for click collision if need be
+
+    a.check_hover()
+    a.show(window.screen)
+
+    pygame.display.update()
+    clock.tick(FPS)
