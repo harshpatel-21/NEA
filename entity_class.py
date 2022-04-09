@@ -106,7 +106,7 @@ class Projectile(pygame.sprite.Sprite):
 
 
 class Entity(pygame.sprite.Sprite):
-    def __init__(self, x, y, obj_type, scale, max_health=100, x_vel=2, all_animations=None, combat_animations=None, bow_dps=20,
+    def __init__(self, x, y, obj_type, scale, max_health=100, x_vel=7, all_animations=None, combat_animations=None, bow_dps=20,
                  melee_dps=33):
         self.GRAVITY = JUMP_Y/20
         self.all_animations = all_animations
@@ -206,29 +206,19 @@ class Entity(pygame.sprite.Sprite):
                     self.wall_collision = True
 
             if tile.rect.colliderect(self.rect.x, self.rect.y + dy, self.rect.w, self.rect.h):
-                if (tile.rect.bottomleft == self.rect.topright) or (tile.rect.bottomright == self.rect.topleft):
-                    continue
                 dy = 0
-
                 # check if jumping and below ground
                 if self.y_vel < 0:
                     self.y_vel = 0
+                    self.rect.top = tile.rect.bottom
 
-                    # tile[1].bottom = self.rect.top
-                    # self.rect.top = tile[1].bottom
-
+                # if they are falling
                 elif self.y_vel > 0:
                     self.ground = min(5, self.ground+1)
                     self.y_vel = 0
                     self.in_air = False
-                    # tile[1].top = self.rect.bottom
                     self.rect.bottom = tile.rect.top
                     if self.ground==1 or self.dust: self.particle_counter = 0; self.dust=False # after landing, don't
-                    # show dust after 1 iteration of dust frames
-        # if self.rect.left + screen_scroll <= 0 and self.direction == -1 and isinstance(self, Player): dx = 0
-        # if self.rect.bottom + dy > 300:
-        #     dy = 300 - self.rect.bottom  # add the remaining distance between floor and player
-        #     self.in_air = False
 
         # check if going off the sides
         if self.rect.y > world.layers*46: # if the player is off screen
@@ -250,23 +240,7 @@ class Entity(pygame.sprite.Sprite):
         self.rect.y += dy
         self.health_rect.x += dx
         self.health_rect.y += dy
-        if dy >= 0.75:
-            pass
-            # print(dy)
-            # self.update_action(self.get_index('Falling'))
 
-        # update scroll based on player position
-        # if isinstance(self, Player):
-        #     # print(self.obj_type)
-        #     check_1 = world.bg_scroll < (Display.MAX_BLOCKS_X * Display.TILE_DIMENSION_X - Display.WIDTH)
-        #     check_2 = world.bg_scroll > abs(dx)
-        #     if (self.rect.right > Display.WIDTH - scroll_threshold and check_1) or (
-        #             self.rect.left <= scroll_threshold and check_2):
-        #         self.rect.x -= dx  # move player back
-        #         self.health_rect.x -= dx
-        #         screen_scroll = -dx
-        # if isinstance(self, Enemy):
-        #     self.health_rect.x += screen_scroll
         return screen_scroll
 
     def reset(self):
@@ -291,7 +265,7 @@ class Entity(pygame.sprite.Sprite):
             return
 
         self.health_rect.midtop = temp.midtop
-        if self.direction == -1: # adjusts the position of the health bar if need be
+        if self.direction == -1 and isinstance(self, Enemy): # adjusts the position of the health bar if need be
             self.health_rect.topright = temp.topright
 
         pygame.draw.rect(surface, (255, 0, 0), self.health_rect)

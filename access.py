@@ -35,21 +35,25 @@ def write(data,path):
         file.seek(0)
         json.dump(data,file)
 #----------------------------------- Login -----------------------------------#
-def check_details(username,password,state):
+def check_details(username, password, state):
     data = read('user_info/users.json')
 
     if state=='login':
-        if data.get(username) == password:return 1
+        info = data.get(username)
+        if info: return info.get("password") == password
         return -1
     elif state=='sign up':
-        if username in data.keys():return -1
-        else: data[username] = password; write(data,'user_info/users.json');return 1
+        if username in data.keys():
+            return -1
+        else:
+            data[username] = {"password": "", "coins": 0, "1.1": 0, "1.2": 0, "1.3": 0, "1.4": 0, "1.5": 0, "2.1": 0, "2.2": 0}
+            data[username]['password'] = password
+            write(data, 'user_info/users.json')
+            return 1
     return 0
 
-    write(data,'user_info/users.json')
 
-
-def validate_character(string,click,character):
+def validate_character(string, click, character):
     # Only allow characters, numbers and certain symbols
     valid_chars = (re.match('''[A-Za-z0-9]{1,15}[-!$%^&*()_+|~=`{}\[\]:";'<>?,.\/]*''',character))
     # return True if the username as long as the length is 
@@ -93,6 +97,7 @@ def input_information(state):
     delete_counter = 0
 
     while True:
+        data = read('user_info/users.json')
         window.refresh(back=True)
 
         username_box.text=fill_text
@@ -159,8 +164,8 @@ def input_information(state):
             window.draw_text(text='New user has been signed up',pos=(window.screen.get_width()//2 - 160,590),color=(0,255,0),size='MEDLARGE')
             # pygame.time.delay(60)
             # return 1
-        if successful_login:
-            return 1
+        if successful_login: #
+            return username, list(data).index(username)
 
         if continue_state: # if the username and password fields are filled make the continue button brighter
             continue_button.surface.set_alpha(300)

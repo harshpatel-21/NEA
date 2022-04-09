@@ -49,8 +49,8 @@ coin_path = os.path.join(image_path, 'coin')
 FPS = 60
 clock = pygame.time.Clock()
 window = WINDOW.Display(new_window=True)
-LEVEL = 2
-TILE_TYPES = os.listdir(f'images/level_images/{2}/Tiles')
+LEVEL = 2.1
+TILE_TYPES = os.listdir(f'images/level_images/{2.1}/Tiles')
 img_list = []
 TILE_SCALE = (window.TILE_DIMENSION_X, window.TILE_DIMENSION_Y)
 tile_x, tile_y = TILE_SCALE
@@ -137,7 +137,7 @@ class World:
                     elif tile == tile_info['enemy']:
                         enemies += [Enemy(img_rect.x, img_rect.y, ENEMY, enemy_scale,
                                           all_animations=['Idle', 'Die', 'Running', 'Attack'],
-                                          max_health=100, x_vel=2, move_radius=1)]
+                                          max_health=100, x_vel=4, move_radius=1)]
                     if obj: self.all_tiles.append(obj)
         return player, decorations, death_blocks, enemies, coins
 
@@ -164,6 +164,7 @@ def load_level(level):
         if 'Entities' in file:
             entities = file
             files.remove(file)
+
     ordered = sorted(files, key=lambda i: int(i.split('_')[1][:i.split('_')[1].index('.')])) # sort layers based on numbers
     files = ordered  # sort the tiles such that highest layer is prioritised/ blitted over the other layers
 
@@ -213,26 +214,11 @@ class Camera:
             else:
                 self.rect.bottomright = target.rect.bottomright
 
-def main(level):
+def play_level(username, user_id, level):
     # scale = (60,92) # with sword
     # player = Player(100, 100, 'player', scale, melee_dps=15)
     # enemy = Player(500,100,'enemy',scale,all_animations = ['Idle','Die'],max_health = 50 )
     player, decorations, death_blocks, enemies, coins = world.process_data(game_level)
-    # print(world.obstacle_list)
-    # print(enemies)
-    # print(decorations)
-    # enemy_1 = Enemy(500, 0, 'samurai', (int(70 * 2.4), 92), all_animations=['Idle', 'Die', 'Running', 'Attack'],
-    #                 max_health=100, x_vel=2)
-    # enemy_2 = Enemy(700, 0, 'knight', player_scale, all_animations=['Idle', 'Running', 'Attack', 'Die'],max_health=10, x_vel=2)
-    # enemy_3 = Enemy(400, 0, 'enemy', (int(70 * 2.4), 92), all_animations=['Idle', 'Die', 'Run', 'Attack'],
-    #                 max_health=100, x_vel=2)
-    # enemy_1.move_radius = 2
-    # enemy_2.move_radius = 5
-    # player.current_weapon_damage = {1: 35, 2: 50}
-    # enemy_group.add(enemy_1,enemy_2)
-    # enemies.append(enemy_1)
-    # enemies.append(enemy_2)
-    # sprite groups
     decoration_group = Group(*decorations)
     death_blocks_group = Group(*death_blocks)
     enemy_group = Group(*enemies)
@@ -244,8 +230,6 @@ def main(level):
     # coin_group = pygame.sprite.Group()
 
     # enemy_1.direction = -1
-    player.weapon = 1
-    player.x_vel = 6
     screen_scroll = 0  # respective to player movement
     background_scroll = 0  # cumulative value
     moving_left = moving_right = False
@@ -256,7 +240,7 @@ def main(level):
             return
         camera.update(player)
         # only perform actions based on these conditions
-        move_conditions = not(player.in_air) and (player.health) and (player.y_vel <= player.GRAVITY)  # making sure player isn't in the air and is still alive
+        move_conditions = not player.in_air and (player.health) and (player.y_vel <= player.GRAVITY)  # making sure player isn't in the air and is still alive
         
         attack_conditions = not (
                 player.sword_attack or player.bow_attack)  # only allow attacking if not already in attack animation -> ADD INTO ITERATIVE DEVELOPMENT
@@ -295,13 +279,14 @@ def main(level):
                     if player.current_weapon == 1:  # sword selected
                         player.sword_attack = True
                     elif player.current_weapon == 2 and player.shoot_cooldown_timer == 0:  # bow selected
-                        player.bow_attack = True
-                        player.shoot_cooldown_timer = player.shoot_cooldown
-
+                        # player.bow_attack = True
+                        # player.shoot_cooldown_timer = player.shoot_cooldown
+                        pass
                 # weapon selection
                 value = chr(event.key)
                 if value in ['1', '2']:
-                    player.current_weapon = int(value)
+                    # player.current_weapon = int(value)
+                    pass
 
             # check for keys that are lifted/ no longer being pressed
             if event.type == pygame.KEYUP:
@@ -316,7 +301,6 @@ def main(level):
         moving_left = keys[pygame.K_a] and attack_conditions
         moving_right = keys[pygame.K_d] and attack_conditions
 
-
         # creating an arrow instance if bow animation was activated
         add_arrow = player.animation_handling()
         if add_arrow:
@@ -325,9 +309,6 @@ def main(level):
 
         for arrow in arrow_group:
             arrow.update(arrows, world, enemy_group, player)  # update the arrow such position and state
-
-        # draw_map(map_array)
-        # pygame.draw.line(window.screen, (255, 0, 0), (0, 300), (window.WIDTH, 300))
 
         # player handling
         player.draw(window.screen, camera)
@@ -368,15 +349,17 @@ def main(level):
 
         clock.tick(FPS)
 
-
-if __name__ == "__main__":
+def main(player, user_id, level):
     while 1:
         window.refresh()
         for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                break
 
             if event.type == pygame.KEYDOWN:
                 if chr(event.key) == 'r' or chr(event.key)=='s':
-                    main(LEVEL)
+                    play_level(player,user_id, level)
                 if event.key == pygame.K_ESCAPE:
                     pygame.quit()
                     break
@@ -384,3 +367,4 @@ if __name__ == "__main__":
         pygame.display.update()
         # if inp == 'r':
         #     main(LEVEL)
+main('harsh',0,2.1)
