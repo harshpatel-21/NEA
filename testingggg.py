@@ -242,11 +242,13 @@ question = QuestionBox(center[0]-w//2, 0 , (w, h*0.8),value='question', text=tex
 options = ['A','B','C','D']
 x1 = int(window.width*0.1//4)
 width = 0.9
+
 a = 'Option A'
 b = 'Option B'
 c = 'Option C'
 d = 'Option D'
-option_1=QuestionBox(question.rect.x + x1,question.rect.bottom + 10,(w*width//2,(window.height-h)//2),value='a',text=a)
+
+option_1=QuestionBox(question.rect.x + x1, question.rect.bottom + 10, (w*width//2,(window.height-h)//2),value='a',text=a)
 option_2=QuestionBox(question.rect.center[0] + x1, question.rect.bottom + 10,(w*width//2,(window.height-h)//2),value='b',text=b)
 option_3=QuestionBox(option_1.rect.left,option_1.rect.bottom + 15,(w*width//2,(window.height-h)//2),value='c',text=c)
 option_4=QuestionBox(option_2.rect.left,option_2.rect.bottom + 15,(w*width//2,(window.height-h)//2),value='d',text=d)
@@ -256,6 +258,7 @@ feedback = QuestionBox(0,0,window.SIZE,text=feedback,value='feedback')
 # continue_box = Textbox(0,int(0.8*window.height),text='Continue',size=(100,50))
 continue_button = Textbox(100,0.8*window.height,text='Continue',text_size='medlarge')
 display = True
+
 while 1:
     window.refresh()
     # continue_box.create_rect()
@@ -270,7 +273,6 @@ while 1:
                 sys.exit()
                 pass
             if event.key == pygame.K_SPACE:
-                print(continue_button.font_rect)
                 display = False
 
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -284,8 +286,9 @@ while 1:
     else:
         feedback.show(window.screen)
         continue_button.check_hover(pygame.mouse.get_pos())
-        continue_button.show(window.screen)
-        # pygame.display.update()
-        # pygame.time.delay(10)
+        continue_button.show(window.screen,center = True)
+        if continue_button.check_click(pygame.mouse.get_pos()):
+            break
+
     pygame.display.update()
     clock.tick(FPS)

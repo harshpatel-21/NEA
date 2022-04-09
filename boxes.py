@@ -25,9 +25,9 @@ class Textbox:
 
     max_width = 270
 
-    def __init__(self, x, y, text='', text_size='MEDIUM', text_color=text_color, padding=(0,0), size=(0,0),limit=True):
-        self.padding=padding
-        self.size=size
+    def __init__(self, x, y, text='', text_size='MEDIUM', text_color=text_color, padding=(10,10), size=(0,0),limit=True):
+        self.padding = padding
+        self.size = size
         self.text = text
         self.text_size = eval('self.' + text_size.upper()+'_FONT')
         self.x, self.y = x, y
@@ -36,45 +36,51 @@ class Textbox:
         self.create_rect()
 
     def create_rect(self):
-        padding_x, padding_y = self.padding
-        w, h = self.size
+        padding_x,padding_y = self.padding
+
+        w,h=self.size
+
         #updates the text to be displayed on the box
         self.font = self.text_size.render(self.text, True, pygame.Color(*self.text_color))
-        tempRect = self.font.get_rect()
+
+        self.rect = self.font.get_rect() # this is the font rectangle
+        tempRect = self.rect.copy()
         tempRect.width = tempRect.width + padding_x
-        if self.limit: tempRect.width = min(270,tempRect.width + padding_x)
+        if self.limit:
+            tempRect.width = min(270,tempRect.width +padding_x)
         tempRect.height = tempRect.height + padding_y
-        self.font_rect = tempRect
-        self.rect = pygame.Rect(self.x,self.y,*self.font_rect.size)
+        self.main_rec = tempRect # font rectangle with padding, the outside rectangle
 
         if w>0 and h>0:
-            if self.font_rect.width - 43 < w:
-                self.font_rect.width = w
-            self.font_rect.height = h
+            if self.main_rec.width - 43 < w:
+                self.main_rec.width = w
+            self.main_rec.height = h
 
-        self.surface = pygame.Surface((self.font_rect.width, self.font_rect.height))
+        self.surface = pygame.Surface((self.main_rec.width, self.main_rec.height))
         self.background = self.background_color
+        # self.main_rec.topleft = (self.x,s/elf.y)
+
 
     def show(self, canvas, center=False):
-        pygame.draw.rect(self.surface, self.background, self.font_rect)
-        pygame.draw.rect(self.surface, self.border_color, self.font_rect, 5)
-        text_x = (self.font_rect.width - self.rect.width) // 2
-        text_y = (self.font_rect.height - self.rect.height) // 2
+        pygame.draw.rect(self.surface, self.background, self.main_rec)
+        pygame.draw.rect(self.surface, self.border_color, self.main_rec, 5)
+        text_x = (self.main_rec.width - self.rect.width) // 2
+        text_y = (self.main_rec.height - self.rect.height) // 2
         self.surface.blit(self.font, (text_x, text_y))
-        
-        if center == True:
-            self.x = (canvas.get_width() - self.font_rect.width)//2
 
-        canvas.blit(self.surface, (self.x, self.y))
+        if center:
+            self.x = (canvas.get_width() - self.main_rec.width)//2 # center it
 
-    def set_properties(self, background=background_color,border=border_color,hover=hover_color):
+        canvas.blit(self.surface, (self.x, self.y)) # blitting the box at the initially specified x and y position
+
+    def set_properties(self, background=background_color, border=border_color, hover=hover_color):
         self.background = background
         self.border_color = border
         self.hover_color = hover
 
-    def check_hover(self, mouse_pos=0):
+    def check_hover(self,mouse_pos=0):
         mouse_pos = pygame.mouse.get_pos()
-        x = self.font_rect.copy()
+        x=self.main_rec.copy()
         x.x = self.x
         x.y = self.y
         if x.collidepoint(mouse_pos):
@@ -82,8 +88,15 @@ class Textbox:
         else:
             self.background = self.background_color
 
-    def check_click(self, mouse_pos):
-        x = self.font_rect.copy()
+    def check_click(self,mouse_pos):
+        x=self.main_rec.copy()
         x.x = self.x
         x.y = self.y
         return x.collidepoint(mouse_pos) and (pygame.mouse.get_pressed()[0])
+
+
+class Inputbox(Textbox):
+    def __init__(self, x, y, text='',text_size='medium',padding=(0,0),size=(0,0),limit=True):
+        super().__init__(x,y,text=text,text_size=text_size,padding=padding,size=size,limit=limit)
+
+

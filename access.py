@@ -63,10 +63,10 @@ def validate_character(string, click, character):
     valid_chars = (re.match('''[A-Za-z0-9]{1,15}[-!$%^&*()_+|~=`{}\[\]:";'<>?,.\/]*''',character))
     # return True if the username as long as the length is 
     # < 15 and typing in the username box
-    return (len(string)<15 and (click) and bool(valid_chars))
+    return len(string) < 15 and click and bool(valid_chars)
 
 def validate_info(string):
-    return (4 <= len(string) <= 15)
+    return 4 <= len(string) <= 15
 
 def input_information(state):
     max_length=15
