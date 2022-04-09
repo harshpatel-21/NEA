@@ -183,8 +183,8 @@ def input_information(state):
             delete_counter = 0
 
         if delete_counter > 8 and (delete_counter%2)==0: # allows for singular + held down deletion
-            if username_click:username=username[:-1]
-            if password_click:password=password[:-1]
+            if username_click: username=username[:-1]
+            if password_click: password=password[:-1]
             random_box.text = random_box.text[:-1]
         
         if not username: # if nothing has been typed in the username box, it should display 'Username'

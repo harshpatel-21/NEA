@@ -42,7 +42,8 @@ class Display:
     def __init__(self, background=GREEN, caption='Game',size=None,new_window=True,arrow_pos=None):
         if size is not None:
             self.SIZE = size
-            self.width,self.height = size
+            self.width, self.height = size
+            self.WIDTH, self.HEIGHT = size
 
         if arrow_pos is not None:
             self.ARROW_X, self.ARROW_Y = arrow_pos

@@ -127,40 +127,139 @@ os.environ['SDL_VIDEO_WINDOW_POS'] = f"{x},{y}"
 
 FPS = 60
 clock = pygame.time.Clock()
-window = WINDOW.Display(new_window=True,caption='Question Display')
+window = WINDOW.Display(new_window=True,caption='Question Display',size=(1000,500))
 
 class QuestionBox(Textbox):
     LARGE_FONT = pygame.font.SysFont('Sans', 35)
     MEDLARGE_FONT = pygame.font.SysFont('Sans', 30)
     MEDIUM_FONT = pygame.font.SysFont('Sans', 25)
     SMALL_FONT = pygame.font.SysFont('Sans', 15)
-    def __init__(self, x, y, size):
+
+    def __init__(self, x, y, size, value, text='', font_size='MEDLARGE'):
         # inherit a few methods
-        super().__init__(x, y)
+        # super().__init__(x, y)
         # self.check_hover = Textbox.check_hover
         # self.check_click = Textbox.check_click
-        self.x,self.y = x,y
-        self.rect = pygame.Rect(x,y,*size)
+        self.value = value
+        self.x, self.y = x, y
+        self.rect = pygame.Rect(x, y, *size)
         self.surface = pygame.Surface(self.rect.size)
-        self.background = (0,0,0)
-        text_rect_size = [*map(lambda i: i*0.8,self.rect.size)] # create a padding
-        dx = text_rect_size[0]
-        self.text_rect = pygame.Rect((self.rect + ()))
+        self.background = Textbox.BACKGROUND
+        text_rect_size = [*map(lambda i: i*0.9,self.rect.size)] # create a padding for where the text will be placed
+        # calculate the offset of where the text rectangle will be placed
+        dx = (self.rect.w - text_rect_size[0])//2
+        dy = (self.rect.h - text_rect_size[1])//2
+        self.text_rect = pygame.Rect((self.rect.x + dx, self.rect.y + dy, *text_rect_size))
+        self.font = eval(f"self.{font_size}_FONT")
+        self.surf = None
+        self.text=text
+        self.border_color = None
+        self.add_text(text)
 
     def show(self, surface):
-        self.surface.fill((0,0,0))
+        # self.surface.fill(self.background)
         pygame.draw.rect(self.surface, self.background, (0, 0, self.rect.w, self.rect.h))
-        surface.blit(self.surface,(self.x,self.y))
+        if self.border_color: # if there is a border color
+            pygame.draw.rect(self.surface, self.border_color, (0, 0, self.rect.w, self.rect.h), 1)
+        # pygame.draw.rect(self.surface, self.border_color, (self.text_rect.x-self.rect.x, self.text_rect.y-self.rect.y, self.text_rect.w,self.text_rect.h),1)
+        surface.blit(self.surface,(self.rect.topleft))
+        if self.surf:
+            surface.blit(self.surf, self.text_rect.topleft)
 
-    def add_text(self, text):
-        pass
+    def add_text(self, text, delay=False):
+        text = text.split() # split all the words
+        # modification variables
+        add_y = 0
+        widths = 0
+        # text variables
+        pointer = 0
+        letter_count = 0
+        height = 36 # the height of a font character
+        self.surf = pygame.Surface(self.text_rect.size, pygame.SRCALPHA, 32)
+        self.surf.convert_alpha()
+
+        if self.value == 'button' and len(text)==1:
+            rendered = self.font.render(text[0],1,(255,255,255))
+            self.surf.blit(rendered,(0,0))
+            return
+
+        while pointer <= len(text) - 1:
+            temp = self.surf.copy() # create a temporary surface where letters will be blitted
+            font_letters = []
+            for letter in text[pointer]:
+                font_letters += [self.font.render(letter,1,(255,255,255))]
+
+            for letter in font_letters:
+                rect = letter.get_rect()
+                if not letter_count: # if the row has no letters
+                    proposed_x, proposed_y = 5, add_y * height
+                    letter_count+=1
+                    widths = 5
+                else:
+                    proposed_x = widths
+                    proposed_y = add_y * height
+
+                    # if adding a character of a word will overflow, add the whole word to the next line
+                    if proposed_x + rect.w > self.text_rect.w:
+                        add_y += 1 # increasing the y
+                        widths = 1 # resetting the widths to 2
+                        letter_count = 0 # reset the letter count on the row
+                        break # repeat the process again for this word but on a new line
+
+                    # proposed_x = rect.x + widths
+                    # proposed_y = add_y * height
+
+                temp.blit(letter, (proposed_x, proposed_y))
+                widths += rect.w + 1 # +2 is for the padding after a letter has been added
+
+            else:
+                if letter_count: # if there is a first character on the row
+                    # self.surf.blit(self.font.render('   ',1,(255,255,255)), (proposed_x, proposed_y))
+                    widths += 10 # this is the "space" between each word
+                pointer += 1 # once a word has finished blitting, move onto the next one
+                self.surf = temp.copy() # if a word was fully blitted, then add it onto the main canvas/surface
+
+    def check_hover(self, mouse_pos=0):
+        mouse_pos = pygame.mouse.get_pos()
+        if self.rect.collidepoint(mouse_pos):
+            self.background = self.hover_color
+            self.border_color = (0,0,255)
+            return 1
+        else:
+            self.background = self.background_color
+            self.border_color = None
+            return 0
+
+    def check_click(self, mouse_pos):
+        return self.rect.collidepoint(mouse_pos) and (pygame.mouse.get_pressed()[0])
+
 
 center = [*window.screen.get_rect().center]
-a = QuestionBox(center[0]-50,center[1]-50,(100,100))
+w, h = window.width, 200
+text = "Explain in detail as to why many users get so confused with many operating systems such as linux... is it because of the cmd?"
+question = QuestionBox(center[0]-w//2, 0 , (w, h*0.8),value='question', text=text)
 
-text = 'Hello'
+options = ['A','B','C','D']
+x1 = int(window.width*0.1//4)
+width = 0.9
+a = 'Option A'
+b = 'Option B'
+c = 'Option C'
+d = 'Option D'
+option_1=QuestionBox(question.rect.x + x1,question.rect.bottom + 10,(w*width//2,(window.height-h)//2),value='a',text=a)
+option_2=QuestionBox(question.rect.center[0] + x1, question.rect.bottom + 10,(w*width//2,(window.height-h)//2),value='b',text=b)
+option_3=QuestionBox(option_1.rect.left,option_1.rect.bottom + 15,(w*width//2,(window.height-h)//2),value='c',text=c)
+option_4=QuestionBox(option_2.rect.left,option_2.rect.bottom + 15,(w*width//2,(window.height-h)//2),value='d',text=d)
+# question.add_text(text)
+feedback = "The data bus retrieves data and instructions from main memory. The address bus sends addresses to main memory. The control bus sends read right signals to main memory"
+feedback = QuestionBox(0,0,window.SIZE,text=feedback,value='feedback')
+# continue_box = Textbox(0,int(0.8*window.height),text='Continue',size=(100,50))
+continue_button = Textbox(100,0.8*window.height,text='Continue',text_size='medlarge')
+display = True
 while 1:
     window.refresh()
+    # continue_box.create_rect()
+    continue_button.create_rect()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -169,11 +268,24 @@ while 1:
             if event.key == pygame.K_ESCAPE:
                 pygame.quit()
                 sys.exit()
+                pass
+            if event.key == pygame.K_SPACE:
+                print(continue_button.font_rect)
+                display = False
+
         if event.type == pygame.MOUSEBUTTONDOWN:
-            print(a.check_click(pygame.mouse.get_pos())) # only check for click collision if need be
-
-    a.check_hover()
-    a.show(window.screen)
-
+            # print(a.check_click(pygame.mouse.get_pos())) # only check for click collision if need be
+            pass
+    if display:
+        question.show(window.screen)
+        for option in [option_1, option_2, option_3, option_4]:
+            option.show(window.screen)
+            option.check_hover()
+    else:
+        feedback.show(window.screen)
+        continue_button.check_hover(pygame.mouse.get_pos())
+        continue_button.show(window.screen)
+        # pygame.display.update()
+        # pygame.time.delay(10)
     pygame.display.update()
     clock.tick(FPS)

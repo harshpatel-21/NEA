@@ -37,15 +37,15 @@ class Textbox:
 
     def create_rect(self):
         padding_x, padding_y = self.padding
-        w, h=self.size
+        w, h = self.size
         #updates the text to be displayed on the box
         self.font = self.text_size.render(self.text, True, pygame.Color(*self.text_color))
-        self.rect = self.font.get_rect()
-        tempRect = self.rect.copy()
+        tempRect = self.font.get_rect()
         tempRect.width = tempRect.width + padding_x
-        if self.limit: tempRect.width = min(270,tempRect.width +padding_x)
+        if self.limit: tempRect.width = min(270,tempRect.width + padding_x)
         tempRect.height = tempRect.height + padding_y
         self.font_rect = tempRect
+        self.rect = pygame.Rect(self.x,self.y,*self.font_rect.size)
 
         if w>0 and h>0:
             if self.font_rect.width - 43 < w:
@@ -55,7 +55,6 @@ class Textbox:
         self.surface = pygame.Surface((self.font_rect.width, self.font_rect.height))
         self.background = self.background_color
 
-    
     def show(self, canvas, center=False):
         pygame.draw.rect(self.surface, self.background, self.font_rect)
         pygame.draw.rect(self.surface, self.border_color, self.font_rect, 5)
@@ -75,10 +74,16 @@ class Textbox:
 
     def check_hover(self, mouse_pos=0):
         mouse_pos = pygame.mouse.get_pos()
-        if self.rect.collidepoint(mouse_pos):
+        x = self.font_rect.copy()
+        x.x = self.x
+        x.y = self.y
+        if x.collidepoint(mouse_pos):
             self.background = self.hover_color
         else:
             self.background = self.background_color
 
     def check_click(self, mouse_pos):
-        return self.rect.collidepoint(mouse_pos) and (pygame.mouse.get_pressed()[0])
+        x = self.font_rect.copy()
+        x.x = self.x
+        x.y = self.y
+        return x.collidepoint(mouse_pos) and (pygame.mouse.get_pressed()[0])
