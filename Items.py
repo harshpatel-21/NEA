@@ -28,6 +28,7 @@ class Item(pygame.sprite.Sprite):
         self.rect.midtop = (x + Display.TILE_DIMENSION_X // 2, y + (
                 Display.TILE_DIMENSION_Y - self.image.get_height()))  # make it so that its at the center of a tile, even if the size isn't the same
         self.initial_time = pygame.time.get_ticks()
+        self.obj_type = 'Coin'
 
     def draw(self, surface, target):
         temp = self.rect.copy()
@@ -84,6 +85,7 @@ class Decoration(pygame.sprite.Sprite):
         self.image = image
         self.rect = rect
         self.direction = 0
+        self.obj_type = 'Decoration'
         # self.rect.midtop = (x + Display.TILE_DIMENSION_X // 2, y + (Display.TILE_DIMENSION_Y - self.rect.h))
 
     def draw(self, surface, scroll=0):
@@ -99,14 +101,19 @@ class DeathBlock(pygame.sprite.Sprite):
         self.image = image
         self.rect = rect
         self.direction = 0
+        self.obj_type = 'Death Block'
         # self.rect.midtop = (x + (Display.TILE_DIMENSION_X//2), y + (Display.TILE_DIMENSION_Y - self.rect.h))
 
-    def draw(self, surface, scroll=0):
-        self.rect.x += scroll
+    def draw(self, surface, target):
+        # self.rect.x += scroll
         # midtop = self.rect.midtop
         # self.rect.midtop = (midtop[0] - (Display.TILE_DIMENSION_X - self.rect.w)//2 - 2, midtop[1])
         # surface.blit(self.image, self.rect.midtop)
-        surface.blit(self.image, self.rect)
+        temp = self.rect.copy()
+        x, y = target.rect.topleft
+        temp.x = temp.x - x + Display.WIDTH//2
+        temp.y = temp.y - y + Display.HEIGHT//2
+        surface.blit(self.image, temp)
 
     def collision(self, objs):
         if isinstance(objs, Group):
@@ -114,9 +121,13 @@ class DeathBlock(pygame.sprite.Sprite):
                 collision = self.mask_collision(obj)
                 if collision:
                     obj.health = 0
+
         else:
-            collision = self.mask_collision(objs)
-            if collision: objs.health = 0
+            collision = self.mask_collision(objs) and objs.rect.y >= self.rect.y
+            if collision:
+                objs.health = 0
+                # objs.remove=True
+                # print('here')
 
     def update(self, objs):
         self.collision(objs)
@@ -133,8 +144,9 @@ class Obstacle(pygame.sprite.Sprite):
         self.rect = rect
         self.mask = pygame.mask.from_surface(self.image)
         self.direction = 0
+        self.obj_type = 'Obstacle'
 
-    def draw(self, surface, scroll):
+    def draw(self, surface, scroll, player=None):
         self.rect.x += scroll
         surface.blit(self.image, self.rect)
 

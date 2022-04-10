@@ -62,9 +62,10 @@ class Projectile(pygame.sprite.Sprite):
             # self.direction *= -1
 
         # check for tile collision
-        for tile in filter(lambda i: i not in world.no_collide,world.obstacle_list):
+        for tile in filter(lambda i: i not in world.no_collide, world.obstacle_list):
             if self.mask_collision(tile):
                 self.remove = True
+
                 pass
         if self.remove:
             # arr.remove(self) # used when arrows were stored in an array
@@ -163,8 +164,8 @@ class Entity(pygame.sprite.Sprite):
         # reset movement variables
         dx = dy = 0
         check = True
-        if not self.check_alive():
-            check = False
+        if not self.check_alive(): # if the player is dead, then don't do any movements
+            return
         # horizontal movement
         if self.bow_attack:  # don't allow movement during an attack animation
             check = False
@@ -222,7 +223,6 @@ class Entity(pygame.sprite.Sprite):
 
         # check if going off the sides
         if self.rect.y > (world.height)*46-self.rect.h: # if the player is off screen
-            # print('here')
             self.remove = True
             self.kill()
             self.update_action(self.get_index('Die'))
@@ -298,22 +298,19 @@ class Entity(pygame.sprite.Sprite):
         if (current_time - self.time1) > cooldown_time:
             self.animation_pointer += 1  # add one to animation pointer
             if self.current_action in self.combat_animations:  # if its a combat animation
-                if self.animation_pointer >= len(
-                        self.animations[self.current_action]):  # if at the last frame of animation
-                    if self.current_action in self.combat_animations:
-                        self.sword_attack = False  # no longer attacking with a weapon
-                        if self.bow_attack:  # if currently in bow animation, set finished bow_animation to True
-                            self.shoot_cooldown_timer = self.shoot_cooldown
-                            shoot_projectile = True
-                        self.bow_attack = False  # no longer attacking with a weapon
+                if self.animation_pointer >= len(self.animations[self.current_action]):  # if at the last frame of animation
+                    self.sword_attack = False  # no longer attacking with a weapon
+                    if self.bow_attack:  # if currently in bow animation, set finished bow_animation to True
+                        self.shoot_cooldown_timer = self.shoot_cooldown
+                        shoot_projectile = True
+                    self.bow_attack = False  # no longer attacking with a weapon
                     self.animation_pointer = 0  # reset animation pointer
                     self.current_action = 0  # go back to idle position
 
             elif self.current_action == death_index:  # death animation
-                print(self.animation_pointer)
                 if self.animation_pointer > len(self.animations[death_index]) - 1:
                     self.animation_pointer = len(self.animations[death_index]) - 1
-                    # self.remove = True
+                    self.remove = True
 
             else:  # looping animations
                 self.animation_pointer = self.animation_pointer % len(self.animations[self.current_action])
@@ -631,11 +628,11 @@ class Group(pygame.sprite.Group):
         super().__init__()
         self.add(*args)
 
-    def draw(self, surface, scroll=0):
+    def draw(self, surface, scroll=0, target=None):
         for sprite in self.sprites():
             # Check if the sprite has a `draw` method.
             if hasattr(sprite, 'draw'):
-                sprite.draw(surface, scroll)
+                sprite.draw(surface, target=target)
             else:
                 surface.blit(sprite.image, sprite.rect)
 

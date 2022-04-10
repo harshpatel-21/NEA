@@ -1,4 +1,5 @@
 import os, sys, csv
+from openpyxl import load_workbook
 
 # v3:
 # - made it so that the player cannot hit with a sword whilst in bow animation and making sure the player is alive
@@ -36,6 +37,7 @@ sys.path.insert(1, x)
 from entity_class import Entity, Enemy, Projectile, Player, Group
 import pygame, WINDOW
 from Items import Item, Decoration, DeathBlock, Obstacle
+from WINDOW import read_json,write_json
 
 pygame.init()
 
@@ -209,26 +211,18 @@ class Camera:
                 self.rect.bottomright = target.rect.bottomright
 
 def play_level(username, user_id, level):
-    # scale = (60,92) # with sword
-    # player = Player(100, 100, 'player', scale, melee_dps=15)
-    # enemy = Player(500,100,'enemy',scale,all_animations = ['Idle','Die'],max_health = 50 )
+    # load in the questions
+    question_data = read_json(f'Questions/{1.1}.json')
+
     player, decorations, death_blocks, enemies, coins = world.process_data(game_level)
     decoration_group = Group(*decorations)
     death_blocks_group = Group(*death_blocks)
     enemy_group = Group(*enemies)
     arrow_group = Group()
     coin_group = Group(*coins)
-    print(enemy_group, decoration_group, death_blocks_group)
-    arrows = []
-    # enemies = [enemy_1, enemy_2]
-    # coin_group = pygame.sprite.Group()
-
-    # enemy_1.direction = -1
-    screen_scroll = 0  # respective to player movement
-    background_scroll = 0  # cumulative value
-    moving_left = moving_right = False
     dust_pos = ()
     camera = Camera(player)
+    # print(death_blocks_group)
     while True:
         if player.remove:
             return
@@ -301,22 +295,26 @@ def play_level(username, user_id, level):
             # arrows += [add_arrow]
             arrow_group.add(add_arrow)
 
-        for arrow in arrow_group:
-            arrow.update(arrows, world, enemy_group, player)  # update the arrow such position and state
+        # for arrow in arrow_group:
+        #     arrow.update(arrows, world, enemy_group, player)  # update the arrow such position and state
 
         # player handling
+
         player.draw(window.screen, camera)
         screen_scroll = player.move(moving_left, moving_right, world, death_blocks)
         player.update(moving_left, moving_right, world)
 
         # enemy handling
         dead = enemy_group.update(player, window.screen, world)
-        if dead:
-            print('Killed')
-        enemy_group.draw(window.screen, camera)
+        # if dead:
+        #     print('Killed')
+        enemy_group.draw(window.screen, target=camera)
         # arrow handling
         arrow_group.update(window.screen, world, enemy_group, player)
         arrow_group.draw(window.screen, camera)
+
+        death_blocks_group.draw(window.screen, target=player)
+        death_blocks_group.update(player) # do death block checking for player
         #
         # # coin handling
         # coin_group.draw(window.screen, screen_scroll)
@@ -327,8 +325,6 @@ def play_level(username, user_id, level):
         decoration_group.draw(window.screen)
         decoration_group.update()
         #
-        death_blocks_group.draw(window.screen)
-        death_blocks_group.update(player) # do death block checking for player
 
         # death_blocks_group.update(enemy_group) # do death block checking for enemies
 
@@ -340,7 +336,7 @@ def play_level(username, user_id, level):
         #     print('jumping')
         if player.particle_counter == 0:
             dust_pos = (player.rect.x, (player.rect.y//46)*46 + 92)
-        player.draw_dust(window.screen, dust_pos)
+        # player.draw_dust(window.screen, dust_pos)
         pygame.display.update()  # make all the changes
 
         clock.tick(FPS)

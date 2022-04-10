@@ -135,7 +135,7 @@ class QuestionBox(Textbox):
     MEDIUM_FONT = pygame.font.SysFont('Sans', 25)
     SMALL_FONT = pygame.font.SysFont('Sans', 15)
 
-    def __init__(self, x, y, size, value, text='', font_size='MEDLARGE'):
+    def __init__(self, x, y, size, value, text='', font_size='MEDIUM'):
         # inherit a few methods
         # super().__init__(x, y)
         # self.check_hover = Textbox.check_hover
@@ -174,7 +174,7 @@ class QuestionBox(Textbox):
         # text variables
         pointer = 0
         letter_count = 0
-        height = 36 # the height of a font character
+        height = self.font.render('h',1,(255,255,255)).get_rect().height
         self.surf = pygame.Surface(self.text_rect.size, pygame.SRCALPHA, 32)
         self.surf.convert_alpha()
 
@@ -243,7 +243,7 @@ options = ['A','B','C','D']
 x1 = int(window.width*0.1//4)
 width = 0.9
 
-a = 'Option A'
+a = "Holds the result of calculations and operations performed by the arithmetic and logic unit."
 b = 'Option B'
 c = 'Option C'
 d = 'Option D'
@@ -253,8 +253,10 @@ option_2=QuestionBox(question.rect.center[0] + x1, question.rect.bottom + 10,(w*
 option_3=QuestionBox(option_1.rect.left,option_1.rect.bottom + 15,(w*width//2,(window.height-h)//2),value='c',text=c)
 option_4=QuestionBox(option_2.rect.left,option_2.rect.bottom + 15,(w*width//2,(window.height-h)//2),value='d',text=d)
 # question.add_text(text)
-feedback = "The data bus retrieves data and instructions from main memory. The address bus sends addresses to main memory. The control bus sends read right signals to main memory"
-feedback = QuestionBox(0,0,window.SIZE,text=feedback,value='feedback')
+# feedback = "The data bus retrieves data and instructions from main memory. The address bus sends addresses to main memory. The control bus sends read right signals to main memory"
+# feedback = "The program counter holds the memory location address of the next instruction to be performed by the central processing unit.  Memory data register holds the data that has been retrieved from memory, or that is about to be stored in memory. Accumulator holds the result of calculations and operations performed by the arithmetic and logic unit."
+feedback_text = 'nothing'
+feedback = QuestionBox(0,0,window.SIZE,text=feedback_text,value='feedback',font_size='MEDIUM')
 # continue_box = Textbox(0,int(0.8*window.height),text='Continue',size=(100,50))
 continue_button = Textbox(100,0.8*window.height,text='Continue',text_size='medlarge')
 display = True
