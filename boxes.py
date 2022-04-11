@@ -88,11 +88,11 @@ class Textbox:
         else:
             self.background = self.background_color
 
-    def check_click(self,mouse_pos):
+    def check_click(self,mouse_pos=None):
         x=self.main_rec.copy()
         x.x = self.x
         x.y = self.y
-        return x.collidepoint(mouse_pos) and (pygame.mouse.get_pressed()[0])
+        return x.collidepoint(pygame.mouse.get_pos()) and (pygame.mouse.get_pressed()[0])
 
 
 class Inputbox(Textbox):

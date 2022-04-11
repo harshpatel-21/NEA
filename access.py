@@ -1,15 +1,12 @@
-try:
-    import pygame,os
-    from WINDOW import Display
-    from boxes import Textbox
-    import re,json
-    import WINDOW
-except ImportError as error:
-    print(error)
+
+import pygame, os, WINDOW
+from WINDOW import Display, NoIndent, read_json, write_json
+from boxes import Textbox
+import re, json
+
+# --------------------- Main Game stuff -------------------------------#
 x,y = WINDOW.x,WINDOW.y
 os.environ['SDL_VIDEO_WINDOW_POS'] = f"{x},{y}"
-
-
 pygame.init()
 clock = pygame.time.Clock()
 
@@ -23,20 +20,9 @@ window = Display(caption='Main Menu',size=(1426, 690),arrow_pos=(525,515))
 image = pygame.image.load(background)
 background = pygame.transform.scale(image,(1426, 690))
 window.background = background
-#------------------------------ get/set details ------------------------------#
-def read(path):
-    details = get_path(path)
-    with open(details,'r') as file:
-        return json.load(file)
-
-def write(data,path):
-    details = get_path(path)
-    with open(details, 'w') as file:
-        file.seek(0)
-        json.dump(data,file)
 #----------------------------------- Login -----------------------------------#
 def check_details(username, password, state):
-    data = read('user_info/users.json')
+    data = read_json('user_info/users.json')
     if state=='login':
         info = data.get(username)
         if info: return info.get("password") == password
@@ -52,11 +38,14 @@ def check_details(username, password, state):
 def add_info(data, username, password):
     data[username] = {"password": "", "coins": 0, "1.1": 0, "1.2": 0, "1.3": 0, "1.4": 0, "1.5": 0, "2":0}
     data[username]['password'] = password
+    write_json(data, 'user_info/users.json')
 
-    write(data, 'user_info/users.json')
-
-    questions = os.listdir('Questions json')
-    print(questions)
+    questions = os.listdir('Questions')
+    for file in questions:
+        file_info = read_json(f'Questions/{file}')
+        for question in file_info:
+            file_info[question][username] = NoIndent([0, 0])
+        write_json(file_info, f'Questions/{file}')
 
 def validate_character(string, click, character):
     # Only allow characters, numbers and certain symbols
@@ -102,7 +91,7 @@ def input_information(state):
     delete_counter = 0
 
     while True:
-        data = read('user_info/users.json')
+        data = read_json('user_info/users.json')
         window.refresh(back=True)
 
         username_box.text=fill_text

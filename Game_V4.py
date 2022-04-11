@@ -1,32 +1,5 @@
-import os, sys, csv
+import os, sys, csv,random
 from openpyxl import load_workbook
-
-# v3:
-# - made it so that the player cannot hit with a sword whilst in bow animation and making sure the player is alive
-# - fixed an error where player could move whilst in a action animation which would crash the player
-#   animations.
-
-# v4:
-# - when player was in attack animation in direction x and held movement key in opposing direction, once the
-#   animation finished, it wouldn't do so. To fix fix this, added pygame.key.get_pressed()
-#   so that once animation is finished and another direction key is held during animation, it wil
-#   to move player in that direction. Makes it more fluid.
-
-# - whilst in an animation, if the player changed direction before/at the point when arrow is shot
-#   it would change the direction of the player but unintentionally change the arrow's direction as well.
-#   fixed this by making it so that the player cannot change direction during the attack animations.
-
-# in entity_class, in the collision check for the Entity, added a 'self.collisions' counter to check if collisions
-# occurred. Because if normal collision check was done, every collision check during combat animation, it would count
-# overlap between the images as an attack and subtract the enemy health. Therefore, to prevent this, a counter was added
-# to simply check if any collisions occurred between the two images during the combat animation, and if that counter is
-# bigger than 0, it means combat collision occurred and so only the amount intended to be subtracted from the enemy is
-# subtracted.
-# ie dps = 20 for sword.
-# before: each collision in the animation of a sword swing: damage == x * dps where x = number of frame collisions
-# after: once sword animation ended, if there was contact at any frame which incremented the counter:  damage = dps
-
-# insert at 1, 0 is the script path (or '' in REPL)
 
 x = '\\'.join(os.path.abspath(__file__).split('\\')[:-2])  # allow imports from main folder
 # print(x)
@@ -38,7 +11,7 @@ from entity_class import Entity, Enemy, Projectile, Player, Group
 import pygame, WINDOW
 from Items import Item, Decoration, DeathBlock, Obstacle
 from WINDOW import read_json,write_json
-
+import QuestionWindow
 pygame.init()
 
 x, y = WINDOW.x, WINDOW.y
@@ -213,6 +186,13 @@ class Camera:
 def play_level(username, user_id, level):
     # load in the questions
     question_data = read_json(f'Questions/{1.1}.json')
+    questions = list(question_data)
+    # questions = random.sample(list(question_data),len(question_data)) # a list of keys which are the questions
+    # for j in range(4):
+    result = QuestionWindow.StartQuestion(question=questions[1], question_data=question_data)
+    print(result)
+
+    sys.exit()
 
     player, decorations, death_blocks, enemies, coins = world.process_data(game_level)
     decoration_group = Group(*decorations)

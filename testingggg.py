@@ -3,7 +3,7 @@ from WINDOW import get_path
 from openpyxl import load_workbook
 from boxes import Textbox
 # from entity_class import Entity, Enemy, Projectile, Player, Group
-import pygame, WINDOW
+import pygame, WINDOW, random
 # from Items import Item, Decoration, DeathBlock
 # from level_editor import load_level, draw_grid
 #
@@ -243,10 +243,7 @@ options = ['A','B','C','D']
 x1 = int(window.width*0.1//4)
 width = 0.9
 
-a = "Holds the result of calculations and operations performed by the arithmetic and logic unit."
-b = 'Option B'
-c = 'Option C'
-d = 'Option D'
+options = random.sample(options,4)
 
 option_1=QuestionBox(question.rect.x + x1, question.rect.bottom + 10, (w*width//2,(window.height-h)//2),value='a',text=a)
 option_2=QuestionBox(question.rect.center[0] + x1, question.rect.bottom + 10,(w*width//2,(window.height-h)//2),value='b',text=b)

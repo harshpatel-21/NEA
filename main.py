@@ -1,15 +1,9 @@
 #---------------------------------- Imports ----------------------------------#
 
-try:
-    import pygame,os
-    from WINDOW import Display
-    from boxes import Textbox
-    import re,json
-    from access import input_information
-    import WINDOW
-    import Game_V4
-except ImportError as error:
-    print(error)
+import pygame, os, re, json, Game_V4, WINDOW
+from WINDOW import Display
+from boxes import Textbox
+from access import input_information
 
 # laptop
 x,y = WINDOW.x,WINDOW.y
@@ -17,8 +11,6 @@ x,y = WINDOW.x,WINDOW.y
 # x,y = 50,80
 os.environ['SDL_VIDEO_WINDOW_POS'] = f"{x},{y}"
 #--------------------------------- Setting Up --------------------------------#
-
-pygame.init()
 clock = pygame.time.Clock()
 
 def get_path(path):
@@ -31,6 +23,7 @@ window = Display(caption='Main Menu',size=(1426, 690))
 image = pygame.image.load(background)
 background = pygame.transform.scale(image,window.SIZE)
 window.background = background
+pygame.init()
 #------------------------------ get/set details ------------------------------#
 def read(path):
     details = get_path(path)
