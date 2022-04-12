@@ -4,6 +4,7 @@ from entity_class import Entity, Enemy, Projectile, Player, Group
 import pygame, WINDOW, QuestionWindow, os, sys, random, csv
 from Items import Item, Decoration, DeathBlock, Obstacle
 from transition import ScreenFade
+import time
 
 pygame.init()
 read_json = WINDOW.read_json # using the pre-coded read and write methods to json files
@@ -208,9 +209,11 @@ def play_level(username, user_id, level):
     run=True
 
     show_question = False
+    fade = ScreenFade(1, (0,0,0), 0.7)
+    start_fade = True
+    x1 = pygame.time.get_ticks()
     timer = 0
-    fade = ScreenFade(1, (0,0,0), 7)
-    start_intro = True
+    timing = 0
     while run:
         if player.remove: # if they died
             run = False
@@ -304,9 +307,11 @@ def play_level(username, user_id, level):
         # if an enemy has died, present a question
         enemy_dead = enemy_group.check_death()
         if enemy_dead:
-            show_question=True
+            start_fade = True
+            fade.direction = -1
 
         if show_question:
+
             current_question = questions.pop() # pop the question at the top of the stack
             if current_question:
                 result = QuestionWindow.StartQuestion(question=current_question, question_data=question_data)
@@ -319,11 +324,18 @@ def play_level(username, user_id, level):
                     if wrong!=0 or right!=0: accuracy = right/(right+wrong)
                     question_data[current_question][username] = [right, wrong, accuracy]
             show_question = False
-        if start_intro:
+
+        if start_fade:
             if fade.fade(window.screen): # if the fade has completed
-                start_intro = False # don't show the intro fade anymore
-                fade.fade_fade_counter=0 # reset the fade counter
-        timer += 1
+                pygame.time.delay(500) # wait a bit
+                start_fade = False # don't show the intro fade anymore
+                if fade.direction == -1 and player.check_alive(): # if fading out, then it means going to a question
+                    show_question = True
+        if (pygame.time.get_ticks() - x1) > 1000:
+            timer += 1
+            x1 = pygame.time.get_ticks()
+        # timing += 1/60
+        window.draw_text(text=f'Time: {timer}', pos=(20,20), size='MEDIUM')
         pygame.display.update()  # make all the changes
 
         clock.tick(FPS)

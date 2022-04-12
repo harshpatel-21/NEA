@@ -123,11 +123,9 @@ class DeathBlock(pygame.sprite.Sprite):
                     obj.health = 0
 
         else:
-            collision = self.mask_collision(objs) and objs.rect.y >= self.rect.y
+            collision = self.mask_collision(objs) and objs.rect.y + objs.rect.h*0.5 >= self.rect.y # if more than half of body is submerged
             if collision:
                 objs.health = 0
-                # objs.remove=True
-                # print('here')
 
     def update(self, objs):
         self.collision(objs)
