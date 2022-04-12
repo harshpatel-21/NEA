@@ -56,7 +56,6 @@ move_radii = [1, 1, 1, 1, 1]
 img_list = {}
 for i in TILE_TYPES:
     img = pygame.image.load(WINDOW.get_path(f'images/level_images/{LEVEL}/Tiles/{i}')).convert_alpha()
-
     name = i[:i.index('.')]
     img_list[name] = img
 
@@ -109,7 +108,7 @@ class World:
                         coins += [obj]
                     elif tile == tile_info['player']:  # create player if there's one on the map
                         # print('player')
-                        player = Player(img_rect.x, img_rect.y, PLAYER, player_scale, melee_dps=30)
+                        player = Player(img_rect.x, img_rect.y, PLAYER, player_scale, melee_dps=100)
                     elif tile == tile_info['enemy']:
                         enemies += [Enemy(img_rect.x, img_rect.y, ENEMY, enemy_scale,
                                           all_animations=['Idle', 'Die', 'Running', 'Attack'],
@@ -192,31 +191,35 @@ class Camera:
 def play_level(username, user_id, level):
     # load in the questions
     question_data = read_json(f'Questions/{1.1}.json')
-    questions = random.sample(list(question_data), len(question_data))
-    # questions = random.sample(list(question_data),len(question_data)) # a list of keys which are the questions
-    # for j in range(4):
-    result = QuestionWindow.StartQuestion(question=questions[1], question_data=question_data)
-    if result:
-        user_info = read_json(f'user_info/users.json')
-        user_info[username]['points'].append(50)
-        write_json(user_info, f'user_info/users.json')
-    sys.exit()
+    # NOTE: question_data[question][username] = list(correct: int, incorrect: int, percentage: float)
 
+    # select the 10 questions the user performed worst at, no longer random selection using sample alone
+    questions = sorted(question_data, key=lambda question: (question_data[question][username])[2], reverse=True)[:10] # biggest -> smallest correct %
+    questions = random.sample(questions, len(questions)) # shuffle the order of selected questions
+    # questions will be treated as a stack. Last in is first out
+
+    current_question = questions.pop() # pop the question at the top of the stack
+    # result = QuestionWindow.StartQuestion(question=current_question, question_data=question_data)
+
+    # sprite groups
     player, decorations, death_blocks, enemies, coins = world.process_data(game_level)
     decoration_group = Group(*decorations)
     death_blocks_group = Group(*death_blocks)
     enemy_group = Group(*enemies)
     arrow_group = Group()
     coin_group = Group(*coins)
-    dust_pos = ()
+
     camera = Camera(player)
-    # print(death_blocks_group)
-    while True:
+    points = 0
+    run=True
+
+    show_question = False
+    while run:
         if player.remove:
-            return
+            run = False
         camera.update(player, world)
         # only perform actions based on these conditions
-        move_conditions = not player.in_air and (player.health) and (
+        move_conditions = not player.in_air and player.health and (
                     player.y_vel <= player.GRAVITY)  # making sure player isn't in the air and is still alive
 
         attack_conditions = not (
@@ -229,12 +232,12 @@ def play_level(username, user_id, level):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-                return
+                run = False
 
             # check for keyboard input
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    return ()
+                    run=False
 
                 if event.key == pygame.K_r:
                     enemy_group.regen()
@@ -294,61 +297,57 @@ def play_level(username, user_id, level):
         player.update(moving_left, moving_right, world)
 
         # enemy handling
-        dead = enemy_group.update(player, window.screen, world)
-        # if dead:
-        #     print('Killed')
+        enemy_group.update(player, window.screen, world)
         enemy_group.draw(window.screen, target=camera)
         # arrow handling
         arrow_group.update(window.screen, world, enemy_group, player)
         arrow_group.draw(window.screen, camera)
 
-        death_blocks_group.draw(window.screen, target=player)
+        death_blocks_group.draw(window.screen, target=camera)
         death_blocks_group.update(player)  # do death block checking for player
-        #
+
         # # coin handling
         # coin_group.draw(window.screen, screen_scroll)
         # coin_group.update(player)  # check for player collision
-        #
 
-        # tile groups
-        decoration_group.draw(window.screen)
-        decoration_group.update()
-        #
+        # if an enemy has died, present a question
+        enemy_dead = enemy_group.check_death()
+        if enemy_dead:
+            show_question=True
 
-        # death_blocks_group.update(enemy_group) # do death block checking for enemies
+        if show_question:
+            current_question = questions.pop() # pop the question at the top of the stack
+            if current_question:
+                result = QuestionWindow.StartQuestion(question=current_question, question_data=question_data)
 
-        # display text
-        window.draw_text(f'weapon: {["Sword", "Bow"][player.current_weapon - 1]}', (10, 7))
-        window.draw_text(f'Press [1] to use Sword, [2] to use Bow', (10, 20))
-        # world.bg_scroll -= screen_scroll
-        # if draw_dust:
-        #     print('jumping')
-        if player.particle_counter == 0:
-            dust_pos = (player.rect.x, (player.rect.y // 46) * 46 + 92)
-        # player.draw_dust(window.screen, dust_pos)
+                # extract current stats for the question and adjust them based on result of the answer
+                if result is not None:
+                    print((question_data[current_question])[username])
+                    right, wrong, accuracy = (question_data[current_question])[username]
+                    if result: right += 1; points += 50
+                    else: wrong += 1
+                    if wrong!=0 or right!=0: accuracy = right/(right+wrong)
+                    question_data[current_question][username] = [right, wrong, accuracy]
+            show_question = False
+
         pygame.display.update()  # make all the changes
 
         clock.tick(FPS)
+    # update question data
+    write_json(question_data, f'Questions/{1.1}.json')
+    return points
 
-
-def main(player, user_id, level):
-    # while 1:
-    #     window.refresh()
-    #     for event in pygame.event.get():
-    #         if event.type == pygame.QUIT:
-    #             pygame.quit()
-    #             break
-    #
-    #         if event.type == pygame.KEYDOWN:
-    #             if chr(event.key) == 'r' or chr(event.key)=='s':
-    #                 play_level(player,user_id, level)
-    #             if event.key == pygame.K_ESCAPE:
-    #                 pygame.quit()
-    #                 break
-    #
-    #     pygame.display.update()
-    play_level(player, user_id, level)
-
+def main(username, user_id, level):
+    points = play_level(username, user_id, level) # once the player has finished the level, return the points collected
+    user_info = read_json(f'user_info/users.json')
+    user_info[username]['points'].append(points)
+    write_json(user_info, f'user_info/users.json')
+    sys.exit()
 
 if __name__ == '__main__':
-    main('user1', 0, 2)
+    remove = '' # if I want to remove a user.
+    for file in os.listdir('Questions'):
+        WINDOW.delete_json_key(f'Questions/{file}', key=remove,two_d=True)
+    WINDOW.delete_json_key(f'user_info/users.json',key=remove)
+
+    main('Harsh', 0, 2)

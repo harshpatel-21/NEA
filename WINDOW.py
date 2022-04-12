@@ -75,6 +75,24 @@ def write_json(data, path, cls=MyEncoder):
         file.seek(0)
         json.dump(data, file, indent=4, cls=cls)
 
+def delete_json_key(path, cls=MyEncoder, key=None, two_d=False):
+    details_path = get_path(path)
+    data = read_json(details_path)
+    for key1 in data:
+        if two_d:
+            for key2 in data[key1]:
+                if key2 == key:
+                    del data[key1][key2]
+                    break # go onto next main key
+        else:
+            if key1==key:
+                del data[key1]
+                break
+
+    write_json(data, path)
+
+
+
 class Display:
     pygame.init()
     RED = (255,0,0)

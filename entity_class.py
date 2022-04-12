@@ -530,6 +530,7 @@ class Enemy(Entity):
         self.change_direction = False
         self.wall_collision = False
         self.move_radius = move_radius
+        self.trigger = False
 
     def rec_collision(self, obj):
         return self.attack_vision.colliderect(obj.rect)
@@ -614,13 +615,13 @@ class Enemy(Entity):
         self.animation_handling()
         # pygame.draw.rect(Display.screen, (255, 0, 0), enemy.attack_vision,2)
         if self.health > 0:
+            self.trigger = False
             if self.start_attack(player, world):  # check if player collision has occurred
                 pass
             player.sword_collision(self)
             self.sword_collision(player)  # check for collision with the player
         elif self.remove:
-            self.kill()  # remove enemy from enemy group and free up memory space
-            return 1
+            self.trigger = True
 
         self.AI(world, player)  # do enemy AI
 
@@ -648,6 +649,15 @@ class Group(pygame.sprite.Group):
             # Check if the sprite has a `regen` method.
             if hasattr(sprite, 'regen'):
                 sprite.regen()
+
+    def check_death(self):
+        ask_question = False
+        for obj in self.sprites():
+            if obj.trigger:
+                obj.kill()
+                ask_question = True
+        return ask_question
+
 
 class BoxGroup:
     def __init__(self, *args):

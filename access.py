@@ -38,15 +38,15 @@ def check_details(username, password, state):
 def add_info(data, username, password):
     data[username] = {"password": "", "points": [0], "1.1": 0, "1.2": 0, "1.3": 0, "1.4": 0, "1.5": 0, "2": 0}
     data[username]['password'] = password
-    write_json(data, 'user_info/users.json')
+
 
     questions = os.listdir('Questions')
     for file in questions:
         file_info = read_json(f'Questions/{file}')
         for question in file_info:
-            file_info[question][username] = NoIndent([0, 0])
-        write_json(file_info, f'Questions/{file}')
-
+            file_info[question][username] = NoIndent([0, 0, 0])
+        write_json(file_info, f'Questions/{file}') # write to all question files
+        write_json(data, 'user_info/users.json') # if username was added to all question files, officially add em
 def validate_character(string, click, character):
     # Only allow characters, numbers and certain symbols
     valid_chars = (re.match("[A-Za-z\d$@$!%*?&]{1}", character))
@@ -158,7 +158,7 @@ def input_information(state):
             window.draw_text(text='Username must be between 4 and 15 characters long',pos=(window.screen.get_width()//2 - 380,590),color=(255,0,0),size='MEDLARGE',center=True)
 
         elif display_password_text and state=='sign up':
-            window.draw_text(text='Password must contain 8-10 characters, minimum [one uppercase and lowercase letters, one number] and optional special character',size='MEDIUM',color=(255,0,0),pos=(window.screen.get_width()//2 - 400,600),center=True)
+            window.draw_text(text='Password must contain 4-15 characters, minimum [one uppercase and lowercase letters, one number] and optional special character',size='MEDIUM',color=(255,0,0),pos=(window.screen.get_width()//2 - 400,600),center=True)
         elif successful_signUp:
             window.draw_text(text='New user has been signed up', pos=(window.screen.get_width()//2 - 160,590),color=(0,255,0),size='MEDLARGE',center=True)
 
@@ -201,7 +201,7 @@ def input_information(state):
             valid_username = validate_info(username)
             valid_password = validate_password(password)
             
-            if state=='sign up':
+            if state=='sign up' and not valid_username or not valid_password:
                 if not valid_username:
                     display_string_length = True
                     display_password_text = False
@@ -209,7 +209,6 @@ def input_information(state):
                     display_password_text = True
                     display_string_length = False
                 incorrect_details = False
-
 
             else:
                 display_string_length = False

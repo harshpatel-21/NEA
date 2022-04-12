@@ -115,12 +115,12 @@ def StartQuestion(question, question_data):
     os.environ['SDL_VIDEO_WINDOW_POS'] = f"{x},{y}"
     FPS = 60
     clock = pygame.time.Clock()
-    window = WINDOW.Display(new_window=True, caption='Question Display', size=(1000, 500))
+    window = WINDOW.Display(new_window=True, caption='Question Display')
     w, h = window.width, 200
 
     text = question
     options = question_data[question]['options']
-    correct_answer = question_data[question]['options'][0] # correct answer will always be at first index
+    correct_answer = question_data[question]['options'][0] # correct answer will always be at first index of options
     question_box = QuestionBox(0, 0, (w, h*0.8), obj_type='question', text=text)
 
     left_shift = 0.1
@@ -130,10 +130,10 @@ def StartQuestion(question, question_data):
     option_w, option_h = (w*width//2,(window.height-h)//2)
 
     # creating all the option instances, and positioning them respectively
-    option_1=QuestionBox(question_box.rect.x + x1, question_box.rect.bottom + 10, (option_w, option_h), obj_type='option', text=options[0])
-    option_2=QuestionBox(question_box.rect.center[0] + x1, question_box.rect.bottom + 10, (option_w, option_h), obj_type='option', text=options[1])
-    option_3=QuestionBox(option_1.rect.left, option_1.rect.bottom + 15, (option_w, option_h), obj_type='option', text=options[2])
-    option_4=QuestionBox(option_2.rect.left, option_2.rect.bottom + 15, (option_w, option_h), obj_type='option', text=options[3])
+    option_1=QuestionBox(question_box.rect.x + x1, question_box.rect.bottom + 13.3, (option_w, option_h), obj_type='option', text=options[0])
+    option_2=QuestionBox(question_box.rect.center[0] + x1, question_box.rect.bottom + 13.3, (option_w, option_h), obj_type='option', text=options[1])
+    option_3=QuestionBox(option_1.rect.left, option_1.rect.bottom + 13.3, (option_w, option_h), obj_type='option', text=options[2])
+    option_4=QuestionBox(option_2.rect.left, option_2.rect.bottom + 13.3, (option_w, option_h), obj_type='option', text=options[3])
     main_group = BoxGroup(option_1, option_2, option_3, option_4, question_box)
     # feedback instance
     feedback_text = question_data[question]['feedback']
@@ -144,21 +144,22 @@ def StartQuestion(question, question_data):
     options_screen = True
     result = False
     check_click = True
-    move_to_feedback = 6000
+    move_to_feedback = 6000 # the time to wait until moving onto feedback screen
     time1 = 0
     main_continue.create_rect()
     feedback_continue.create_rect()
     while True:
         window.refresh()
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+            if event.type == pygame.QUIT and 1==2:
                 pygame.quit()
                 return
                 # sys.exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    pygame.quit()
-                    sys.exit()
+                    # pygame.quit()
+                    # sys.exit()
+                    return
                     pass
 
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -166,7 +167,8 @@ def StartQuestion(question, question_data):
                 if pygame.time.get_ticks() - time1 > move_to_feedback and time1 and options_screen: # wait a bit of time
                     if main_continue.check_click():
                         options_screen = False # don't display options anymore, signalling the feedback screen to show
-                        if result: return result # if the answer was correct, then don't go to feedback screen
+                        if result:
+                            return result # if the answer was correct, then don't go to feedback screen
 
                 # check for continue button click on the feedback screen
                 if feedback_continue.check_click() and not options_screen:
@@ -202,3 +204,4 @@ def StartQuestion(question, question_data):
 
         pygame.display.update()
         clock.tick(FPS)
+
