@@ -1,4 +1,4 @@
-import os, sys, csv,random
+import os, sys, csv, random
 from openpyxl import load_workbook
 
 x = '\\'.join(os.path.abspath(__file__).split('\\')[:-2])  # allow imports from main folder
@@ -8,12 +8,12 @@ sys.path.insert(1, x)
 # EDIT FOR IMAGES: DIMENSIONS SHOULD BE 17x30
 # if __name__ == 'Game_V4':
 from entity_class import Entity, Enemy, Projectile, Player, Group
-import pygame, WINDOW
+import pygame, WINDOW, QuestionWindow
 from Items import Item, Decoration, DeathBlock, Obstacle
-from WINDOW import read_json,write_json
-import QuestionWindow
-pygame.init()
 
+pygame.init()
+read_json = WINDOW.read_json # using the pre-coded read and write methods to json files
+write_json = WINDOW.write_json
 x, y = WINDOW.x, WINDOW.y
 os.environ['SDL_VIDEO_WINDOW_POS'] = f"{x},{y}"
 
@@ -34,7 +34,8 @@ PLAYER = 'player'
 # ENEMY_IMG = 'samurai'
 # PLAYER_IMG = pygame.image.load(f'images/mobs/{PLAYER}/default.png')
 
-background = pygame.transform.scale(pygame.image.load(WINDOW.get_path('backgrounds/background_2.png')),window.SIZE).convert_alpha()
+background = pygame.transform.scale(pygame.image.load(WINDOW.get_path('backgrounds/background_2.png')),
+                                    window.SIZE).convert_alpha()
 
 GRAVITY = 0.75
 
@@ -59,11 +60,12 @@ for i in TILE_TYPES:
     name = i[:i.index('.')]
     img_list[name] = img
 
+
 class World:
     def __init__(self):
         self.obstacle_list = []
         self.bg_scroll = 0
-        self.no_collide = [] # blocks that shouldn't be checked for collision
+        self.no_collide = []  # blocks that shouldn't be checked for collision
         self.height = 0
         self.all_tiles = []
 
@@ -122,11 +124,12 @@ class World:
 
         for tile in self.all_tiles:
             temp = tile.rect.copy()
-            x,y = target.rect.topleft
-            temp.x = temp.x - x + window.WIDTH//2
-            temp.y = temp.y - y + window.HEIGHT//2
+            x, y = target.rect.topleft
+            temp.x = temp.x - x + window.WIDTH // 2
+            temp.y = temp.y - y + window.HEIGHT // 2
             window.screen.blit(tile.image, temp)
             # pygame.draw.rect(window.screen, (255,0,0),temp,2)
+
 
 # noinspection PyAssignmentToLoopOrWithParameter
 def load_level(level):
@@ -140,7 +143,8 @@ def load_level(level):
             entities = file
             files.remove(file)
 
-    ordered = sorted(files, key=lambda i: int(i.split('_')[1][:i.split('_')[1].index('.')])) # sort layers based on numbers
+    ordered = sorted(files,
+                     key=lambda i: int(i.split('_')[1][:i.split('_')[1].index('.')]))  # sort layers based on numbers
     files = ordered  # sort the tiles such that highest layer is prioritised/ blitted over the other layers
     for index, file in enumerate(files):
         with open(os.path.join(path, file)) as file:
@@ -170,6 +174,7 @@ def draw_grid(scroll):
         y = (i * tiles_y)
         pygame.draw.line(window.screen, (200, 200, 200), (0 + scroll, y), (window.WIDTH * 4 + scroll, y))
 
+
 class Camera:
     def __init__(self, target):
         self.rect = target.rect.copy()
@@ -183,15 +188,18 @@ class Camera:
             else:
                 self.rect.bottomright = target.rect.bottomright
 
+
 def play_level(username, user_id, level):
     # load in the questions
     question_data = read_json(f'Questions/{1.1}.json')
-    questions = list(question_data)
+    questions = random.sample(list(question_data), len(question_data))
     # questions = random.sample(list(question_data),len(question_data)) # a list of keys which are the questions
     # for j in range(4):
     result = QuestionWindow.StartQuestion(question=questions[1], question_data=question_data)
-    print(result)
-
+    if result:
+        user_info = read_json(f'user_info/users.json')
+        user_info[username]['points'].append(50)
+        write_json(user_info, f'user_info/users.json')
     sys.exit()
 
     player, decorations, death_blocks, enemies, coins = world.process_data(game_level)
@@ -208,8 +216,9 @@ def play_level(username, user_id, level):
             return
         camera.update(player, world)
         # only perform actions based on these conditions
-        move_conditions = not player.in_air and (player.health) and (player.y_vel <= player.GRAVITY)  # making sure player isn't in the air and is still alive
-        
+        move_conditions = not player.in_air and (player.health) and (
+                    player.y_vel <= player.GRAVITY)  # making sure player isn't in the air and is still alive
+
         attack_conditions = not (
                 player.sword_attack or player.bow_attack)  # only allow attacking if not already in attack animation -> ADD INTO ITERATIVE DEVELOPMENT
         window.refresh()
@@ -239,7 +248,7 @@ def play_level(username, user_id, level):
                     # print(pygame.time.get_ticks())
                     player.jumping = True
                     draw_dust = True
-                    player.particle_counter = 0 # trigger dust animation
+                    player.particle_counter = 0  # trigger dust animation
                     # player.in_air = True
 
                 # attacking
@@ -294,7 +303,7 @@ def play_level(username, user_id, level):
         arrow_group.draw(window.screen, camera)
 
         death_blocks_group.draw(window.screen, target=player)
-        death_blocks_group.update(player) # do death block checking for player
+        death_blocks_group.update(player)  # do death block checking for player
         #
         # # coin handling
         # coin_group.draw(window.screen, screen_scroll)
@@ -315,11 +324,12 @@ def play_level(username, user_id, level):
         # if draw_dust:
         #     print('jumping')
         if player.particle_counter == 0:
-            dust_pos = (player.rect.x, (player.rect.y//46)*46 + 92)
+            dust_pos = (player.rect.x, (player.rect.y // 46) * 46 + 92)
         # player.draw_dust(window.screen, dust_pos)
         pygame.display.update()  # make all the changes
 
         clock.tick(FPS)
+
 
 def main(player, user_id, level):
     # while 1:
@@ -337,7 +347,8 @@ def main(player, user_id, level):
     #                 break
     #
     #     pygame.display.update()
-    play_level(player,user_id, level)
+    play_level(player, user_id, level)
+
 
 if __name__ == '__main__':
-    main('harsh', 0, 2)
+    main('user1', 0, 2)

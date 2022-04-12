@@ -68,8 +68,8 @@ def write_json(data, path, cls=MyEncoder):
     # re-assigning any lists to NoIndent instances
     for detail in data:
         for thing in data[detail]:
-            if type(data[detail][thing]) == list and thing!='options':
-                data[detail][thing] = NoIndent(data[detail][thing])
+            if type(data[detail][thing]) == list and thing!='options': # so options can be visually seen
+                data[detail][thing] = NoIndent(data[detail][thing]) # if its any other thing that's list format, ie points or right-wrong
 
     with open(details_path, 'w') as file:
         file.seek(0)
@@ -93,15 +93,14 @@ class Display:
 
     MAX_BLOCKS_X = 112
 
-    BIG_FONT = pygame.font.Font(None,35)
-    MEDIUM_FONT = pygame.font.Font(None,25)
+    LARGE_FONT = pygame.font.SysFont('Sans', 35)
     MEDLARGE_FONT = pygame.font.SysFont('Sans', 30)
+    MEDIUM_FONT = pygame.font.SysFont('Sans', 25)
+    SMALL_FONT = pygame.font.SysFont('Sans', 20)
 
-    SMALL_FONT = pygame.font.Font(None,20)
+    ARROW_X, ARROW_Y = 10, 15 # default position of back arrow
 
-    ARROW_X,ARROW_Y = 10,15 # default position of back arrow
-
-    def __init__(self, background=GREEN, caption='Game',size=(SIZE),new_window=True,arrow_pos=None):
+    def __init__(self, background=GREEN, caption='Game', size=SIZE, new_window=True, arrow_pos=None):
         self.SIZE = size
         self.WIDTH, self.HEIGHT = size
         self.width, self.height = size
@@ -117,15 +116,14 @@ class Display:
 
         self.background=background
 
+    def blit(self, content, coords):
+        self.screen.blit(content, coords)
 
-    def blit(self,content,coords):
-        self.screen.blit(content,coords)
+    def refresh(self, back=False, scroll=0):
+        left_arrow = pygame.transform.scale(pygame.image.load(get_path('images/left-arrow.png')), (32, 32))
+        arrow_rect = pygame.Rect(self.ARROW_X, self.ARROW_Y, 32, 32)
 
-    def refresh(self,back=False,scroll=0):
-        left_arrow = pygame.transform.scale(pygame.image.load(get_path('images/left-arrow.png')),(32,32))
-        arrow_rect = pygame.Rect(self.ARROW_X,self.ARROW_Y,32,32)
-
-        if isinstance(self.background,tuple): # if the background is an image
+        if isinstance(self.background, tuple): # if the background is an image
             self.screen.fill(self.background)
 
         else:
@@ -134,8 +132,11 @@ class Display:
                 self.screen.blit(self.background,((i*self.SIZE[0]) + scroll,0))
 
         if back: self.screen.blit(left_arrow,(self.ARROW_X,self.ARROW_Y))
+        mouse_pos = self.MEDIUM_FONT.render(str(pygame.mouse.get_pos()),1,self.WHITE)
+        rect = mouse_pos.get_rect()
+        self.screen.blit(mouse_pos,((self.WIDTH-rect.w)//2,0))
 
-    def check_return(self,mouse_pos=None):
+    def check_return(self, mouse_pos=None):
         if not mouse_pos:
             mouse_pos = pygame.mouse.get_pos()
         left_arrow = pygame.transform.scale(pygame.image.load(get_path('images/left-arrow.png')),(32,32))
@@ -143,7 +144,12 @@ class Display:
 
         if arrow_rect.collidepoint(mouse_pos): return 1
 
-    def draw_text(self,text,pos,size='MEDIUM',color=WHITE):
+    def draw_text(self,text,pos,size='MEDIUM',color=WHITE,center=False):
         text = eval(f'self.{size.upper()}_FONT.render(text, True, color)')
-        self.screen.blit(text,pos)
+        rec=text.get_rect()
+        x, y = pos
+        if center:
+            x = (self.WIDTH-rec.w)//2
+        self.screen.blit(text,(x,y))
+
 

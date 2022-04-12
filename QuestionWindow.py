@@ -84,7 +84,7 @@ class QuestionBox(Textbox):
                 temp.blit(letter, (proposed_x, proposed_y)) # blit it on the temp surface
                 widths += rect.w + 1 # +1 is for the padding between letters
 
-            else:
+            else: # if the loop finished iterating meaning that all letters were successfully blitted
                 if letter_count: # if there is a first character on the row
                     # self.surf.blit(self.font.render('   ',1,(255,255,255)), (proposed_x, proposed_y))
                     widths += 10 # this is the "space" between each word
@@ -120,13 +120,13 @@ def StartQuestion(question, question_data):
 
     text = question
     options = question_data[question]['options']
-    correct_answer = question_data[question]['options'][0]
+    correct_answer = question_data[question]['options'][0] # correct answer will always be at first index
     question_box = QuestionBox(0, 0, (w, h*0.8), obj_type='question', text=text)
 
     left_shift = 0.1
     x1 = int(window.width*left_shift//4)
     width = 1-left_shift
-    options = random.sample(options, 4) # select a random order from the options
+    options = random.sample(options, 4) # select a random order from the options, shuffling the order of options
     option_w, option_h = (w*width//2,(window.height-h)//2)
 
     # creating all the option instances, and positioning them respectively
