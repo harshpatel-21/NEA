@@ -24,7 +24,7 @@ TILE_TYPES = os.listdir(f'images/level_images/{LEVEL}/Tiles')
 img_list = []
 TILE_SCALE = (window.TILE_DIMENSION_X, window.TILE_DIMENSION_Y)
 tile_x, tile_y = TILE_SCALE
-ENEMY = 'samurai'
+ENEMY = 'knight'
 PLAYER = 'player'
 # ENEMY_IMG = 'samurai'
 # PLAYER_IMG = pygame.image.load(f'images/mobs/{PLAYER}/default.png')
@@ -33,7 +33,6 @@ background = pygame.transform.scale(pygame.image.load(WINDOW.get_path('backgroun
                                     window.SIZE).convert_alpha()
 
 GRAVITY = 0.75
-
 # scale = (60,92) # with sword
 # load in game data
 tile_info = {
@@ -103,11 +102,11 @@ class World:
                         coins += [obj]
                     elif tile == tile_info['player']:  # create player if there's one on the map
                         # print('player')
-                        player = Player(img_rect.x, img_rect.y, PLAYER, player_scale, melee_dps=100)
+                        player = Player(img_rect.x, img_rect.y, PLAYER, player_scale, melee_dps=1000)
                     elif tile == tile_info['enemy']:
                         enemies += [Enemy(img_rect.x, img_rect.y, ENEMY, enemy_scale,
                                           all_animations=['Idle', 'Die', 'Running', 'Attack'],
-                                          max_health=100, x_vel=4, move_radius=1)]
+                                          max_health=100, x_vel=2, move_radius=1)]
                     if obj: self.all_tiles.append(obj)
         return player, decorations, death_blocks, enemies, coins
 
@@ -209,7 +208,7 @@ def play_level(username, user_id, level):
     run=True
 
     show_question = False
-    fade = ScreenFade(1, (0,0,0), 0.7)
+    fade = ScreenFade(1, (0, 0, 0))
     start_fade = True
     x1 = pygame.time.get_ticks()
     timer = 0
@@ -217,13 +216,15 @@ def play_level(username, user_id, level):
     while run:
         if player.remove: # if they died
             run = False
+
         camera.update(player, world)
         # only perform actions based on these conditions
         move_conditions = not player.in_air and player.health and (
-                    player.y_vel <= player.GRAVITY)  # making sure player isn't in the air and is still alive
+                    player.y_vel <= player.GRAVITY) and not start_fade # making sure player isn't in the air and is still alive
 
         attack_conditions = not (
-                player.sword_attack or player.bow_attack)  # only allow attacking if not already in attack animation -> ADD INTO ITERATIVE DEVELOPMENT
+                player.sword_attack or player.bow_attack) and not start_fade  # only allow attacking if not already in attack animation -> ADD INTO ITERATIVE DEVELOPMENT
+
         window.refresh(show_mouse_pos=False)
         world.draw(background, camera)
 
@@ -279,13 +280,8 @@ def play_level(username, user_id, level):
         moving_left = keys[pygame.K_a] and attack_conditions
         moving_right = keys[pygame.K_d] and attack_conditions
 
-        # creating an arrow instance if bow animation was activated
-        add_arrow = player.animation_handling()
-        if add_arrow:
-            # arrows += [add_arrow]
-            arrow_group.add(add_arrow)
-
         # player handling
+        player.animation_handling()
         player.draw(window.screen, camera)
         player.move(moving_left, moving_right, world, death_blocks)
         player.update(moving_left, moving_right, world)
@@ -306,28 +302,25 @@ def play_level(username, user_id, level):
 
         # if an enemy has died, present a question
         enemy_dead = enemy_group.check_death()
-        if enemy_dead:
+        if enemy_dead and questions: # if there are still questions left, then do the animation to goto question screen
             start_fade = True
             fade.direction = -1
 
         if show_question:
-
             current_question = questions.pop() # pop the question at the top of the stack
-            if current_question:
-                result = QuestionWindow.StartQuestion(question=current_question, question_data=question_data)
-                # extract current stats for the question and adjust them based on result of the answer
-                if result is not None:
-                    print((question_data[current_question])[username])
-                    right, wrong, accuracy = (question_data[current_question])[username]
-                    if result: right += 1; points += 50
-                    else: wrong += 1
-                    if wrong!=0 or right!=0: accuracy = right/(right+wrong)
-                    question_data[current_question][username] = [right, wrong, accuracy]
+            result = QuestionWindow.StartQuestion(question=current_question, question_data=question_data)
+            # extract current stats for the question and adjust them based on result of the answer
+            if result is not None:
+                # print((question_data[current_question])[username])
+                right, wrong, accuracy = (question_data[current_question])[username]
+                if result: right += 1; points += 50
+                else: wrong += 1
+                if wrong!=0 or right!=0: accuracy = right/(right+wrong)
+                question_data[current_question][username] = [right, wrong, accuracy]
 
-                # inwards fade
-                start_fade = True
-                fade.direction = 1
-
+            # inwards fade
+            start_fade = True
+            fade.direction = 1
             show_question = False
 
         if start_fade:
@@ -336,26 +329,24 @@ def play_level(username, user_id, level):
                 if fade.direction == -1 and player.check_alive(): # if fading out, then it means going to a question
                     show_question = True
 
-        if (pygame.time.get_ticks() - x1) > 1000:
+        if (pygame.time.get_ticks() - x1) > 1000: # 1 ticks == 1 millisecond, 1000 millisecond = 1 second
             timer += 1
             x1 = pygame.time.get_ticks()
-        # timing += 1/60
-        window.draw_text(text=f'Time: {timer}', pos=(20,20), size='MEDIUM')
 
+        window.draw_text(text=f'Time: {timer}', pos=(20,20), size='MEDIUM')
         pygame.display.update()  # make all the changes
 
         clock.tick(FPS)
 
-    # update question data when/ if run == False, if they just finished level/died
+    # update question data and user data when/ if run == False, if they just finished level/died
     write_json(question_data, f'Questions/{1.1}.json')
-    return points
 
-def main(username, user_id, level):
-    points = play_level(username, user_id, level) # once the player has finished the level, return the points collected
     user_info = read_json(f'user_info/users.json')
     user_info[username]['points'].append(points)
     write_json(user_info, f'user_info/users.json')
-    sys.exit()
+
+def main(username, user_id, level):
+    play_level(username, user_id, level)
 
 if __name__ == '__main__':
     remove = '' # if I want to remove a user.

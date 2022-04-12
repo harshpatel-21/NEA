@@ -166,7 +166,7 @@ class Entity(pygame.sprite.Sprite):
         dx = dy = 0
         check = True
         if not self.check_alive():  # if the player is dead, then don't do any movements
-            return
+            self.remove = True
         # horizontal movement
         if self.bow_attack:  # don't allow movement during an attack animation
             check = False
@@ -223,9 +223,9 @@ class Entity(pygame.sprite.Sprite):
                     if self.ground == 1 or self.dust: self.particle_counter = 0; self.dust = False  # after landing, don't
 
         # check if going off the sides
-        if self.rect.y > (world.height) * 46 - self.rect.h:  # if the player is off screen
+        if self.rect.y > world.height * 46 - self.rect.h:  # if the player is off screen
             self.remove = True
-            self.kill()
+            # self.kill()
             self.update_action(self.get_index('Die'))
             return
 
@@ -335,7 +335,6 @@ class Entity(pygame.sprite.Sprite):
 
         melee_index = self.get_index('Melee')
         if new_action == melee_index and world:
-            # print('here')
             images = self.animations[melee_index]
             if any(self.check_image_collision(image, world) for image in
                    images):  # if wall collisions have occured in any of the frames
@@ -360,7 +359,7 @@ class Entity(pygame.sprite.Sprite):
                     pass
             elif self.sword_attack:
                 self.update_action(self.get_index('Melee'),
-                                   world)  # if switchin g to sword animation, make sure new image doesn't collide with walls
+                                   world)  # if switching to sword animation, make sure new image doesn't collide with walls
             elif self.bow_attack:
                 self.update_action(self.get_index('Bow'), world)  # if switching
             elif moving_right or moving_left:
@@ -421,7 +420,7 @@ class Entity(pygame.sprite.Sprite):
             },
             'knight': {
                 'Idle': (46, 92),
-                'Attack': (scale[0] * 2.7, scale[1] * 1.2),
+                'Attack': (46*2.9, 92),
                 'Jumping': (46, 92),
                 'Falling': (46, 92),
                 'Running': (46 * 1.5, 92),
@@ -451,30 +450,6 @@ class Entity(pygame.sprite.Sprite):
         # pygame.draw.rect(surface, self.border_color, temp, 1)
 
         self.draw_health_bar(surface, target)
-
-    # pygame.draw.rect(surface,self.border_color,self.rect,2)
-    def draw_dust(self, surface, dust_pos):
-        cooldown_time = 30
-        images = os.listdir('images/dust')
-        if self.particle_counter >= len(images):
-            return
-        # print(images)
-        # if not self.particle_counter: return
-        img = pygame.transform.flip(pygame.image.load(f'images/dust/{images[self.particle_counter]}').convert_alpha(),
-                                    False, True)
-        img_rect = img.get_rect()
-        img_rect.y = (self.rect.y // 46) * 46 + 92
-        img_rect.x = self.rect.x
-        # print(img_rect,self.rect)
-        surface.blit(img, dust_pos)
-        current_time = pygame.time.get_ticks()
-
-        if (current_time - self.dust_time) >= cooldown_time:
-            # print(self.particle_counter)
-            self.dust_time = current_time
-            # print('next')
-            self.particle_counter = min(self.particle_counter + 1, len(images))
-            # self.particle_counter = (self.particle_counter+1) % len(images)
 
     def check_alive(self):  # check if the entity is alive
         if self.health <= 0:  # if they've died
@@ -517,7 +492,7 @@ class Player(Entity):
 
 
 class Enemy(Entity):
-    def __init__(self, x, y, obj_type, scale, max_health=100, x_vel=5, all_animations=None, attack_radius=100,
+    def __init__(self, x, y, obj_type, scale, max_health=100, x_vel=2, all_animations=None, attack_radius=100,
                  move_radius=3, melee_dps=30):
         super().__init__(x, y, obj_type, scale, max_health, x_vel, all_animations, melee_dps=melee_dps)
         self.move_counter = 0
@@ -530,7 +505,7 @@ class Enemy(Entity):
         self.change_direction = False
         self.wall_collision = False
         self.move_radius = move_radius
-        self.trigger = False
+        self.trigger_removal = False
 
     def rec_collision(self, obj):
         return self.attack_vision.colliderect(obj.rect)
@@ -552,7 +527,6 @@ class Enemy(Entity):
         AI_moving_right = False
         if self.sword_attack:
             return
-
         # set up attack radius
         self.attack_vision.center = self.rect.center
         if self.direction == 1:
@@ -615,13 +589,13 @@ class Enemy(Entity):
         self.animation_handling()
         # pygame.draw.rect(Display.screen, (255, 0, 0), enemy.attack_vision,2)
         if self.health > 0:
-            self.trigger = False
+            self.trigger_removal = False
             if self.start_attack(player, world):  # check if player collision has occurred
                 pass
             player.sword_collision(self)
             self.sword_collision(player)  # check for collision with the player
         elif self.remove:
-            self.trigger = True
+            self.trigger_removal = True
 
         self.AI(world, player)  # do enemy AI
 
@@ -653,11 +627,12 @@ class Group(pygame.sprite.Group):
     def check_death(self):
         ask_question = False
         for obj in self.sprites():
-            if obj.trigger:
-                obj.kill()
+            if obj.health <= 0 and obj.animation_pointer == len(obj.all_animations[obj.get_index('Die')]):
                 ask_question = True
+            if obj.trigger_removal:
+                obj.trigger_removal = False
+                obj.kill()
         return ask_question
-
 
 class BoxGroup:
     def __init__(self, *args):

@@ -116,15 +116,15 @@ class Display:
     MEDIUM_FONT = pygame.font.SysFont('Sans', 25)
     SMALL_FONT = pygame.font.SysFont('Sans', 20)
 
-    ARROW_X, ARROW_Y = 10, 15 # default position of back arrow
+    BACK_X, BACK_Y = 10, 15 # default position of back arrow
 
-    def __init__(self, background=GREEN, caption='Game', size=SIZE, new_window=True, arrow_pos=None):
+    def __init__(self, background=GREEN, caption='Game', size=SIZE, new_window=True, back_pos=None):
         self.SIZE = size
         self.WIDTH, self.HEIGHT = size
         self.width, self.height = size
 
-        if arrow_pos is not None:
-            self.ARROW_X, self.ARROW_Y = arrow_pos
+        if back_pos is not None:
+            self.BACK_X, self.BACK_Y = back_pos
 
         if new_window:
             self.screen = pygame.display.set_mode(self.SIZE)
@@ -139,7 +139,7 @@ class Display:
 
     def refresh(self, back=False, scroll=0, show_mouse_pos=True):
         left_arrow = pygame.transform.scale(pygame.image.load(get_path('images/left-arrow.png')), (32, 32))
-        arrow_rect = pygame.Rect(self.ARROW_X, self.ARROW_Y, 32, 32)
+        arrow_rect = pygame.Rect(self.BACK_X, self.BACK_Y, 32, 32)
 
         if isinstance(self.background, tuple): # if the background is an image
             self.screen.fill(self.background)
@@ -149,7 +149,8 @@ class Display:
             for i in range(4):
                 self.screen.blit(self.background,((i*self.SIZE[0]) + scroll,0))
 
-        if back: self.screen.blit(left_arrow,(self.ARROW_X,self.ARROW_Y))
+        if back: self.screen.blit(left_arrow,(self.BACK_X,self.BACK_Y))
+
         if show_mouse_pos:
             mouse_pos = self.MEDIUM_FONT.render(str(pygame.mouse.get_pos()),1,self.WHITE)
             rect = mouse_pos.get_rect()
@@ -159,7 +160,7 @@ class Display:
         if not mouse_pos:
             mouse_pos = pygame.mouse.get_pos()
         left_arrow = pygame.transform.scale(pygame.image.load(get_path('images/left-arrow.png')),(32,32))
-        arrow_rect = pygame.Rect(self.ARROW_X,self.ARROW_Y,32,32)
+        arrow_rect = pygame.Rect(self.BACK_X,self.BACK_Y,*left_arrow.get_size())
 
         if arrow_rect.collidepoint(mouse_pos): return 1
 

@@ -1,6 +1,6 @@
 #---------------------------------- Imports ----------------------------------#
 
-import pygame, os, re, json, Game_V4, WINDOW
+import pygame, os, re, json, menu, WINDOW
 from WINDOW import Display
 from boxes import Textbox
 from access import input_information
@@ -88,9 +88,8 @@ def main():
             pass
 
         if login_result:
-            selected_topic = 2.1
             username, id = login_result
-            # Game_V4.main(username,id,selected_topic)
+            menu.show_menu(username)
             login_result = False # if come back to main menu, they should no longer be logged in
 
         pygame.display.update()

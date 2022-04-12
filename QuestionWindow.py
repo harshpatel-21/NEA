@@ -4,7 +4,7 @@ from entity_class import BoxGroup
 from transition import ScreenFade
 
 
-class QuestionBox(Textbox):
+class DynamicBox(Textbox):
     LARGE_FONT = pygame.font.SysFont('Sans', 35)
     MEDLARGE_FONT = pygame.font.SysFont('Sans', 30)
     MEDIUM_FONT = pygame.font.SysFont('Sans', 25)
@@ -122,7 +122,7 @@ def StartQuestion(question, question_data):
     text = question
     options = question_data[question]['options']
     correct_answer = question_data[question]['options'][0] # correct answer will always be at first index of options
-    question_box = QuestionBox(0, 0, (w, h*0.8), obj_type='question', text=text)
+    question_box = DynamicBox(0, 0, (w, h*0.8), obj_type='question', text=text)
 
     left_shift = 0.1
     x1 = int(window.width*left_shift//4)
@@ -131,14 +131,14 @@ def StartQuestion(question, question_data):
     option_w, option_h = (w*width//2,(window.height-h)//2)
 
     # creating all the option instances, and positioning them respectively
-    option_1=QuestionBox(question_box.rect.x + x1, question_box.rect.bottom + 13.3, (option_w, option_h), obj_type='option', text=options[0])
-    option_2=QuestionBox(question_box.rect.center[0] + x1, question_box.rect.bottom + 13.3, (option_w, option_h), obj_type='option', text=options[1])
-    option_3=QuestionBox(option_1.rect.left, option_1.rect.bottom + 13.3, (option_w, option_h), obj_type='option', text=options[2])
-    option_4=QuestionBox(option_2.rect.left, option_2.rect.bottom + 13.3, (option_w, option_h), obj_type='option', text=options[3])
+    option_1=DynamicBox(question_box.rect.x + x1, question_box.rect.bottom + 13.3, (option_w, option_h), obj_type='option', text=options[0])
+    option_2=DynamicBox(question_box.rect.center[0] + x1, question_box.rect.bottom + 13.3, (option_w, option_h), obj_type='option', text=options[1])
+    option_3=DynamicBox(option_1.rect.left, option_1.rect.bottom + 13.3, (option_w, option_h), obj_type='option', text=options[2])
+    option_4=DynamicBox(option_2.rect.left, option_2.rect.bottom + 13.3, (option_w, option_h), obj_type='option', text=options[3])
     main_group = BoxGroup(option_1, option_2, option_3, option_4, question_box)
     # feedback instance
     feedback_text = question_data[question]['feedback']
-    feedback = QuestionBox(0,0,window.SIZE,text=feedback_text,obj_type='feedback',font_size='MEDIUM')
+    feedback = DynamicBox(0,0,window.SIZE,text=feedback_text,obj_type='feedback',font_size='MEDIUM')
 
     main_continue = Textbox(100, 0.9*window.height,text='Continue',text_size='medlarge')
     feedback_continue = Textbox(100, 0.9*window.height,text='Continue',text_size='medlarge')
@@ -150,7 +150,7 @@ def StartQuestion(question, question_data):
     main_continue.create_rect()
     feedback_continue.create_rect()
     start_fade = True
-    fade = ScreenFade(1, (0,0,0), 0.7)
+    fade = ScreenFade(1, (0, 0, 0))
     going_back = False
     while True:
         window.refresh()
@@ -174,6 +174,7 @@ def StartQuestion(question, question_data):
                         if result: # if they were right, then go back immediately, don't go to feedback screen
                             going_back = True
                             start_fade = True
+                            options_screen = True
                 # check for continue button click on the feedback screen
                 if feedback_continue.check_click() and not options_screen:
                     start_fade = True

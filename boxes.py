@@ -7,6 +7,7 @@ x,y = WINDOW.x,WINDOW.y
 os.environ['SDL_VIDEO_WINDOW_POS'] = f"{x},{y}"
 
 class Textbox:
+    rect: object
     BACKGROUND = (120, 126, 214)
     BORDER = (35, 127, 200)
     HOVER = (126, 175, 252)
