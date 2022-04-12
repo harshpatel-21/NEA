@@ -214,8 +214,9 @@ def play_level(username, user_id, level):
     run=True
 
     show_question = False
+    timer = 0
     while run:
-        if player.remove:
+        if player.remove: # if they died
             run = False
         camera.update(player, world)
         # only perform actions based on these conditions
@@ -226,9 +227,7 @@ def play_level(username, user_id, level):
                 player.sword_attack or player.bow_attack)  # only allow attacking if not already in attack animation -> ADD INTO ITERATIVE DEVELOPMENT
         window.refresh()
         world.draw(background, camera)
-        # draw_grid(0)
 
-        draw_dust = False
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -236,8 +235,8 @@ def play_level(username, user_id, level):
 
             # check for keyboard input
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    run=False
+                if event.key == pygame.K_ESCAPE: # level is not finished, therefore don't save changes
+                    return
 
                 if event.key == pygame.K_r:
                     enemy_group.regen()
@@ -287,13 +286,9 @@ def play_level(username, user_id, level):
             # arrows += [add_arrow]
             arrow_group.add(add_arrow)
 
-        # for arrow in arrow_group:
-        #     arrow.update(arrows, world, enemy_group, player)  # update the arrow such position and state
-
         # player handling
-
         player.draw(window.screen, camera)
-        screen_scroll = player.move(moving_left, moving_right, world, death_blocks)
+        player.move(moving_left, moving_right, world, death_blocks)
         player.update(moving_left, moving_right, world)
 
         # enemy handling
@@ -319,7 +314,6 @@ def play_level(username, user_id, level):
             current_question = questions.pop() # pop the question at the top of the stack
             if current_question:
                 result = QuestionWindow.StartQuestion(question=current_question, question_data=question_data)
-
                 # extract current stats for the question and adjust them based on result of the answer
                 if result is not None:
                     print((question_data[current_question])[username])
@@ -329,11 +323,12 @@ def play_level(username, user_id, level):
                     if wrong!=0 or right!=0: accuracy = right/(right+wrong)
                     question_data[current_question][username] = [right, wrong, accuracy]
             show_question = False
-
+        timer += 1
         pygame.display.update()  # make all the changes
 
         clock.tick(FPS)
-    # update question data
+
+    # update question data when/ if run == False, if they just finished level/died
     write_json(question_data, f'Questions/{1.1}.json')
     return points
 
