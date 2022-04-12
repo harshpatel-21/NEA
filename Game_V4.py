@@ -1,15 +1,9 @@
-import os, sys, csv, random
-from openpyxl import load_workbook
-
-x = '\\'.join(os.path.abspath(__file__).split('\\')[:-2])  # allow imports from main folder
-# print(x)
-sys.path.insert(1, x)
-
 # EDIT FOR IMAGES: DIMENSIONS SHOULD BE 17x30
 # if __name__ == 'Game_V4':
 from entity_class import Entity, Enemy, Projectile, Player, Group
-import pygame, WINDOW, QuestionWindow
+import pygame, WINDOW, QuestionWindow, os, sys, random, csv
 from Items import Item, Decoration, DeathBlock, Obstacle
+from transition import ScreenFade
 
 pygame.init()
 read_json = WINDOW.read_json # using the pre-coded read and write methods to json files
@@ -215,6 +209,8 @@ def play_level(username, user_id, level):
 
     show_question = False
     timer = 0
+    fade = ScreenFade(1, (0,0,0), 7)
+    start_intro = True
     while run:
         if player.remove: # if they died
             run = False
@@ -323,6 +319,10 @@ def play_level(username, user_id, level):
                     if wrong!=0 or right!=0: accuracy = right/(right+wrong)
                     question_data[current_question][username] = [right, wrong, accuracy]
             show_question = False
+        if start_intro:
+            if fade.fade(window.screen): # if the fade has completed
+                start_intro = False # don't show the intro fade anymore
+                fade.fade_fade_counter=0 # reset the fade counter
         timer += 1
         pygame.display.update()  # make all the changes
 
