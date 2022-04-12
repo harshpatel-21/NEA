@@ -137,7 +137,7 @@ class Display:
     def blit(self, content, coords):
         self.screen.blit(content, coords)
 
-    def refresh(self, back=False, scroll=0):
+    def refresh(self, back=False, scroll=0, show_mouse_pos=True):
         left_arrow = pygame.transform.scale(pygame.image.load(get_path('images/left-arrow.png')), (32, 32))
         arrow_rect = pygame.Rect(self.ARROW_X, self.ARROW_Y, 32, 32)
 
@@ -150,9 +150,10 @@ class Display:
                 self.screen.blit(self.background,((i*self.SIZE[0]) + scroll,0))
 
         if back: self.screen.blit(left_arrow,(self.ARROW_X,self.ARROW_Y))
-        mouse_pos = self.MEDIUM_FONT.render(str(pygame.mouse.get_pos()),1,self.WHITE)
-        rect = mouse_pos.get_rect()
-        self.screen.blit(mouse_pos,((self.WIDTH-rect.w)//2,0))
+        if show_mouse_pos:
+            mouse_pos = self.MEDIUM_FONT.render(str(pygame.mouse.get_pos()),1,self.WHITE)
+            rect = mouse_pos.get_rect()
+            self.screen.blit(mouse_pos,((self.WIDTH-rect.w)//2,0))
 
     def check_return(self, mouse_pos=None):
         if not mouse_pos:

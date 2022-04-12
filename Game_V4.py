@@ -224,7 +224,7 @@ def play_level(username, user_id, level):
 
         attack_conditions = not (
                 player.sword_attack or player.bow_attack)  # only allow attacking if not already in attack animation -> ADD INTO ITERATIVE DEVELOPMENT
-        window.refresh()
+        window.refresh(show_mouse_pos=False)
         world.draw(background, camera)
 
         for event in pygame.event.get():
@@ -323,19 +323,25 @@ def play_level(username, user_id, level):
                     else: wrong += 1
                     if wrong!=0 or right!=0: accuracy = right/(right+wrong)
                     question_data[current_question][username] = [right, wrong, accuracy]
+
+                # inwards fade
+                start_fade = True
+                fade.direction = 1
+
             show_question = False
 
         if start_fade:
             if fade.fade(window.screen): # if the fade has completed
-                pygame.time.delay(500) # wait a bit
                 start_fade = False # don't show the intro fade anymore
                 if fade.direction == -1 and player.check_alive(): # if fading out, then it means going to a question
                     show_question = True
+
         if (pygame.time.get_ticks() - x1) > 1000:
             timer += 1
             x1 = pygame.time.get_ticks()
         # timing += 1/60
         window.draw_text(text=f'Time: {timer}', pos=(20,20), size='MEDIUM')
+
         pygame.display.update()  # make all the changes
 
         clock.tick(FPS)

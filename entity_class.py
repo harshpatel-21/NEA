@@ -448,7 +448,7 @@ class Entity(pygame.sprite.Sprite):
         temp.x = temp.x - target.rect.x + Display.WIDTH / 2.0
         temp.y = temp.y - target.rect.y + Display.HEIGHT // 2
         surface.blit(pygame.transform.flip(self.image, self.flip_image or self.direction == -1, False), temp)
-        pygame.draw.rect(surface, self.border_color, temp, 1)
+        # pygame.draw.rect(surface, self.border_color, temp, 1)
 
         self.draw_health_bar(surface, target)
 

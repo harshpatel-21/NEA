@@ -1,6 +1,7 @@
 import os, sys, pygame, WINDOW, random
 from boxes import Textbox
 from entity_class import BoxGroup
+from transition import ScreenFade
 
 
 class QuestionBox(Textbox):
@@ -148,6 +149,9 @@ def StartQuestion(question, question_data):
     time1 = 0
     main_continue.create_rect()
     feedback_continue.create_rect()
+    start_fade = True
+    fade = ScreenFade(1, (0,0,0), 0.7)
+    going_back = False
     while True:
         window.refresh()
         for event in pygame.event.get():
@@ -167,16 +171,17 @@ def StartQuestion(question, question_data):
                 if pygame.time.get_ticks() - time1 > move_to_feedback and time1 and options_screen: # wait a bit of time
                     if main_continue.check_click():
                         options_screen = False # don't display options anymore, signalling the feedback screen to show
-                        if result:
-                            return result # if the answer was correct, then don't go to feedback screen
-
+                        if result: # if they were right, then go back immediately, don't go to feedback screen
+                            going_back = True
+                            start_fade = True
                 # check for continue button click on the feedback screen
                 if feedback_continue.check_click() and not options_screen:
-                    return result
+                    start_fade = True
+                    going_back = True
 
                 clicked = main_group.check_clicks() # if an option has been clicked
                 if clicked and check_click:
-                    result = clicked.text==correct_answer # if the clicked option's text matches to the correct answer
+                    result = clicked.text == correct_answer # check if the clicked option's text matches to the correct answer
                     time1 = pygame.time.get_ticks()
                     check_click = False # don't check for more clicks on any other options
                     for option in main_group.objects:
@@ -201,6 +206,14 @@ def StartQuestion(question, question_data):
         if pygame.time.get_ticks() - time1 > move_to_feedback and time1 and options_screen:
             main_continue.check_hover(pygame.mouse.get_pos())
             main_continue.show(window.screen, center=True)
+
+        if start_fade:
+            if going_back:
+                fade.direction = -1
+            if fade.fade(window.screen):
+                start_fade = False
+                if going_back:
+                    return result
 
         pygame.display.update()
         clock.tick(FPS)
