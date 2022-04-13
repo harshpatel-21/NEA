@@ -75,23 +75,28 @@ def write_json(data, path, cls=MyEncoder):
         file.seek(0)
         json.dump(data, file, indent=4, cls=cls)
 
-def delete_json_key(path, cls=MyEncoder, key=None, two_d=False):
+def delete_json_key(path, cls=MyEncoder, key=None, depth=1):
     details_path = get_path(path)
     data = read_json(details_path)
     for key1 in data:
-        if two_d:
+        if depth==2:
             for key2 in data[key1]:
                 if key2 == key:
                     del data[key1][key2]
                     break # go onto next main key
-        else:
+        elif depth==1:
             if key1==key:
                 del data[key1]
                 break
 
     write_json(data, path)
 
+def delete_user(username):
+     # if I want to remove a user.
+    for file in os.listdir('Questions'):
+        delete_json_key(f'Questions/{file}', key=username, depth=2)
 
+    delete_json_key(f'user_info/users.json',key=username)
 
 class Display:
     pygame.init()
@@ -105,7 +110,7 @@ class Display:
     GREEN = BACKGROUND
 
     TILE_DIMENSION_X,TILE_DIMENSION_Y = 46,46
-    BLOCKS_X,BLOCKS_Y = 28,15 # game window resolution
+    BLOCKS_X,BLOCKS_Y = 31,15 # game window resolution
     WIDTH,HEIGHT = int(BLOCKS_X * TILE_DIMENSION_X), int(BLOCKS_Y * TILE_DIMENSION_Y)
     SIZE = (WIDTH, HEIGHT)
 
@@ -162,7 +167,7 @@ class Display:
         left_arrow = pygame.transform.scale(pygame.image.load(get_path('images/left-arrow.png')),(32,32))
         arrow_rect = pygame.Rect(self.BACK_X,self.BACK_Y,*left_arrow.get_size())
 
-        if arrow_rect.collidepoint(mouse_pos): return 1
+        if arrow_rect.collidepoint(mouse_pos) and pygame.mouse.get_pressed()[0]: return 1
 
     def draw_text(self,text,pos,size='MEDIUM',color=WHITE,center=False):
         text = eval(f'self.{size.upper()}_FONT.render(text, True, color)')
