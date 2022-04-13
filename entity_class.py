@@ -633,32 +633,3 @@ class Group(pygame.sprite.Group):
                 obj.trigger_removal = False
                 obj.kill()
         return ask_question
-
-class BoxGroup:
-    def __init__(self, *args):
-        self.objects = [*args]
-
-    def update_boxes(self, surface):
-        obj = False
-        for box in self.objects:
-            if hasattr(box, 'show'):
-                box.show(surface)
-            if hasattr(box, 'check_hover'):
-                box.check_hover()
-            if hasattr(box, 'check_click') and not obj:  # if a box hasn't already been clicked
-                if box.check_click():
-                    obj = box
-
-    def set_background(self, color):
-        pass
-
-    def check_clicks(self):
-        obj = False
-        for box in self.objects:
-            if hasattr(box, 'check_click') and not obj:
-                if box.check_click():
-                    obj = box
-        return obj
-
-    def get_list(self):
-        return self.objects
