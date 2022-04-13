@@ -123,13 +123,11 @@ class World:
             window.screen.blit(tile.image, temp)
             # pygame.draw.rect(window.screen, (255,0,0),temp,2)
 
-
 # noinspection PyAssignmentToLoopOrWithParameter
 def load_level(level):
     layers = {}
     path = f'levels/{level}'
     files = os.listdir(path)
-    print(files)
     entities = []
     for file in files:
         if 'Entities' in file:
@@ -349,9 +347,4 @@ def main(username, user_id, level):
     play_level(username, user_id, level)
 
 if __name__ == '__main__':
-    remove = '' # if I want to remove a user.
-    for file in os.listdir('Questions'):
-        WINDOW.delete_json_key(f'Questions/{file}', key=remove,two_d=True)
-    WINDOW.delete_json_key(f'user_info/users.json',key=remove)
-
     main('Harsh', 0, 2)
