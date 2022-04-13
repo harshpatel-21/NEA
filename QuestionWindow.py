@@ -1,113 +1,7 @@
 import os, sys, pygame, WINDOW, random
-from boxes import Textbox
-from entity_class import BoxGroup
+from boxes import Textbox, DynamicBox
+from boxes import BoxGroup
 from transition import ScreenFade
-
-
-class DynamicBox(Textbox):
-    LARGE_FONT = pygame.font.SysFont('Sans', 35)
-    MEDLARGE_FONT = pygame.font.SysFont('Sans', 30)
-    MEDIUM_FONT = pygame.font.SysFont('Sans', 25)
-    SMALL_FONT = pygame.font.SysFont('Sans', 15)
-
-    incorrect_color = (204, 51, 0)
-    correct_color = (51, 153, 51)
-
-    def __init__(self, x, y, size, obj_type, text='', font_size='MEDIUM'):
-        self.obj_type = obj_type
-        self.x, self.y = x, y
-        self.rect = pygame.Rect(x, y, *size)
-        self.surface = pygame.Surface(self.rect.size)
-        self.background = Textbox.BACKGROUND
-        text_rect_size = [*map(lambda i: i*0.9,self.rect.size)] # create a padding for where the text will be placed
-        # calculate the offset of where the text rectangle will be placed
-        dx = (self.rect.w - text_rect_size[0])//2
-        dy = (self.rect.h - text_rect_size[1])//2
-        self.text_rect = pygame.Rect((self.rect.x + dx, self.rect.y + dy, *text_rect_size))
-        self.font = eval(f"self.{font_size}_FONT")
-        self.surf = None
-        self.text=text
-        self.border_color = None
-        self.add_text(text)
-
-    def show(self, surface):
-        # self.surface.fill(self.background)
-        pygame.draw.rect(self.surface, self.background, (0, 0, self.rect.w, self.rect.h))
-        if self.border_color: # if there is a border color
-            pygame.draw.rect(self.surface, self.border_color, (0, 0, self.rect.w, self.rect.h), 1)
-        # pygame.draw.rect(self.surface, self.border_color, (self.text_rect.x-self.rect.x, self.text_rect.y-self.rect.y, self.text_rect.w,self.text_rect.h),1)
-        surface.blit(self.surface,(self.rect.topleft))
-        if self.surf:
-            surface.blit(self.surf, self.text_rect.topleft)
-
-    # this allows text to fit in a specified box.
-    def add_text(self, text, delay=False):
-        text = text.split() # split all the words
-        # modification variables
-        add_y = 0
-        widths = 0
-        # text variables
-        pointer = 0
-        letter_count = 0
-        height = self.font.render('h',1,(255,255,255)).get_rect().height
-        self.surf = pygame.Surface(self.text_rect.size, pygame.SRCALPHA, 32)
-        self.surf.convert_alpha()
-
-        if self.obj_type == 'button' and len(text)==1:
-            rendered = self.font.render(text[0],1,(255,255,255))
-            self.surf.blit(rendered,(0,0))
-            return
-
-        # to evaluate: this can go on forever if the box is too small for all of the text to fit in
-        while pointer <= len(text) - 1:
-            temp = self.surf.copy() # create a temporary surface where letters will be blitted
-            font_letters = []
-            for letter in text[pointer]:
-                font_letters += [self.font.render(letter, 1, (255, 255, 255))]
-
-            for letter in font_letters:
-                rect = letter.get_rect()
-                if not letter_count: # if the row has no letters (if its the first letter)
-                    proposed_x, proposed_y = 5, add_y * height
-                    letter_count+=1
-                    widths = 5 # initial padding from the side of rectangle
-                else:
-                    proposed_x = widths # sum all the widths + padding of previous letters
-                    proposed_y = add_y * height
-
-                    # if adding a character of a word will overflow, add the whole word to the next line
-                    if proposed_x + rect.w > self.text_rect.w:
-                        add_y += 1 # increasing the y
-                        widths = 1 # resetting the widths to 1
-                        letter_count = 0 # reset the letter count on the row
-                        break # repeat the process again for this word but on a new line
-
-                temp.blit(letter, (proposed_x, proposed_y)) # blit it on the temp surface
-                widths += rect.w + 1 # +1 is for the padding between letters
-
-            else: # if the loop finished iterating meaning that all letters were successfully blitted
-                if letter_count: # if there is a first character on the row
-                    # self.surf.blit(self.font.render('   ',1,(255,255,255)), (proposed_x, proposed_y))
-                    widths += 10 # this is the "space" between each word
-                pointer += 1 # once a word has finished blitting, move onto the next one
-                self.surf = temp.copy() # if a word was fully blitted, then add it onto the main canvas/surface
-
-    def check_hover(self, mouse_pos=0):
-        # if the mouse position is over the rectangle, change color, otherwise change it back to normal
-        if self.obj_type != 'question':
-            mouse_pos = pygame.mouse.get_pos()
-            if self.rect.collidepoint(mouse_pos):
-                self.background = self.hover_color
-                self.border_color = (0, 0, 255)
-            else:
-                self.background = self.background_color
-                self.border_color = None
-
-    def check_click(self, mouse_pos=0):
-        if self.obj_type != 'question':
-            mouse_pos = pygame.mouse.get_pos()
-            if self.rect.collidepoint(mouse_pos) and (pygame.mouse.get_pressed()[0]):
-                return self
 
 def StartQuestion(question, question_data):
     # ---------- key variables -------------#
@@ -138,7 +32,7 @@ def StartQuestion(question, question_data):
     main_group = BoxGroup(option_1, option_2, option_3, option_4, question_box)
     # feedback instance
     feedback_text = question_data[question]['feedback']
-    feedback = DynamicBox(0,0,window.SIZE,text=feedback_text,obj_type='feedback',font_size='MEDIUM')
+    feedback = DynamicBox(0,0,window.SIZE,text=feedback_text,obj_type='feedback',font_size=32,center_text=False)
 
     main_continue = Textbox(100, 0.9*window.height,text='Continue',text_size='medlarge')
     feedback_continue = Textbox(100, 0.9*window.height,text='Continue',text_size='medlarge')
