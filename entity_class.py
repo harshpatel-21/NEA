@@ -648,7 +648,6 @@ class BoxGroup:
             if hasattr(box, 'check_click') and not obj:  # if a box hasn't already been clicked
                 if box.check_click():
                     obj = box
-        return obj
 
     def set_background(self, color):
         pass

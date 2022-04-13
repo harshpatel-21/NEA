@@ -1,12 +1,14 @@
 #---------------------------------- Imports ----------------------------------#
 
 import pygame, os, re, json, menu, WINDOW
-from WINDOW import Display
 from boxes import Textbox
 from access import input_information
 
+Display = WINDOW.Display
+read_json = WINDOW.read_json
+write_json = WINDOW.write_json
 # laptop
-x,y = WINDOW.x,WINDOW.y
+x, y = WINDOW.x, WINDOW.y
 # school computer
 # x,y = 50,80
 os.environ['SDL_VIDEO_WINDOW_POS'] = f"{x},{y}"
@@ -24,18 +26,16 @@ image = pygame.image.load(background)
 background = pygame.transform.scale(image,window.SIZE)
 window.background = background
 pygame.init()
-#------------------------------ get/set details ------------------------------#
-def read(path):
-    details = get_path(path)
-    with open(details,'r') as file:
-        return json.load(file)
-
-def write(data,path):
-    details = get_path(path)
-    with open(details,'w') as file:
-        file.seek(0)
-        json.dump(data,file)
-#----------------------------------- Login -----------------------------------#
+#------------------------------ update details ------------------------------#
+def update_details():
+    for user in read_json('user_info/users.json'):
+        for topic_name in os.listdir('Questions'):
+            question_path = f'Questions/{topic_name}'
+            topic_data = read_json(question_path)
+            for question in topic_data:
+                topic_data[question].setdefault(user, [0, 0, 0])
+            write_json(topic_data, question_path)
+#------------------------------- Validate Info -------------------------------#
 
 def validator(string,click,letter):
     # Only allow letters, numbers and certain symbols
@@ -46,6 +46,9 @@ def validator(string,click,letter):
 #------------------------------- Main Game Loop ------------------------------#
 
 def main():
+    update_details() # if there's any user info missing from question data, fill it in before proceeding, ie when I decide
+    # to add in a new question, I don't wanna manually type in user info
+
     username_box = Textbox(100,460,'Login',text_size='medlarge',padding=(200,35),size=(300,60))
     signUp_box = Textbox(100,530,'Sign Up',text_size='medlarge',padding=(175,35),size=(300,60))
 

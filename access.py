@@ -16,7 +16,7 @@ def get_path(path):
     return absolute_path
 
 background = get_path('images/logo.png')
-window = Display(caption='Main Menu',size=(1426, 690),arrow_pos=(525,515))
+window = Display(caption='Main Menu',size=(1426, 690), back_pos=(525,515))
 image = pygame.image.load(background)
 background = pygame.transform.scale(image,(1426, 690))
 window.background = background
@@ -49,7 +49,7 @@ def add_info(data, username, password):
         write_json(data, 'user_info/users.json') # if username was added to all question files, officially add em
 def validate_character(string, click, character):
     # Only allow characters, numbers and certain symbols
-    valid_chars = (re.match("[A-Za-z\d$@$!%*?&]{1}", character))
+    valid_chars = (re.match("[A-Za-z\d$@$!%*?&]", character))
     # return True if the username as long as the length is 
     # length is < 15 and typing in the username box and the character is valid
     return len(string) < 15 and click and bool(valid_chars)
