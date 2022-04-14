@@ -55,7 +55,7 @@ class Projectile(pygame.sprite.Sprite):
         if not self.remove: self.rect.x += (self.x_vel * self.acceleration) * self.direction
         # self.acceleration -= 0.035*self.acceleration
         if self.acceleration > 2: self.acceleration *= 0.8
-        else:self.acceleration *= 0.94
+        else: self.acceleration *= 0.94
 
         # check if the arrow has gone off the screen or low acceleration
         if self.acceleration < 0.5:
@@ -158,11 +158,7 @@ class Entity(pygame.sprite.Sprite):
         self.health_rect = pygame.Rect((x, y, 70, 6))
         self.health_rect.center = self.rect.center
         self.health_rect.y -= self.rect.h // 2 + 10
-        self.dust = False  # i don't want the player to start off with dust
-        self.particle_counter = 10000
-        self.dust_time = pygame.time.get_ticks()
         self.ground = 0
-        self.dust = False
         self.remove = False
 
     def move(self, moving_left, moving_right, world, death_blocks=0):  # handle player movement
@@ -172,8 +168,10 @@ class Entity(pygame.sprite.Sprite):
         # reset movement variables
         dx = dy = 0
         check = True
-        if not self.check_alive():  # if the player is dead, then don't do any movements
-            self.remove = True
+        # if not self.check_alive():  # if the player is dead, then don't do any movements
+        #     self.remove = True
+        if self.health <= 0:
+            return
         # horizontal movement
         if self.bow_attack:  # don't allow movement during an attack animation
             check = False
@@ -199,8 +197,6 @@ class Entity(pygame.sprite.Sprite):
         self.y_vel = min(self.y_vel + self.GRAVITY, 10)
         dy += self.y_vel
 
-        if y1 < 0 and self.y_vel > 0:  # if the player was jumping and is now falling, after landing dust should show
-            self.dust = True
         # check collision with floor
         # self.rect.w = 48
         # self.rect.h = 80
@@ -227,7 +223,6 @@ class Entity(pygame.sprite.Sprite):
                     self.y_vel = 0
                     self.in_air = False
                     self.rect.bottom = tile.rect.top
-                    if self.ground == 1 or self.dust: self.particle_counter = 0; self.dust = False  # after landing, don't
 
         # check if going off the sides
         if self.rect.y > world.height * 46 - self.rect.h:  # if the player is off screen
@@ -299,6 +294,7 @@ class Entity(pygame.sprite.Sprite):
         current_time = pygame.time.get_ticks()
         death_index = self.get_index('Die')
         if (current_time - self.time1) > cooldown_time:
+
             self.animation_pointer += 1  # add one to animation pointer
             if self.current_action in self.combat_animations:  # if its a combat animation
                 if self.animation_pointer >= len(
@@ -334,7 +330,6 @@ class Entity(pygame.sprite.Sprite):
         # if the new action is the same as the old action, it would set animation pointer to 0 every time so only the
         # first frame of the animation would be shown. By adding this check, it makes it so that the animation pointer and animation is changed/reset
         # only if there is a change in the player action. """
-
         melee_index = self.get_index('Melee')
         if new_action == melee_index and world:
             images = self.animations[melee_index]
@@ -351,7 +346,7 @@ class Entity(pygame.sprite.Sprite):
 
     def update(self, moving_right, moving_left, world):
         # update player animations
-        if self.obj_type == 'player':
+        if self.obj_type == 'player' and self.health:
             if self.in_air or self.y_vel > self.GRAVITY:  # if jumping or falling the 0.75 is due to gravity
                 if self.y_vel < 0:  # if going upwards
                     self.update_action(self.get_index('Jumping'))
