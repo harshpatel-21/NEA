@@ -37,8 +37,8 @@ class Projectile(pygame.sprite.Sprite):
             self.rect.x -= self.rect.w
 
         self.rect.y = shooter.rect.center[1] - 5
-        self.x_vel = 14
-        self.acceleration = 2.5
+        self.x_vel = 2
+        self.acceleration = 20
         self.mask = pygame.mask.from_surface(self.image)
         self.remove = False
 
@@ -54,10 +54,11 @@ class Projectile(pygame.sprite.Sprite):
 
         if not self.remove: self.rect.x += (self.x_vel * self.acceleration) * self.direction
         # self.acceleration -= 0.035*self.acceleration
-        self.acceleration *= 0.85
+        if self.acceleration > 2: self.acceleration *= 0.8
+        else:self.acceleration *= 0.94
 
         # check if the arrow has gone off the screen or low acceleration
-        if self.acceleration < 0.08:
+        if self.acceleration < 0.5:
             self.remove = True  # set the flag to remove the arrow to true
             # self.direction *= -1
 

@@ -149,25 +149,29 @@ class Display:
             self.screen = pygame.Surface(self.SIZE)
 
         self.background=background
-        self.left_arrow = pygame.transform.scale(pygame.image.load(get_path('images/go_back.png')), (100, 38))
-        self.arrow_rect = pygame.Rect(self.BACK_X, self.BACK_Y, *self.left_arrow.get_size())
+        self.back_image = pygame.transform.scale(pygame.image.load(get_path('images/go_back.png')), (100, 38))
+        self.arrow_rect = pygame.Rect(self.BACK_X, self.BACK_Y, *self.back_image.get_size())
 
     def blit(self, content, coords):
         self.screen.blit(content, coords)
 
-    def draw_back(self):
-        self.screen.blit(self.left_arrow,(self.BACK_X,self.BACK_Y))
-        pygame.draw.rect(self.screen, (255,255,255), (self.BACK_X,self.BACK_Y,*self.left_arrow.get_size()),1)
+    def draw_back(self, pos):
+        self.arrow_rect = pygame.Rect(*pos,*self.back_image.get_size())
+        self.screen.blit(self.back_image,pos)
+        pygame.draw.rect(self.screen, (255,255,255), (*pos,*self.back_image.get_size()),1)
 
-    def refresh(self, back=False, scroll=0, show_mouse_pos=True):
-        if isinstance(self.background, tuple): # if the background is an image
+    def refresh(self, back=False, pos=None, show_mouse_pos=True, target=None):
+        if isinstance(self.background, tuple): # if the background is a color
             self.screen.fill(self.background)
-        else:
-            # print(self.background)
-            for i in range(4):
-                self.screen.blit(self.background,((i*self.SIZE[0]) + scroll,0))
+        else: # if its an image
+            self.screen.blit(self.background,(0,0))
+
+        if pos is None:
+            pos = (self.BACK_X, self.BACK_Y)
+        self.arrow_rect = pygame.Rect(*pos,*self.back_image.get_size())
         if back:
-            self.draw_back()
+            self.draw_back(pos)
+
         if show_mouse_pos:
             mouse_pos = self.MEDIUM_FONT.render(str(pygame.mouse.get_pos()),1,self.WHITE)
             rect = mouse_pos.get_rect()

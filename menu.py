@@ -1,8 +1,7 @@
-import pygame, os, re, sys
-import WINDOW
+import pygame, os, re, sys, WINDOW, game_level
 from boxes import Textbox
 from boxes import BoxGroup, DynamicBox
-
+from matplotlib.pyplot import plot as plt
 pygame.init()
 
 x, y = WINDOW.x, WINDOW.y
@@ -28,6 +27,9 @@ def show_leaderboards(surface, user_data):
         rendered_points = font.render(str(sum(user_data[top_ten[i]]['points'])), 1, (255, 255, 255))
         surface.blit(rendered_name, (start_x, (padding_y * i) + (longest_name.height * i) + start_y))
         surface.blit(rendered_points, (start_x + padding_x, (padding_y * i) + (longest_name.height * i) + start_y))
+
+def show_graph(username, user_data):
+    pass
 
 def show_menu(username):
     user_data = WINDOW.read_json('user_info/users.json')
@@ -79,12 +81,13 @@ def show_menu(username):
                 if bool(clicked):
                     if clicked.obj_type == 'topic':
                         corresponding_num = WINDOW.topics[clicked.text]
-                        print(corresponding_num)
+                        game_level.play_level(username, 0, corresponding_num)
+
                     elif clicked.obj_type == 'leaderboard':
                         leaderboards = True
 
                 # check for back click
-                if window.check_return():
+                elif window.check_return():
                     if leaderboards:
                         leaderboards = False
                     else:

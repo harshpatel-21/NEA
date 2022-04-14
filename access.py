@@ -16,7 +16,7 @@ def get_path(path):
     return absolute_path
 
 background = get_path('images/logo.png')
-window = Display(caption='Main Menu',size=(1426, 690), back_pos=(435,500))
+window = Display(caption='Main Menu',size=(1426, 690))
 image = pygame.image.load(background)
 background = pygame.transform.scale(image,(1426, 690))
 window.background = background
@@ -25,8 +25,8 @@ def check_details(username, password, state):
     data = read_json('user_info/users.json')
     if state=='login':
         info = data.get(username)
-        if info: return info.get("password") == password
-        return -1
+        if not info: return -1
+        return info.get('password') == password
     elif state=='sign up':
         if username in data.keys():
             return -1
@@ -55,9 +55,13 @@ def validate_character(string, click, character):
     # length is < 15 and typing in the username box and the character is valid
     return len(string) < 15 and click and bool(valid_chars)
 
-def validate_info(string):
-    return 4 <= len(string) <= 15
-
+def validate_username(username):
+    # length error, not unique error
+    if not(4 <= len(username) <= 15):
+        return 1, 0
+    if username in WINDOW.read_json('user_info/users.json'):
+        return 0, 1
+    return 0, 0 # no errors
 def validate_password(string):
     return re.match("^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d$@$!%*?&]{4,15}",string)
 
@@ -93,7 +97,7 @@ def input_information(state):
 
     while True:
         data = read_json('user_info/users.json')
-        window.refresh(back=True)
+        window.refresh(back=True, pos=(435,500))
         username_box.text=fill_text
         password_box.text=fillpass_text
 
@@ -198,31 +202,36 @@ def input_information(state):
             password_box.set_properties(border=password_box.BORDER)
             
         if continue_click: # if the continue button has been pressed
-            valid_username = validate_info(username)
+            valid_username = validate_username(username)
             valid_password = validate_password(password)
             
-            if state=='sign up' and not valid_username or not valid_password:
-                if not valid_username:
+            if state=='sign up' and (sum(valid_username)==1 or not valid_password):
+                if valid_username[0]: # if there was an issue with string length
                     display_string_length = True
                     display_password_text = False
+                    incorrect_details = False
+
+                elif valid_username[1]: # if there is already an existing user
+                    display_string_length = False
+                    display_password_text = False
+                    incorrect_details = True
+
                 elif not valid_password:
                     display_password_text = True
                     display_string_length = False
-                incorrect_details = False
+                    incorrect_details = False
 
-            else:
-                display_string_length = False
-                correct = check_details(username,password,state)
+            else: # if it was sign up or login state
+                # print('here')
+                display_string_length = False # don't show error messages
+                correct = check_details(username, password, state)
                 incorrect_details = correct < 1
-
                 if not(incorrect_details) and state == 'sign up':
                     successful_signUp = True
                 elif not(incorrect_details) and state == 'login':
                     successful_login = True
 
             continue_click = False # once the button has been pressed, it should be counted as 'not pressed' after this section is ran
-
-
             # if not incorrect_details: return 1
 
         if username_box.rect.width > 290: 

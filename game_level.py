@@ -182,16 +182,13 @@ class Camera:
 
 def play_level(username, user_id, level):
     # load in the questions
-    question_data = read_json(f'Questions/{1.1}.json')
+    question_data = read_json(f'Questions/{level}.json')
     # NOTE: question_data[question][username] = list(correct: int, incorrect: int, percentage: float)
 
     # select the 10 questions the user performed worst at, no longer random selection using sample alone
     questions = sorted(question_data, key=lambda question: (question_data[question][username])[2], reverse=True)[:10] # biggest -> smallest correct %
     questions = random.sample(questions, len(questions)) # shuffle the order of selected questions
     # questions will be treated as a stack. Last in is first out
-
-    current_question = questions.pop() # pop the question at the top of the stack
-    # result = QuestionWindow.StartQuestion(question=current_question, question_data=question_data)
 
     # sprite groups
     player, decorations, death_blocks, enemies, coins = world.process_data(game_level)
@@ -224,12 +221,8 @@ def play_level(username, user_id, level):
         attack_conditions = not (
                 player.sword_attack or player.bow_attack) and not start_fade  # only allow attacking if not already in attack animation -> ADD INTO ITERATIVE DEVELOPMENT
 
-        window.refresh(show_mouse_pos=False,back=True)
+        window.refresh(show_mouse_pos=False)
         world.draw(background, camera)
-
-        if window.check_return():
-            run = False
-            continue
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -277,6 +270,10 @@ def play_level(username, user_id, level):
                 if event.key == pygame.K_d:
                     moving_right = False
                 pass
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if window.check_return():
+                    run = False
+                    continue
 
         keys = pygame.key.get_pressed()
 
@@ -313,25 +310,26 @@ def play_level(username, user_id, level):
             fade.direction = -1
 
         if show_question:
-            current_question = questions.pop() # pop the question at the top of the stack
-            QuestionWindow_values = QuestionWindow.StartQuestion(question=current_question, question_data=question_data, timer=timer,x1=x1)
-            # extract current stats for the question and adjust them based on result of the answer
-            if len(QuestionWindow_values)==2: # if the result and timer was returned
-                result = QuestionWindow_values[0] # the actual result
-                # print((question_data[current_question])[username])
-                right, wrong, accuracy = (question_data[current_question])[username]
-                if result: right += 1; points += 10
-                else: wrong += 1
-                if wrong!=0 or right!=0: accuracy = right/(right+wrong)
-                question_data[current_question][username] = [right, wrong, accuracy]
-                timer = QuestionWindow_values[1]
-            else:
-                timer = QuestionWindow_values
+            if questions:
+                current_question = questions.pop() # pop the question at the top of the stack
+                QuestionWindow_values = QuestionWindow.StartQuestion(question=current_question, question_data=question_data, timer=timer,x1=x1)
+                # extract current stats for the question and adjust them based on result of the answer
+                if len(QuestionWindow_values)==2: # if the result and timer was returned
+                    result = QuestionWindow_values[0] # the actual result
+                    # print((question_data[current_question])[username])
+                    right, wrong, accuracy = (question_data[current_question])[username]
+                    if result: right += 1; points += 10
+                    else: wrong += 1
+                    if wrong!=0 or right!=0: accuracy = right/(right+wrong)
+                    question_data[current_question][username] = [right, wrong, accuracy]
+                    timer = QuestionWindow_values[1]
+                else:
+                    timer = QuestionWindow_values
 
-            # inwards fade
-            start_fade = True
-            fade.direction = 1
-            show_question = False
+                # inwards fade
+                start_fade = True
+                fade.direction = 1
+                show_question = False
 
         if start_fade:
             if fade.fade(window.screen): # if the fade has completed
@@ -344,14 +342,13 @@ def play_level(username, user_id, level):
             x1 = pygame.time.get_ticks()
 
         window.draw_text(text=f'Time: {WINDOW.convert_time_format(timer)}', pos=(670,3), size='MEDIUM',center=True)
-
-        window.draw_back()
+        window.draw_back((10,3))
+        window.draw_text(f'weapon: {["Sword", "Bow"][player.current_weapon - 1]}', (200, 5))
         pygame.display.update()  # make all the changes
         clock.tick(FPS)
 
     # update question data and user data when/ if run == False, if they just finished level/died
-    write_json(question_data, f'Questions/{1.1}.json')
-
+    write_json(question_data, f'Questions/{level}.json')
     user_info = read_json(f'user_info/users.json')
     user_info[username]['points'].append(points)
     write_json(user_info, f'user_info/users.json')
