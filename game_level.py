@@ -4,7 +4,6 @@ from entity_class import Entity, Enemy, Projectile, Player, Group
 import pygame, WINDOW, QuestionWindow, os, sys, random, csv
 from Items import Item, Decoration, DeathBlock, Obstacle
 from transition import ScreenFade
-import time
 
 pygame.init()
 read_json = WINDOW.read_json # using the pre-coded read and write methods to json files
@@ -24,7 +23,7 @@ TILE_TYPES = os.listdir(f'images/level_images/{LEVEL}/Tiles')
 img_list = []
 TILE_SCALE = (window.TILE_DIMENSION_X, window.TILE_DIMENSION_Y)
 tile_x, tile_y = TILE_SCALE
-ENEMY = 'knight'
+ENEMY = random.choice(['knight', 'samurai'])
 PLAYER = 'player'
 # ENEMY_IMG = 'samurai'
 # PLAYER_IMG = pygame.image.load(f'images/mobs/{PLAYER}/default.png')
@@ -179,7 +178,6 @@ class Camera:
             else:
                 self.rect.bottomright = target.rect.bottomright
 
-
 def play_level(username, user_id, level):
     # load in the questions
     question_data = read_json(f'Questions/{level}.json')
@@ -209,9 +207,8 @@ def play_level(username, user_id, level):
     timer = 0
     timing = 0
     while run:
+        player.check_alive()
         extra_time = 0
-        if player.remove: # if they died
-            run = False
 
         camera.update(player, world)
         # only perform actions based on these conditions
@@ -221,7 +218,7 @@ def play_level(username, user_id, level):
         attack_conditions = not (
                 player.sword_attack or player.bow_attack) and not start_fade  # only allow attacking if not already in attack animation -> ADD INTO ITERATIVE DEVELOPMENT
 
-        window.refresh(show_mouse_pos=False)
+        window.refresh(show_mouse_pos=False,back=True,pos=(10,10))
         world.draw(background, camera)
 
         for event in pygame.event.get():
@@ -245,8 +242,6 @@ def play_level(username, user_id, level):
                 if event.key == pygame.K_w and move_conditions and attack_conditions and not player.in_air and player.y_vel <= 0.75:
                     # print(pygame.time.get_ticks())
                     player.jumping = True
-                    draw_dust = True
-                    player.particle_counter = 0  # trigger dust animation
                     # player.in_air = True
 
                 # attacking
@@ -310,9 +305,9 @@ def play_level(username, user_id, level):
             fade.direction = -1
 
         if show_question:
-            if questions:
+            if questions: # making sure there are still questions left.
                 current_question = questions.pop() # pop the question at the top of the stack
-                QuestionWindow_values = QuestionWindow.StartQuestion(question=current_question, question_data=question_data, timer=timer,x1=x1)
+                QuestionWindow_values = [*QuestionWindow.StartQuestion(question=current_question, question_data=question_data, timer=timer,x1=x1)]
                 # extract current stats for the question and adjust them based on result of the answer
                 if len(QuestionWindow_values)==2: # if the result and timer was returned
                     result = QuestionWindow_values[0] # the actual result
@@ -324,25 +319,32 @@ def play_level(username, user_id, level):
                     question_data[current_question][username] = [right, wrong, accuracy]
                     timer = QuestionWindow_values[1]
                 else:
-                    timer = QuestionWindow_values
+                    timer = QuestionWindow_values[0]
 
                 # inwards fade
                 start_fade = True
                 fade.direction = 1
                 show_question = False
 
+        # start fade animation if player has died
+        if player.remove and not start_fade:
+            start_fade = True
+            fade.direction = -1
+
         if start_fade:
             if fade.fade(window.screen): # if the fade has completed
                 start_fade = False # don't show the intro fade anymore
-                if fade.direction == -1 and player.check_alive(): # if fading out, then it means going to a question
+                if fade.direction == -1 and player.check_alive() and questions: # if fading out, and there are still questions then it means going to a question
                     show_question = True
+                elif fade.direction == -1 and (not questions or not player.check_alive()):
+                    run = False
 
         if (pygame.time.get_ticks() - x1) > 1000: # 1 ticks == 1 millisecond, 1000 millisecond = 1 second
             timer += 1  # account for the time in the question screen
             x1 = pygame.time.get_ticks()
 
         window.draw_text(text=f'Time: {WINDOW.convert_time_format(timer)}', pos=(670,3), size='MEDIUM',center=True)
-        window.draw_back((10,3))
+        window.draw_back()
         window.draw_text(f'weapon: {["Sword", "Bow"][player.current_weapon - 1]}', (200, 5))
         pygame.display.update()  # make all the changes
         clock.tick(FPS)
@@ -350,6 +352,14 @@ def play_level(username, user_id, level):
     # update question data and user data when/ if run == False, if they just finished level/died
     write_json(question_data, f'Questions/{level}.json')
     user_info = read_json(f'user_info/users.json')
+    current_best = user_info[username][level]
+
+    # only update the completion time if the user answered all the questions
+    if current_best != 0 and len(questions)==0:
+        current_best = min(current_best,timer)
+    elif len(questions)==0:
+        current_best = timer
+    user_info[username][level] = current_best # update time if it was lower
     user_info[username]['points'].append(points)
     write_json(user_info, f'user_info/users.json')
 
