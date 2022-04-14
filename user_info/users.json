@@ -1,7 +1,7 @@
 {
     "Testing1": {
         "password": "Testing1",
-        "points": [0],
+        "points": [0, 50, 0],
         "1.1": 0,
         "1.2": 0,
         "1.3": 0,

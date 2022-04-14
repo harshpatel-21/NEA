@@ -3,7 +3,7 @@ from boxes import Textbox, DynamicBox
 from boxes import BoxGroup
 from transition import ScreenFade
 
-def StartQuestion(question, question_data):
+def StartQuestion(question, question_data,timer=0,x1=None):
     # ---------- key variables -------------#
     pygame.init()
     x, y = WINDOW.x, WINDOW.y
@@ -33,7 +33,7 @@ def StartQuestion(question, question_data):
     main_group = BoxGroup(option_1, option_2, option_3, option_4, question_box)
     # feedback instance
     feedback_text = question_data[question]['feedback']
-    feedback = DynamicBox(0,0,window.SIZE,text=feedback_text,obj_type='feedback',font_size=32,center_text=False,color=Display.BACKGROUND)
+    feedback = DynamicBox(0,4,(window.SIZE[0],window.SIZE[1]-4),text=feedback_text,obj_type='feedback',font_size=30,center_text=False,color=Display.BACKGROUND)
 
     main_continue = Textbox(100, 0.9*window.height,text='Continue',text_size='medlarge')
     feedback_continue = Textbox(100, 0.9*window.height,text='Continue',text_size='medlarge')
@@ -47,20 +47,18 @@ def StartQuestion(question, question_data):
     start_fade = True
     fade = ScreenFade(1, (0, 0, 0))
     going_back = False
-
+    x1 = x1
+    timer = timer
     while True:
         window.refresh()
         for event in pygame.event.get():
             if event.type == pygame.QUIT and 1==2:
                 pygame.quit()
-                return
+                return timer
                 # sys.exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    # pygame.quit()
-                    # sys.exit()
-                    return
-                    pass
+                    return timer
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 # check for the continue button click on the main/ options screen
@@ -110,14 +108,18 @@ def StartQuestion(question, question_data):
                     continue
                 box.surface.set_alpha(150)
 
-        if start_fade:
+        if start_fade: # do the fade animation
             if going_back:
-                fade.direction = -1
+                fade.direction = -1 # fading out
             if fade.fade(window.screen):
                 start_fade = False
-                if going_back:
-                    return result
+                if going_back: # if they're exiting the question screen
+                    return result, timer
 
+        if (pygame.time.get_ticks() - x1) >= 1000: # 1 ticks == 1 millisecond, 1000 millisecond = 1 second, update timer every second
+            timer += 1  # account for the time in the question screen
+            x1 = pygame.time.get_ticks()
+        window.draw_text(text=f'Time: {WINDOW.convert_time_format(timer)}', pos=(670,3), size='MEDIUM',center=True)
         pygame.display.update()
         clock.tick(FPS)
 

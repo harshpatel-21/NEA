@@ -212,6 +212,7 @@ def play_level(username, user_id, level):
     timer = 0
     timing = 0
     while run:
+        extra_time = 0
         if player.remove: # if they died
             run = False
 
@@ -223,8 +224,12 @@ def play_level(username, user_id, level):
         attack_conditions = not (
                 player.sword_attack or player.bow_attack) and not start_fade  # only allow attacking if not already in attack animation -> ADD INTO ITERATIVE DEVELOPMENT
 
-        window.refresh(show_mouse_pos=False)
+        window.refresh(show_mouse_pos=False,back=True)
         world.draw(background, camera)
+
+        if window.check_return():
+            run = False
+            continue
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -306,15 +311,19 @@ def play_level(username, user_id, level):
 
         if show_question:
             current_question = questions.pop() # pop the question at the top of the stack
-            result = QuestionWindow.StartQuestion(question=current_question, question_data=question_data)
+            QuestionWindow_values = QuestionWindow.StartQuestion(question=current_question, question_data=question_data, timer=timer,x1=x1)
             # extract current stats for the question and adjust them based on result of the answer
-            if result is not None:
+            if len(QuestionWindow_values)==2: # if the result and timer was returned
+                result = QuestionWindow_values[0] # the actual result
                 # print((question_data[current_question])[username])
                 right, wrong, accuracy = (question_data[current_question])[username]
-                if result: right += 1; points += 50
+                if result: right += 1; points += 10
                 else: wrong += 1
                 if wrong!=0 or right!=0: accuracy = right/(right+wrong)
                 question_data[current_question][username] = [right, wrong, accuracy]
+                timer = QuestionWindow_values[1]
+            else:
+                timer = QuestionWindow_values
 
             # inwards fade
             start_fade = True
@@ -328,12 +337,13 @@ def play_level(username, user_id, level):
                     show_question = True
 
         if (pygame.time.get_ticks() - x1) > 1000: # 1 ticks == 1 millisecond, 1000 millisecond = 1 second
-            timer += 1
+            timer += 1  # account for the time in the question screen
             x1 = pygame.time.get_ticks()
 
-        window.draw_text(text=f'Time: {timer}', pos=(20,20), size='MEDIUM')
-        pygame.display.update()  # make all the changes
+        window.draw_text(text=f'Time: {WINDOW.convert_time_format(timer)}', pos=(670,3), size='MEDIUM',center=True)
 
+        window.draw_back()
+        pygame.display.update()  # make all the changes
         clock.tick(FPS)
 
     # update question data and user data when/ if run == False, if they just finished level/died

@@ -16,7 +16,7 @@ def get_path(path):
     return absolute_path
 
 background = get_path('images/logo.png')
-window = Display(caption='Main Menu',size=(1426, 690), back_pos=(525,515))
+window = Display(caption='Main Menu',size=(1426, 690), back_pos=(435,500))
 image = pygame.image.load(background)
 background = pygame.transform.scale(image,(1426, 690))
 window.background = background
@@ -94,7 +94,6 @@ def input_information(state):
     while True:
         data = read_json('user_info/users.json')
         window.refresh(back=True)
-
         username_box.text=fill_text
         password_box.text=fillpass_text
 

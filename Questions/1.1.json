@@ -6,7 +6,7 @@
             "Control",
             "Retrieval"
         ],
-        "feedback": "- The data bus retrieves data and instructions from main memory. \\n - The address bus sends addresses to main memory. \\n - The control bus sends read right signals to main memory.",
+        "feedback": " - The data bus retrieves data and instructions from main memory. \\n - The address bus sends addresses to main memory. \\n - The control bus sends read right signals to main memory.",
         "Testing1": [0, 0, 0]
     },
     "What is the purpose of the Accumulator?": {
@@ -16,7 +16,7 @@
             "Holds the address of the location in memory where data is to be retrieved or stored.",
             "Holds the memory location address of the next instruction to be performed by the central processing unit."
         ],
-        "feedback": "- The program counter holds the memory location address of the next instruction to be performed by the central processing unit.  \\n - The Memory data register holds the data that has been retrieved from memory, or that is about to be stored in memory. \\n - The Accumulator holds the result of calculations and operations performed by the arithmetic and logic unit.",
+        "feedback": " - The program counter holds the memory location address of the next instruction to be performed by the central processing unit.  \\n - The Memory data register holds the data that has been retrieved from memory, or that is about to be stored in memory. \\n - The Accumulator holds the result of calculations and operations performed by the arithmetic and logic unit.",
         "Testing1": [0, 0, 0]
     },
     "Which of the following can be adjusted to improve the performance of a CPU?": {
@@ -26,7 +26,7 @@
             "Remove the OS",
             "Get a bigger motherboard"
         ],
-        "feedback": "- Each core of a CPU can execute its own independent Fetch Decode Execute (FDE) cycle; increasing the number of cores can increase the amount of simultaneous FDE cycles executed to enhance processing power. \\n - Another way to increase processing power is by increasing the clock speed. The clock speed is the time taken for one FDE cycle to complete, so by increasing this it results in more FDE cycles being completed per specified time frame. \\n - Increasing the Cache memory is also another option to improve CPU performance. Cache memory is the CPU's onboard memory. Instructions fetched from main memory are copied to the cache so if required again, they can be accessed quicker. As cache fills up, unused instructions are replaced. ",
+        "feedback": " - Each core of a CPU can execute its own independent Fetch Decode Execute (FDE) cycle; increasing the number of cores can increase the amount of simultaneous FDE cycles executed to enhance processing power. \\n - Another way to increase processing power is by increasing the clock speed. The clock speed is the time taken for one FDE cycle to complete, so by increasing this it results in more FDE cycles being completed per specified time frame. \\n - Increasing the Cache memory is also another option to improve CPU performance. Cache memory is the CPU's onboard memory. Instructions fetched from main memory are copied to the cache so if required again, they can be accessed quicker. As cache fills up, unused instructions are replaced. ",
         "Testing1": [0, 0, 0]
     },
     "Which two CPU registers will regularly store the same value?": {
@@ -36,7 +36,7 @@
             "Program Counter and Accumulator",
             "Program Counter and Memory Data Register"
         ],
-        "feedback": "- At the beginning of the FDE cycle, the contents of the Program Counter are copied into the Memory Address Register; at that points they store the same information as each other.",
-        "Testing1": [0, 0, 0]
+        "feedback": " - At the beginning of the FDE cycle, the contents of the Program Counter are copied into the Memory Address Register; at that points they store the same information as each other.",
+        "Testing1": [1, 1, 0.5]
     }
 }

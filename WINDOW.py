@@ -97,8 +97,13 @@ def delete_json_key(path, cls=MyEncoder, key=None, depth=1):
 
     write_json(data, path)
 
+def convert_time_format(time):
+    h,r = divmod(time, 3600) # calculate how many hours, and the remainder is the number of minutes (in seconds)
+    m,s = divmod(r, 60) # convert the remaining seconds into minutes, and the remainder is the amount of seconds
+    return f'{h:02}:{m:02}:{s:02}' # format each value by filling in missing number(s) of maximum 2 numbers with leading 0s.
+
 def delete_user(username):
-     # if I want to remove a user.
+     # To remove a user and maintain referential integrity by deleting all records of the user everywhere.
     for file in os.listdir('Questions'):
         delete_json_key(f'Questions/{file}', key=username, depth=2)
 
@@ -133,9 +138,10 @@ class Display:
         self.WIDTH, self.HEIGHT = size
         self.width, self.height = size
 
+        self.BACK_X, self.BACK_Y = (20,22)
         if back_pos is not None:
             self.BACK_X, self.BACK_Y = back_pos
-        self.BACK_X, self.BACK_Y = (20,22)
+
         if new_window:
             self.screen = pygame.display.set_mode(self.SIZE)
             pygame.display.set_caption(caption)
@@ -149,19 +155,19 @@ class Display:
     def blit(self, content, coords):
         self.screen.blit(content, coords)
 
+    def draw_back(self):
+        self.screen.blit(self.left_arrow,(self.BACK_X,self.BACK_Y))
+        pygame.draw.rect(self.screen, (255,255,255), (self.BACK_X,self.BACK_Y,*self.left_arrow.get_size()),1)
+
     def refresh(self, back=False, scroll=0, show_mouse_pos=True):
         if isinstance(self.background, tuple): # if the background is an image
             self.screen.fill(self.background)
-
         else:
             # print(self.background)
             for i in range(4):
                 self.screen.blit(self.background,((i*self.SIZE[0]) + scroll,0))
-
         if back:
-            self.screen.blit(self.left_arrow,(self.BACK_X,self.BACK_Y))
-            pygame.draw.rect(self.screen, (255,255,255), (self.BACK_X,self.BACK_Y,*self.left_arrow.get_size()),1)
-
+            self.draw_back()
         if show_mouse_pos:
             mouse_pos = self.MEDIUM_FONT.render(str(pygame.mouse.get_pos()),1,self.WHITE)
             rect = mouse_pos.get_rect()
