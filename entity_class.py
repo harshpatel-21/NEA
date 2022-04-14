@@ -48,42 +48,42 @@ class Projectile(pygame.sprite.Sprite):
         temp.y = temp.y - target.rect.y + Display.HEIGHT // 2
         surface.blit(self.image, temp)
 
-    def update(self, surface, world, enemy_group, player, arr=None):
-        self.check_collision(enemy_group)  # check for collision with enemies
-        self.check_collision(player)  # check for collision with player
+    def update(self, surface, world, enemy_group, player, target, arr=None):
+        self.check_collision(enemy_group, target)  # check for collision with enemies
+        self.check_collision(player, target)  # check for collision with player
 
         if not self.remove: self.rect.x += (self.x_vel * self.acceleration) * self.direction
         # self.acceleration -= 0.035*self.acceleration
         self.acceleration *= 0.85
 
         # check if the arrow has gone off the screen or low acceleration
-        if (self.rect.left > Display.WIDTH) or (self.rect.right < 0) or self.acceleration < 0.08:
+        if self.acceleration < 0.08:
             self.remove = True  # set the flag to remove the arrow to true
             # self.direction *= -1
 
         # check for tile collision
         for tile in filter(lambda i: i not in world.no_collide, world.obstacle_list):
-            if self.mask_collision(tile):
+            if self.mask_collision(tile,target):
                 self.remove = True
-
                 pass
+
         if self.remove:
             # arr.remove(self) # used when arrows were stored in an array
             self.kill()  # frees up memory and removes all instances of this specific arrow from associated groups
 
-    def check_collision(self, objs):  # checking for arrow collision from bow_attack
+    def check_collision(self, objs, target):  # checking for arrow collision from bow_attack
         # flip the mask of the image during collision detection
         if isinstance(objs, Group):
             for obj in objs:
-                if self.entity_collision(obj):
+                if self.entity_collision(obj, target):
                     self.remove = True
 
         elif isinstance(objs, Player):
-            if self.entity_collision(objs):
+            if self.entity_collision(objs, target):
                 self.remove = True
 
-    def entity_collision(self, obj):
-        collision = self.mask_collision(obj)
+    def entity_collision(self, obj, target):
+        collision = self.mask_collision(obj, target)
         # change border color if collision with arrow has occurred
         if collision:
             obj.border_color = (0, 255, 0)
@@ -98,10 +98,16 @@ class Projectile(pygame.sprite.Sprite):
             obj.border_color = (255, 0, 0)
         return collision
 
-    def mask_collision(self, obj):
+    def mask_collision(self, obj, target):
+        temp = self.rect.copy()
+        temp.x = temp.x - target.rect.x + Display.WIDTH // 2
+        temp.y = temp.y - target.rect.y + Display.HEIGHT // 2
         obj_mask = pygame.mask.from_surface(pygame.transform.flip(obj.image, obj.direction == -1, False))
-        offset_x = obj.rect.x - self.rect.x
-        offset_y = obj.rect.y - self.rect.y
+        obj_temp = obj.rect.copy()
+        obj_temp.x = obj_temp.x - target.rect.x + Display.WIDTH // 2
+        obj_temp.y = obj_temp.y - target.rect.y + Display.HEIGHT // 2
+        offset_x = obj_temp.x - temp.x
+        offset_y = obj_temp.y - temp.y
         collision = self.mask.overlap(obj_mask, (offset_x, offset_y))
         return collision
 
@@ -236,11 +242,6 @@ class Entity(pygame.sprite.Sprite):
         self.health_rect.y += dy
 
         return screen_scroll
-
-    def reset(self):
-        # self.current_action = self.get_index('Idle')
-        # if self.animation_pointer == len(self.all_animations[self.get_index('Die')])-1:self.kill()
-        return
 
     def draw_health_bar(self, surface, target):
 

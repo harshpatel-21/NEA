@@ -261,13 +261,13 @@ def play_level(username, user_id, level):
                     if player.current_weapon == 1:  # sword selected
                         player.sword_attack = True
                     elif player.current_weapon == 2 and player.shoot_cooldown_timer == 0:  # bow selected
-                        # player.bow_attack = True
-                        # player.shoot_cooldown_timer = player.shoot_cooldown
+                        player.bow_attack = True
+                        player.shoot_cooldown_timer = player.shoot_cooldown
                         pass
                 # weapon selection
                 value = chr(event.key)
                 if value in ['1', '2']:
-                    # player.current_weapon = int(value)
+                    player.current_weapon = int(value)
                     pass
 
             # check for keys that are lifted/ no longer being pressed
@@ -284,7 +284,9 @@ def play_level(username, user_id, level):
         moving_right = keys[pygame.K_d] and attack_conditions
 
         # player handling
-        player.animation_handling()
+        add_arrow = player.animation_handling()
+        if add_arrow: arrow_group.add(add_arrow)
+
         player.draw(window.screen, camera)
         player.move(moving_left, moving_right, world, death_blocks)
         player.update(moving_left, moving_right, world)
@@ -292,9 +294,10 @@ def play_level(username, user_id, level):
         # enemy handling
         enemy_group.update(player, window.screen, world)
         enemy_group.draw(window.screen, target=camera)
+
         # arrow handling
-        arrow_group.update(window.screen, world, enemy_group, player)
-        arrow_group.draw(window.screen, camera)
+        arrow_group.update(window.screen, world, enemy_group, player, camera)
+        arrow_group.draw(window.screen, target=camera)
 
         death_blocks_group.draw(window.screen, target=camera)
         death_blocks_group.update(player)  # do death block checking for player

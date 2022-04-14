@@ -49,6 +49,7 @@ def StartQuestion(question, question_data,timer=0,x1=None):
     going_back = False
     x1 = x1
     timer = timer
+    paused = False
     while True:
         window.refresh()
         for event in pygame.event.get():
@@ -89,6 +90,7 @@ def StartQuestion(question, question_data,timer=0,x1=None):
                             option.hover_color = option.correct_color
                             move_to_feedback //= 2 # if they're right, move on to the next stage faster
                         option.check_collision = False
+                        paused=True
 
         if options_screen:
             main_group.update_boxes(window.screen) # update the boxes (draw them) onto the screen
@@ -116,7 +118,7 @@ def StartQuestion(question, question_data,timer=0,x1=None):
                 if going_back: # if they're exiting the question screen
                     return result, timer
 
-        if (pygame.time.get_ticks() - x1) >= 1000: # 1 ticks == 1 millisecond, 1000 millisecond = 1 second, update timer every second
+        if (pygame.time.get_ticks() - x1) >= 1000 and not paused: # 1 ticks == 1 millisecond, 1000 millisecond = 1 second, update timer every second
             timer += 1  # account for the time in the question screen
             x1 = pygame.time.get_ticks()
         window.draw_text(text=f'Time: {WINDOW.convert_time_format(timer)}', pos=(670,3), size='MEDIUM',center=True)
