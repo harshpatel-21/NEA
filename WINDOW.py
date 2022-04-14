@@ -8,11 +8,11 @@ x,y = 50,80
 os.environ['SDL_VIDEO_WINDOW_POS'] = f"{x},{y}"
 from _ctypes import PyObj_FromPtr  # see https://stackoverflow.com/a/15012814/355230 for adding lists to json no indent
 topics = {
-    'Systems Architecture':1.1,
-    'Software and Software development': 1.2,
-    'Exchanging Data': 1.3,
-    'Data types, Data structures, and Algorithms': 1.4,
-    'Elements of Computational thinking, Problem solving, and programming': 2
+    'Systems Architecture':"1.1",
+    'Software and Software development': "1.2",
+    'Exchanging Data': "1.3",
+    'Data types, Data structures, and Algorithms': "1.4",
+    'Elements of Computational thinking, Problem solving, and programming': "2"
 }
 # --------------- modules to add lists/tuples to .json without indentation ---------------------- #
 class NoIndent(object):
@@ -138,7 +138,7 @@ class Display:
         self.WIDTH, self.HEIGHT = size
         self.width, self.height = size
 
-        self.BACK_X, self.BACK_Y = (20,22)
+        self.BACK_X, self.BACK_Y = (10,10)
         if back_pos is not None:
             self.BACK_X, self.BACK_Y = back_pos
 
@@ -155,12 +155,13 @@ class Display:
     def blit(self, content, coords):
         self.screen.blit(content, coords)
 
-    def draw_back(self, pos):
+    def draw_back(self):
+        pos = (self.BACK_X, self.BACK_Y)
         self.arrow_rect = pygame.Rect(*pos,*self.back_image.get_size())
         self.screen.blit(self.back_image,pos)
         pygame.draw.rect(self.screen, (255,255,255), (*pos,*self.back_image.get_size()),1)
 
-    def refresh(self, back=False, pos=None, show_mouse_pos=True, target=None):
+    def refresh(self, back=False, pos=None, show_mouse_pos=False):
         if isinstance(self.background, tuple): # if the background is a color
             self.screen.fill(self.background)
         else: # if its an image
@@ -168,10 +169,11 @@ class Display:
 
         if pos is None:
             pos = (self.BACK_X, self.BACK_Y)
-        self.arrow_rect = pygame.Rect(*pos,*self.back_image.get_size())
+        else:
+            self.BACK_X, self.BACK_Y = pos
+        self.arrow_rect = pygame.Rect(*pos, *self.back_image.get_size())
         if back:
-            self.draw_back(pos)
-
+            self.draw_back()
         if show_mouse_pos:
             mouse_pos = self.MEDIUM_FONT.render(str(pygame.mouse.get_pos()),1,self.WHITE)
             rect = mouse_pos.get_rect()
