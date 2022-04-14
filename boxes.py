@@ -110,8 +110,7 @@ class DynamicBox(Textbox):
 
     incorrect_color = (204, 51, 0)
     correct_color = (51, 153, 51)
-
-    def __init__(self, x, y, size, obj_type, text='', font_size='MEDIUM',center_text=True,color=(68, 71, 68)):
+    def __init__(self, x, y, size, obj_type, text='', font_size='MEDIUM',center_text=(True,True),color=(68, 71, 68),padding=None):
         if color is not None:
             self.background_color = color
         else:
@@ -130,11 +129,10 @@ class DynamicBox(Textbox):
         self.rect = pygame.Rect(x, y, *size)
         self.surface = pygame.Surface(self.rect.size)
         text_rect_size = [*map(lambda i: i*0.9,self.rect.size)] # create a padding for where the text will be placed
-
         # calculate the offset to place the text rectangle in the center of the main box rectangle
-        dx = (self.rect.w - text_rect_size[0])//2
-        dy = (self.rect.h - text_rect_size[1])//2
-        self.text_rect = pygame.Rect((self.rect.x + dx, self.rect.y + dy, *text_rect_size))
+        self.dx = (self.rect.w - text_rect_size[0])//2
+        self.dy = (self.rect.h - text_rect_size[1])//2
+        self.text_rect = pygame.Rect((self.rect.x + self.dx, self.rect.y + self.dy, *text_rect_size))
         self.surf = None
         self.text=text
         self.center_text = center_text
@@ -151,9 +149,12 @@ class DynamicBox(Textbox):
         surface.blit(self.surface, self.rect.topleft)
         if self.surf:
             # pygame.draw.rect(surface,(255,0,0),(self.rect.x + (self.rect.w-self.text_rect.w)//2, self.rect.y + (self.rect.h-self.text_rect.h)//2, self.text_rect.w, self.text_rect.h),1)
-            if not self.center_text: self.surface.blit(self.surf, self.text_rect.topleft)
-            else: self.surface.blit(self.surf, ((self.rect.w-self.text_rect.w)//2,(self.rect.h-self.text_rect.h)//2, self.text_rect.w, self.text_rect.h))
-
+            x, y = self.dx, 0
+            if self.center_text[0]:
+                x = (self.rect.w-self.text_rect.w)//2
+            if self.center_text[1]:
+                y = (self.rect.h-self.text_rect.h)//2
+            self.surface.blit(self.surf, (x, y, self.text_rect.w, self.text_rect.h))
         # blit everything onto the specified surface
         surface.blit(self.surface,(self.x,self.y))
 
@@ -237,6 +238,10 @@ class DynamicBox(Textbox):
 
         self.text_rect.h = (add_y+1) * font_letters[0].get_height()
         self.text_rect.w = max_x
+
+    def update_text(self,text):
+        # self.surf.fill(0,0,0)
+        self.add_text(text)
 
     def check_hover(self, mouse_pos=0):
         # if the mouse position is over the rectangle, change color, otherwise change it back to normal

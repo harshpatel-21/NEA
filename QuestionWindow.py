@@ -33,7 +33,7 @@ def StartQuestion(question, question_data,timer=0,x1=None):
     main_group = BoxGroup(option_1, option_2, option_3, option_4, question_box)
     # feedback instance
     feedback_text = question_data[question]['feedback']
-    feedback = DynamicBox(0,4,(window.SIZE[0],window.SIZE[1]-4),text=feedback_text,obj_type='feedback',font_size=30,center_text=False,color=Display.BACKGROUND)
+    feedback = DynamicBox(0,40,(window.SIZE[0],window.SIZE[1]-40),text=feedback_text,obj_type='feedback',font_size=29,center_text=(False,False),color=Display.BACKGROUND)
 
     main_continue = Textbox(100, 0.9*window.height,text='Continue',text_size='medlarge')
     feedback_continue = Textbox(100, 0.9*window.height,text='Continue',text_size='medlarge')

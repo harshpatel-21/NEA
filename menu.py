@@ -1,6 +1,7 @@
 import pygame, os, re, sys, WINDOW, game_level
 from boxes import Textbox
 from boxes import BoxGroup, DynamicBox
+from transition import ScreenFade
 from matplotlib.pyplot import plot as plt
 pygame.init()
 
@@ -13,15 +14,22 @@ window = WINDOW.Display(new_window=True)
 
 def show_leaderboards(surface, user_data):
     highest_points = lambda user: sum(user_data[user]['points'])
-    top_ten = sorted(user_data, key=highest_points)[:10]
+    top_ten = sorted(user_data, key=highest_points,reverse=True)[:10] # highest -> lowest
     font = pygame.font.SysFont('Sans',30)
-    longest_name = font.render(max(top_ten, key=len), 1, (255, 255, 255)).get_rect()  # longest name
-    most_points = font.render(max(top_ten, key=highest_points), 1, (255, 255, 255)).get_rect()
+    longest_name = font.render('W'*15, 1, (255, 255, 255)).get_rect()  # longest name's data
     padding_y = 20
     padding_x = longest_name.width + 20
-    start_x = (window.WIDTH - padding_x - most_points.width) // 2
-    start_y = (window.HEIGHT - (padding_y * 9) - longest_name.height * 10) // 2  # position all names to the vertical center
+    start_x = (window.WIDTH - padding_x) // 2
+    start_y = (window.HEIGHT - (padding_y * 6) - longest_name.height * 10) // 2  # position all names to the vertical center
 
+    # draw text username and points titles
+    username = font.render('Username', 1, (255, 255, 255))
+    points = font.render('Points',1,(255,255,255))
+    surface.blit(username, (start_x, 60))
+    surface.blit(points, (start_x+padding_x - 20 ,60))
+    pygame.draw.line(surface, (255,255,255),(start_x-13,65+username.get_height()),(start_x+padding_x+points.get_width()-10,65+username.get_height()))
+
+    # draw the actual values for each user
     for i in range(len(top_ten)):
         rendered_name = font.render(top_ten[i], 1, (255, 255, 255))
         rendered_points = font.render(str(sum(user_data[top_ten[i]]['points'])), 1, (255, 255, 255))
@@ -31,38 +39,124 @@ def show_leaderboards(surface, user_data):
 def show_graph(username, user_data):
     pass
 
-def show_menu(username):
-    user_data = WINDOW.read_json('user_info/users.json')
+def get_topic_boxes(username, user_data):
     topics = []
     row_1 = ['Systems Architecture', 'Software and Software development', 'Exchanging Data']
     row_2 = ['Data types, Data structures, and Algorithms',
              'Elements of Computational thinking, Problem solving, and programming']
+    accuracy_1 = []
+    for topic in row_1:
+        topic_number = WINDOW.topics[topic]
+        question_data = WINDOW.read_json(f'Questions/{topic_number}.json')
+        # p = sum([question_data[question][username] for question in question_data])
+        accuracy = sum([question_data[question][username][2] for question in question_data])
+        if accuracy:
+            accuracy = str(round(accuracy*100/len(question_data),1))+'%'
+        else:
+            accuracy = 'N/A'
+        accuracy_1.append(accuracy)
+
+    accuracy_2 = []
+    for topic in row_2:
+        topic_number = WINDOW.topics[topic]
+        question_data = WINDOW.read_json(f'Questions/{topic_number}.json')
+        # p = sum([question_data[question][username] for question in question_data])
+        accuracy = sum([question_data[question][username][2] for question in question_data])
+        if accuracy:
+            accuracy = str(round(accuracy*100/len(question_data),1))+'%'
+        else:
+            accuracy = 'N/A'
+        accuracy_2.append(accuracy)
 
     # arrange topic selection
     width1 = 430
     padding1 = (window.WIDTH - 3 * width1) // 4
     for i in range(3):
+        current_time = user_data[username][WINDOW.topics[row_1[i]]]
+        if not current_time:
+            current_time = 'N/A'
+        else:
+            current_time = WINDOW.convert_time_format(current_time)
         topics.append(
-            DynamicBox(padding1 * i + (width1 * i) + padding1, 200, (width1, 0.4 * width1), 'topic', text=row_1[i]))
+            DynamicBox(padding1 * i + (width1 * i) + padding1, 200, (width1, 0.4 * width1), row_1[i], text=row_1[i]+f' \\n \\n Accuracy: {accuracy_1[i]}  \\n Best Time: {current_time}'))
 
     width2 = 520
     padding2 = (window.WIDTH - 2 * width2) // 3
     padding_y = 200
     for j in range(2):
-        topics.append(DynamicBox(padding2 * j + (width2 * j) + padding2, topics[1].rect.h + padding_y + padding1,(width2, 0.35 * width2), 'topic', text=row_2[j]))
-    rec = topics[2].rect
-    username_width = DynamicBox.MEDIUM_FONT.render(f'username: {username}', 1, (255, 255,255)).get_width() + 42  # finding out the maximum width for a username since 'W' is largest width character
+        current_time = user_data[username][WINDOW.topics[row_2[j]]]
+        if not current_time:
+            current_time = 'N/A'
+        else:
+            current_time = WINDOW.convert_time_format(current_time)
+        topics.append(DynamicBox(padding2 * j + (width2 * j) + padding2, topics[1].rect.h + padding_y + padding1,(width2, 0.35 * width2), row_2[j], text=row_2[j]+f' \\n \\n Accuracy: {accuracy_1[i]}  \\n Best Time: {current_time}'))
+    return topics
 
-    username_box = DynamicBox(rec.x + (rec.w - username_width)//2, 40, (username_width, topics[1].rect.h // 2), 'username',text=f'username: {username} \\n points: {sum(user_data[username]["points"])}', font_size=23, center_text=True)
+def update_topic_boxes(username,user_data,topic_boxes):
+    row_1 = ['Systems Architecture', 'Software and Software development', 'Exchanging Data']
+    row_2 = ['Data types, Data structures, and Algorithms',
+             'Elements of Computational thinking, Problem solving, and programming']
+    accuracy_1 = []
+    for topic in row_1:
+        topic_number = WINDOW.topics[topic]
+        question_data = WINDOW.read_json(f'Questions/{topic_number}.json')
+        # p = sum([question_data[question][username] for question in question_data])
+        accuracy = sum([question_data[question][username][2] for question in question_data])
+        if accuracy:
+            accuracy = str(round(accuracy*100/len(question_data),1))+'%'
+        else:
+            accuracy = 'N/A'
+        accuracy_1.append(accuracy)
+
+    accuracy_2 = []
+    for topic in row_2:
+        topic_number = WINDOW.topics[topic]
+        question_data = WINDOW.read_json(f'Questions/{topic_number}.json')
+        # p = sum([question_data[question][username] for question in question_data])
+        accuracy = sum([question_data[question][username][2] for question in question_data])
+        if accuracy:
+            accuracy = str(round(accuracy*100/len(question_data),1))+'%'
+        else:
+            accuracy = 'N/A'
+        accuracy_2.append(accuracy)
+
+    topic_boxes = topic_boxes
+    for i in range(3):
+        current_time = user_data[username][WINDOW.topics[row_1[i]]]
+        if not current_time:
+            current_time = 'N/A'
+        else:
+            current_time = WINDOW.convert_time_format(current_time)
+        topic_boxes[i].update_text(row_1[i]+f' \\n \\n Accuracy: {accuracy_1[i]}  \\n Best Time: {current_time}')
+
+    for j in range(2):
+        current_time = user_data[username][WINDOW.topics[row_2[j]]]
+        if not current_time:
+            current_time = 'N/A'
+        else:
+            current_time = WINDOW.convert_time_format(current_time)
+        topic_boxes[3+j].update_text(row_2[j]+f' \\n \\n Accuracy: {accuracy_1[i]}  \\n Best Time: {current_time}')
+    return topic_boxes
+    pass
+def show_menu(username):
+    user_data = WINDOW.read_json('user_info/users.json')
+    question_files = ['1.1', '1.2', '1.3', '1.4', '2']
+    topics = get_topic_boxes(username, user_data)
+
+    rec = topics[2].rect
+    username_width = DynamicBox.MEDIUM_FONT.render(f'username: {"W"*15}', 1, (255, 255,255)).get_width() + 42  # finding out the maximum width for a username since 'W' is largest width character
+
+    username_box = DynamicBox(rec.x + (rec.w - username_width)//2, 40, (username_width, topics[1].rect.h // 2), 'username',text=f'Username: {username} \\n Points: {sum(user_data[username]["points"])}', font_size=23, center_text=(False,True))
 
     width = DynamicBox.MEDIUM_FONT.render(f'Leaderboards', 1, (255, 255, 255)).get_width() * 1.3
     rec = topics[1].rect # the 2nd topic's rect
     # position the leaderboards box at the centered x position relative to the 2nd topic box
-    leaderboard_box = DynamicBox(rec.x + (rec.w - width)//2, 40, (width, topics[1].rect.h // 2), 'leaderboard',text='Leaderboards',center_text=True)
+    leaderboard_box = DynamicBox(rec.x + (rec.w - width)//2, 40, (width, topics[1].rect.h // 2), 'leaderboard',text='Leaderboards',center_text=(True,True))
 
     all_boxes = BoxGroup(*topics, username_box, leaderboard_box)
     leaderboards = False
-    print(user_data)
+    fade = ScreenFade(1,(0,0,0))
+    screen_fade = True
     while True:
         window.refresh(back=True, show_mouse_pos=True)
         for event in pygame.event.get():
@@ -78,10 +172,16 @@ def show_menu(username):
             if event.type == pygame.MOUSEBUTTONDOWN:
                 # check for button clicks
                 clicked = all_boxes.check_clicks()
-                if bool(clicked):
-                    if clicked.obj_type == 'topic':
-                        corresponding_num = WINDOW.topics[clicked.text]
+                if bool(clicked): # if something was returned
+                    corresponding_num = WINDOW.topics.get(clicked.obj_type)
+                    if corresponding_num: # if the clicked box is a topic
                         game_level.play_level(username, 0, corresponding_num)
+                        # update user information after a change has been made by finishing a level don't do it constantly
+                        user_data = WINDOW.read_json('user_info/users.json')
+                        username_box.update_text(f'Username: {username} \\n Points: {sum(user_data[username]["points"])}')
+                        topics = get_topic_boxes(username,user_data) # alters the text_box size if points/ time changes
+                        # topics = update_topic_boxes(username,user_data,topics) # this only alters the text, not the size which leads to inconsistent formatting
+                        all_boxes = BoxGroup(*topics, username_box, leaderboard_box)
 
                     elif clicked.obj_type == 'leaderboard':
                         leaderboards = True
@@ -92,6 +192,7 @@ def show_menu(username):
                         leaderboards = False
                     else:
                         return
+
         if leaderboards:
             show_leaderboards(window.screen, user_data)
         else:
