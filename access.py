@@ -36,7 +36,7 @@ def check_details(username, password, state):
     return 0
 
 def add_info(data, username, password):
-    data[username] = {"password": "", "points": [0], "1.1": 0, "1.2": 0, "1.3": 0, "1.4": 0, "1.5": 0, "2": 0}
+    data[username] = {"password": "", "points": [0], "1.1": 0, "1.2": 0, "1.3": 0, "1.4": 0, "2": 0}
     data[username]['password'] = password
 
 
@@ -47,6 +47,7 @@ def add_info(data, username, password):
             file_info[question][username] = NoIndent([0, 0, 0])
         write_json(file_info, f'Questions/{file}') # write to all question files
         write_json(data, 'user_info/users.json') # if username was added to all question files, officially add em
+
 def validate_character(string, click, character):
     # Only allow characters, numbers and certain symbols
     valid_chars = (re.match("[A-Za-z\d$@$!%*?&]", character))

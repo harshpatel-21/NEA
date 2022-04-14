@@ -111,7 +111,14 @@ class DynamicBox(Textbox):
     incorrect_color = (204, 51, 0)
     correct_color = (51, 153, 51)
 
-    def __init__(self, x, y, size, obj_type, text='', font_size='MEDIUM',center_text=True):
+    def __init__(self, x, y, size, obj_type, text='', font_size='MEDIUM',center_text=True,color=(68, 71, 68)):
+        if color is not None:
+            self.background_color = color
+        else:
+            self.background_color = Textbox.BACKGROUND
+
+        self.border_color = None
+
         if isinstance(font_size, int):
             self.font = pygame.font.SysFont('Sans', font_size)
 
@@ -122,7 +129,6 @@ class DynamicBox(Textbox):
         self.x, self.y = x, y
         self.rect = pygame.Rect(x, y, *size)
         self.surface = pygame.Surface(self.rect.size)
-        self.background = Textbox.BACKGROUND
         text_rect_size = [*map(lambda i: i*0.9,self.rect.size)] # create a padding for where the text will be placed
 
         # calculate the offset to place the text rectangle in the center of the main box rectangle
@@ -132,22 +138,26 @@ class DynamicBox(Textbox):
         self.surf = None
         self.text=text
         self.center_text = center_text
-        self.border_color = None
         self.add_text(text)
+        self.background = self.background_color
+        self.check_collision = True
 
     def show(self, surface):
         # self.surface.fill(self.background)
         pygame.draw.rect(self.surface, self.background, (0, 0, self.rect.w, self.rect.h))
         if self.border_color: # if there is a border color
-            pygame.draw.rect(self.surface, self.border_color, (0, 0, self.rect.w, self.rect.h), 1)
+            pygame.draw.rect(self.surface, self.border_color, (0, 0, self.rect.w, self.rect.h), 3)
         # pygame.draw.rect(self.surface, self.border_color, (self.text_rect.x-self.rect.x, self.text_rect.y-self.rect.y, self.text_rect.w,self.text_rect.h),1)
         surface.blit(self.surface, self.rect.topleft)
         if self.surf:
             # pygame.draw.rect(surface,(255,0,0),(self.rect.x + (self.rect.w-self.text_rect.w)//2, self.rect.y + (self.rect.h-self.text_rect.h)//2, self.text_rect.w, self.text_rect.h),1)
-            if not self.center_text: surface.blit(self.surf, self.text_rect.topleft)
-            else: surface.blit(self.surf, (self.rect.x + (self.rect.w-self.text_rect.w)//2, self.rect.y + (self.rect.h-self.text_rect.h)//2, self.text_rect.w, self.text_rect.h))
+            if not self.center_text: self.surface.blit(self.surf, self.text_rect.topleft)
+            else: self.surface.blit(self.surf, ((self.rect.w-self.text_rect.w)//2,(self.rect.h-self.text_rect.h)//2, self.text_rect.w, self.text_rect.h))
 
-    # this allows text to fit in a specified box.
+        # blit everything onto the specified surface
+        surface.blit(self.surface,(self.x,self.y))
+
+    # this allows text to fit in a box.
     def add_text(self, text, delay=False):
         """
         \\n = newline
@@ -232,14 +242,15 @@ class DynamicBox(Textbox):
         # if the mouse position is over the rectangle, change color, otherwise change it back to normal
         if self.obj_type != 'question':
             mouse_pos = pygame.mouse.get_pos()
-            if self.rect.collidepoint(mouse_pos):
-                self.background = self.hover_color
-                self.border_color = (0, 0, 255)
+            if self.rect.collidepoint(mouse_pos) and self.check_collision:
+                self.background = (65, 114, 191)
+                self.border_color = (207, 234, 255)
             else:
                 self.background = self.background_color
                 self.border_color = None
 
     def check_click(self, mouse_pos=0):
+        if not self.check_collision:return
         if self.obj_type != 'question':
             mouse_pos = pygame.mouse.get_pos()
             if self.rect.collidepoint(mouse_pos) and (pygame.mouse.get_pressed()[0]):

@@ -7,6 +7,7 @@ def StartQuestion(question, question_data):
     # ---------- key variables -------------#
     pygame.init()
     x, y = WINDOW.x, WINDOW.y
+    Display = WINDOW.Display
     os.environ['SDL_VIDEO_WINDOW_POS'] = f"{x},{y}"
     FPS = 60
     clock = pygame.time.Clock()
@@ -32,7 +33,7 @@ def StartQuestion(question, question_data):
     main_group = BoxGroup(option_1, option_2, option_3, option_4, question_box)
     # feedback instance
     feedback_text = question_data[question]['feedback']
-    feedback = DynamicBox(0,0,window.SIZE,text=feedback_text,obj_type='feedback',font_size=32,center_text=False)
+    feedback = DynamicBox(0,0,window.SIZE,text=feedback_text,obj_type='feedback',font_size=32,center_text=False,color=Display.BACKGROUND)
 
     main_continue = Textbox(100, 0.9*window.height,text='Continue',text_size='medlarge')
     feedback_continue = Textbox(100, 0.9*window.height,text='Continue',text_size='medlarge')
@@ -46,6 +47,7 @@ def StartQuestion(question, question_data):
     start_fade = True
     fade = ScreenFade(1, (0, 0, 0))
     going_back = False
+
     while True:
         window.refresh()
         for event in pygame.event.get():
@@ -69,6 +71,7 @@ def StartQuestion(question, question_data):
                             going_back = True
                             start_fade = True
                             options_screen = True
+
                 # check for continue button click on the feedback screen
                 if feedback_continue.check_click() and not options_screen:
                     start_fade = True
@@ -87,6 +90,7 @@ def StartQuestion(question, question_data):
                             option.background_color = option.correct_color
                             option.hover_color = option.correct_color
                             move_to_feedback //= 2 # if they're right, move on to the next stage faster
+                        option.check_collision = False
 
         if options_screen:
             main_group.update_boxes(window.screen) # update the boxes (draw them) onto the screen
@@ -101,6 +105,10 @@ def StartQuestion(question, question_data):
         if pygame.time.get_ticks() - time1 > move_to_feedback and time1 and options_screen:
             main_continue.check_hover(pygame.mouse.get_pos())
             main_continue.show(window.screen, center=True)
+            for box in main_group.get_list():
+                if box.obj_type =='question':
+                    continue
+                box.surface.set_alpha(150)
 
         if start_fade:
             if going_back:

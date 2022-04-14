@@ -347,4 +347,4 @@ def main(username, user_id, level):
     play_level(username, user_id, level)
 
 if __name__ == '__main__':
-    main('Harsh', 0, 2)
+    main('Testing1', 0, 2)

@@ -7,7 +7,13 @@ x,y = 50,80
 
 os.environ['SDL_VIDEO_WINDOW_POS'] = f"{x},{y}"
 from _ctypes import PyObj_FromPtr  # see https://stackoverflow.com/a/15012814/355230 for adding lists to json no indent
-
+topics = {
+    'Systems Architecture':1.1,
+    'Software and Software development': 1.2,
+    'Exchanging Data': 1.3,
+    'Data types, Data structures, and Algorithms': 1.4,
+    'Elements of Computational thinking, Problem solving, and programming': 2
+}
 # --------------- modules to add lists/tuples to .json without indentation ---------------------- #
 class NoIndent(object):
     """ Value wrapper. """
@@ -97,7 +103,6 @@ def delete_user(username):
         delete_json_key(f'Questions/{file}', key=username, depth=2)
 
     delete_json_key(f'user_info/users.json',key=username)
-
 class Display:
     pygame.init()
     RED = (255,0,0)
@@ -105,7 +110,7 @@ class Display:
     WHITE = (255,255,255)
     GREY = (80,80,80)
     BLACK = (0,0,0)
-    BACKGROUND = (70,70,70)
+    BACKGROUND = (34,40,44)
     ORANGE = (255,215,0)
     GREEN = BACKGROUND
 
@@ -130,7 +135,7 @@ class Display:
 
         if back_pos is not None:
             self.BACK_X, self.BACK_Y = back_pos
-
+        self.BACK_X, self.BACK_Y = (20,22)
         if new_window:
             self.screen = pygame.display.set_mode(self.SIZE)
             pygame.display.set_caption(caption)
@@ -138,14 +143,13 @@ class Display:
             self.screen = pygame.Surface(self.SIZE)
 
         self.background=background
+        self.left_arrow = pygame.transform.scale(pygame.image.load(get_path('images/go_back.png')), (100, 38))
+        self.arrow_rect = pygame.Rect(self.BACK_X, self.BACK_Y, *self.left_arrow.get_size())
 
     def blit(self, content, coords):
         self.screen.blit(content, coords)
 
     def refresh(self, back=False, scroll=0, show_mouse_pos=True):
-        left_arrow = pygame.transform.scale(pygame.image.load(get_path('images/left-arrow.png')), (32, 32))
-        arrow_rect = pygame.Rect(self.BACK_X, self.BACK_Y, 32, 32)
-
         if isinstance(self.background, tuple): # if the background is an image
             self.screen.fill(self.background)
 
@@ -154,7 +158,9 @@ class Display:
             for i in range(4):
                 self.screen.blit(self.background,((i*self.SIZE[0]) + scroll,0))
 
-        if back: self.screen.blit(left_arrow,(self.BACK_X,self.BACK_Y))
+        if back:
+            self.screen.blit(self.left_arrow,(self.BACK_X,self.BACK_Y))
+            pygame.draw.rect(self.screen, (255,255,255), (self.BACK_X,self.BACK_Y,*self.left_arrow.get_size()),1)
 
         if show_mouse_pos:
             mouse_pos = self.MEDIUM_FONT.render(str(pygame.mouse.get_pos()),1,self.WHITE)
@@ -164,10 +170,8 @@ class Display:
     def check_return(self, mouse_pos=None):
         if not mouse_pos:
             mouse_pos = pygame.mouse.get_pos()
-        left_arrow = pygame.transform.scale(pygame.image.load(get_path('images/left-arrow.png')),(32,32))
-        arrow_rect = pygame.Rect(self.BACK_X,self.BACK_Y,*left_arrow.get_size())
 
-        if arrow_rect.collidepoint(mouse_pos) and pygame.mouse.get_pressed()[0]: return 1
+        if self.arrow_rect.collidepoint(mouse_pos) and pygame.mouse.get_pressed()[0]: return 1
 
     def draw_text(self,text,pos,size='MEDIUM',color=WHITE,center=False):
         text = eval(f'self.{size.upper()}_FONT.render(text, True, color)')

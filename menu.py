@@ -12,7 +12,6 @@ FPS = 60
 clock = pygame.time.Clock()
 window = WINDOW.Display(new_window=True)
 
-
 def show_leaderboards(surface, user_data):
     highest_points = lambda user: sum(user_data[user]['points'])
     top_ten = sorted(user_data, key=highest_points)[:10]
@@ -31,9 +30,9 @@ def show_leaderboards(surface, user_data):
         surface.blit(rendered_points, (start_x + padding_x, (padding_y * i) + (longest_name.height * i) + start_y))
 
 def show_menu(username):
-    user_data = WINDOW.read_json('user_info/users.json')[username]
+    user_data = WINDOW.read_json('user_info/users.json')
     topics = []
-    row_1 = ['Systems Architecture', 'Software and Software development', "Exchanging Data"]
+    row_1 = ['Systems Architecture', 'Software and Software development', 'Exchanging Data']
     row_2 = ['Data types, Data structures, and Algorithms',
              'Elements of Computational thinking, Problem solving, and programming']
 
@@ -52,7 +51,7 @@ def show_menu(username):
     rec = topics[2].rect
     username_width = DynamicBox.MEDIUM_FONT.render(f'username: {username}', 1, (255, 255,255)).get_width() + 42  # finding out the maximum width for a username since 'W' is largest width character
 
-    username_box = DynamicBox(rec.x + (rec.w - username_width)//2, 40, (username_width, topics[1].rect.h // 2), 'username',text=f'username: {username} \\n points: {sum(user_data["points"])}', font_size=23, center_text=True)
+    username_box = DynamicBox(rec.x + (rec.w - username_width)//2, 40, (username_width, topics[1].rect.h // 2), 'username',text=f'username: {username} \\n points: {sum(user_data[username]["points"])}', font_size=23, center_text=True)
 
     width = DynamicBox.MEDIUM_FONT.render(f'Leaderboards', 1, (255, 255, 255)).get_width() * 1.3
     rec = topics[1].rect # the 2nd topic's rect
@@ -61,6 +60,7 @@ def show_menu(username):
 
     all_boxes = BoxGroup(*topics, username_box, leaderboard_box)
     leaderboards = False
+    print(user_data)
     while True:
         window.refresh(back=True, show_mouse_pos=True)
         for event in pygame.event.get():
@@ -78,7 +78,8 @@ def show_menu(username):
                 clicked = all_boxes.check_clicks()
                 if bool(clicked):
                     if clicked.obj_type == 'topic':
-                        print(clicked.text)
+                        corresponding_num = WINDOW.topics[clicked.text]
+                        print(corresponding_num)
                     elif clicked.obj_type == 'leaderboard':
                         leaderboards = True
 
@@ -98,4 +99,4 @@ def show_menu(username):
 
 
 if __name__ == '__main__':
-    show_menu('w'*15)
+    show_menu('Testing1')
