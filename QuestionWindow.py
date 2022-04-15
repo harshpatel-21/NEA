@@ -33,14 +33,14 @@ def StartQuestion(question, question_data,timer=0,x1=None):
     main_group = BoxGroup(option_1, option_2, option_3, option_4, question_box)
     # feedback instance
     feedback_text = question_data[question]['feedback']
-    feedback = DynamicBox(0,40,(window.SIZE[0],window.SIZE[1]-40),text=feedback_text,obj_type='feedback',font_size=29,center_text=(False,False),color=Display.BACKGROUND)
+    feedback = DynamicBox(0,40,(window.SIZE[0],window.SIZE[1]-40),text=feedback_text, obj_type='feedback',font_size=29,center_text=(False,False),color=Display.BACKGROUND)
 
     main_continue = Textbox(100, 0.9*window.height,text='Continue',text_size='medlarge')
     feedback_continue = Textbox(100, 0.9*window.height,text='Continue',text_size='medlarge')
     options_screen = True
     result = False
     check_click = True
-    move_to_feedback = 6000 # the time to wait until moving onto feedback screen
+    move_to_feedback = 6000 # the time to wait until moving onto feedback screen == 6 seconds
     time1 = 0
     main_continue.create_rect()
     feedback_continue.create_rect()
@@ -76,11 +76,13 @@ def StartQuestion(question, question_data,timer=0,x1=None):
                     start_fade = True
                     going_back = True
 
-                clicked = main_group.check_clicks() # if an option has been clicked
-                if clicked and check_click:
+                clicked = main_group.check_clicks() # check if an option has been clicked
+                if clicked and check_click: # if an option has been clicked
                     result = clicked.text == correct_answer # check if the clicked option's text matches to the correct answer
                     time1 = pygame.time.get_ticks()
                     check_click = False # don't check for more clicks on any other options
+
+                    # change the options' properties based on the outcome
                     for option in main_group.objects:
                         if option.text != correct_answer and option.obj_type!='question':
                             option.background_color = option.incorrect_color
@@ -88,18 +90,22 @@ def StartQuestion(question, question_data,timer=0,x1=None):
                         else:
                             option.background_color = option.correct_color
                             option.hover_color = option.correct_color
-                            move_to_feedback //= 2 # if they're right, move on to the next stage faster
-                        option.check_collision = False
-                        paused=True
+                            move_to_feedback //= 2 # if they're right, show the continue button faster
 
-        if options_screen:
+                        option.check_collision = False # don't check for collisions with the selected option/button anymore
+                        paused=True # don't continue the timer after the question has been answered to allow the user to absorb info without worrying about time
+
+        if options_screen: # if the user is still on the options screen
             main_group.update_boxes(window.screen) # update the boxes (draw them) onto the screen
 
         elif not options_screen: # if an option has been picked, and it was incorrect show the feedback text
-            feedback.show(window.screen) # show the feedback
-            feedback_continue.show(window.screen)
-            feedback_continue.check_hover(pygame.mouse.get_pos())
-            feedback_continue.show(window.screen, center=True)
+            if not feedback.text:
+                going_back = True # go back
+            if not going_back:
+                feedback.show(window.screen) # show the feedback
+                feedback_continue.show(window.screen)
+                feedback_continue.check_hover(pygame.mouse.get_pos())
+                feedback_continue.show(window.screen, center=True)
 
         # after a option is picked, and after a certain time, move to feedback screen, and display its continue button
         if pygame.time.get_ticks() - time1 > move_to_feedback and time1 and options_screen:
@@ -121,6 +127,7 @@ def StartQuestion(question, question_data,timer=0,x1=None):
         if (pygame.time.get_ticks() - x1) >= 1000 and not paused: # 1 ticks == 1 millisecond, 1000 millisecond = 1 second, update timer every second
             timer += 1  # account for the time in the question screen
             x1 = pygame.time.get_ticks()
+
         window.draw_text(text=f'Time: {WINDOW.convert_time_format(timer)}', pos=(670,3), size='MEDIUM',center=True)
         pygame.display.update()
         clock.tick(FPS)

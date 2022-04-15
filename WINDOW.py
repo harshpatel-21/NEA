@@ -108,6 +108,7 @@ def delete_user(username):
         delete_json_key(f'Questions/{file}', key=username, depth=2)
 
     delete_json_key(f'user_info/users.json',key=username)
+
 class Display:
     pygame.init()
     RED = (255,0,0)

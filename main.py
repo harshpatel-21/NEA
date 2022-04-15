@@ -28,6 +28,7 @@ window.background = background
 pygame.init()
 #------------------------------ update details ------------------------------#
 def update_details():
+    # fill in missing user data in question files. ie when a new question is added, dont have to do it manually
     for user in read_json('user_info/users.json'):
         for topic_name in os.listdir('Questions'):
             question_path = f'Questions/{topic_name}'

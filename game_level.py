@@ -305,11 +305,11 @@ def play_level(username, user_id, level):
             fade.direction = -1
 
         if show_question:
-            if questions: # making sure there are still questions left.
+            if enemy_group.sprites(): # making sure there are enough enemies left.
                 current_question = questions.pop() # pop the question at the top of the stack
-                QuestionWindow_values = [*QuestionWindow.StartQuestion(question=current_question, question_data=question_data, timer=timer,x1=x1)]
+                QuestionWindow_values = QuestionWindow.StartQuestion(question=current_question, question_data=question_data, timer=timer,x1=x1)
                 # extract current stats for the question and adjust them based on result of the answer
-                if len(QuestionWindow_values)==2: # if the result and timer was returned
+                if isinstance(QuestionWindow_values,tuple): # if the result and timer was returned
                     result = QuestionWindow_values[0] # the actual result
                     # print((question_data[current_question])[username])
                     right, wrong, accuracy = (question_data[current_question])[username]
@@ -319,7 +319,7 @@ def play_level(username, user_id, level):
                     question_data[current_question][username] = [right, wrong, accuracy]
                     timer = QuestionWindow_values[1]
                 else:
-                    timer = QuestionWindow_values[0]
+                    timer = QuestionWindow_values
 
                 # inwards fade
                 start_fade = True
@@ -334,9 +334,9 @@ def play_level(username, user_id, level):
         if start_fade:
             if fade.fade(window.screen): # if the fade has completed
                 start_fade = False # don't show the intro fade anymore
-                if fade.direction == -1 and player.check_alive() and questions: # if fading out, and there are still questions then it means going to a question
+                if fade.direction == -1 and player.check_alive() and questions and enemy_group.sprites(): # if fading out, and there are still questions then it means going to a question
                     show_question = True
-                elif fade.direction == -1 and (not questions or not player.check_alive()):
+                elif fade.direction == -1 and (not questions or not player.check_alive() or not enemy_group.sprites()):
                     run = False
 
         if (pygame.time.get_ticks() - x1) > 1000: # 1 ticks == 1 millisecond, 1000 millisecond = 1 second
@@ -359,9 +359,10 @@ def play_level(username, user_id, level):
         current_best = min(current_best,timer)
     elif len(questions)==0:
         current_best = timer
+
     user_info[username][level] = current_best # update time if it was lower
-    user_info[username]['points'].append(points)
-    write_json(user_info, f'user_info/users.json')
+    user_info[username]['points'].append(points) # adding points onto the player's history for graph plotting
+    write_json(user_info, f'user_info/users.json') # save all the changes
 
 def main(username, user_id, level):
     play_level(username, user_id, level)
