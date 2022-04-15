@@ -106,7 +106,7 @@
             "Virtual Memory"
         ],
         "feedback": "The order for speed goes: Flash -> magnetic -> Optical. In this case SSDs are the fastest, then HDDs, then Blu-Rays. Virtual Memory is regarded as a form of temporary RAM; this is because Virtual Memory is a small segment of secondary storage that is assigned to hold inactive running programs that are in RAM to free up space in the RAM. However constant use of virtual memory and switching back and forth from RAM to Hard Disk Drive can cause disk threshing.",
-        "Testing1": [1, 1, 0.5],
+        "Testing1": [2, 1, 0.6666666666666666],
         "Testing": [0, 0, 0]
     },
     "What are the two parts of a computer instruction?": {
