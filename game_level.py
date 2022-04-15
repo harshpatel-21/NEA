@@ -44,7 +44,7 @@ tile_info = {
     'enemy': '25',
     'enemy_scale': (int(70 * 2.4), 92),
     'player_scale': (50, 83),
-    'move_radii': [0, 1, 2, 2, 0, 2, 0, 0, 1, 0, 1, 1]
+    'move_radii': [4, 1, 2, 2, 0, 2, 0, 0, 1, 0, 1, 1]
 }
 
 enemy_scale = (int(70 * 2.4), 92)
@@ -307,13 +307,14 @@ def play_level(username, user_id, level):
 
         # portal handling
         portal_group.draw(window.screen, target=camera)
-        if not portal_enter: # if the user hasn't already entered the portal
-            for portal in portal_group.sprites():
-                portal_enter = portal.update(player,camera)
-                if portal_enter and (not questions or not enemy_group.sprites()): # if all questions are answered or enemies are dead
-                    start_fade = True
-                    fade.direction = -1
-                    show_question=False
+        # if the user hasn't already entered the portal
+        for portal in portal_group.sprites():
+            portal_collision = portal.update(player,camera) and not portal_enter
+            if portal_collision and (not questions or not enemy_group.sprites()): # if all questions are answered or enemies are dead
+                start_fade = True
+                fade.direction = -1
+                show_question=False
+                portal_enter = True
 
         # do fade animation
         if start_fade:
