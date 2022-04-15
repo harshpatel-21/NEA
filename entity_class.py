@@ -296,6 +296,7 @@ class Entity(pygame.sprite.Sprite):
             image_rect.midbottom = self.rect.midbottom
 
         self.rect = image_rect
+        self.collision_rect.midbottom = image_rect.midbottom # move the collision rectangle
 
         if self.obj_type =='player': # only the player's hit box should be dynamic, for the rest it should just be normal
             self.collision_rect = image_rect
@@ -433,13 +434,13 @@ class Entity(pygame.sprite.Sprite):
                 'Jumping': (46, 92),
                 'Falling': (46, 92),
                 'Running': (46 * 1.5, 92),
-                'Die': (135, 60)
+                'Die': (135, 90)
             },
             'blackguy': {
                 'Idle':(scale[0]*0.8,scale[1]*0.8),
                 'Running': (scale[0]*0.8,scale[1]*0.8),
                 'Attack':(scale[0]*2,scale[1]*2),
-                'Die':(scale[0]*0.8,130)
+                'Die':(scale[0]*0.65,200)
             }
         }
         temp = []
@@ -589,15 +590,17 @@ class Enemy(Entity):
         self.update_action(self.get_index('Idle'), world)
 
     def draw(self, surface, target):  # custom draw method for enemy class
-        debug = 0
+        debug = 1
         temp = self.rect.copy()
         temp.x = temp.x - target.rect.x + Display.WIDTH // 2
         temp.y = temp.y - target.rect.y + Display.HEIGHT // 2
-
+        temp2 = self.collision_rect.copy()
+        temp2.x = temp2.x - target.rect.x + Display.WIDTH // 2
+        temp2.y = temp2.y - target.rect.y + Display.HEIGHT // 2
         surface.blit(pygame.transform.flip(self.image, self.flip_image or self.direction == -1, False), temp)
         if debug:
-            pygame.draw.rect(surface, (255, 0, 0), self.attack_vision, 2)
-            pygame.draw.rect(surface, (255, 255, 0), self.rect, 2)
+            # pygame.draw.rect(surface, (255, 0, 0), self.attack_vision, 2)
+            pygame.draw.rect(surface, (255, 255, 0), temp2, 2)
         self.draw_health_bar(surface, target)
 
     def update(self, player, surface, world):

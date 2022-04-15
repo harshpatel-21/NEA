@@ -23,14 +23,13 @@ TILE_TYPES = os.listdir(f'images/level_images/{LEVEL}/Tiles')
 img_list = []
 TILE_SCALE = (window.TILE_DIMENSION_X, window.TILE_DIMENSION_Y)
 tile_x, tile_y = TILE_SCALE
-# ENEMY = random.choice(['knight', 'samurai'])
-ENEMY = 'samurai'
+ENEMY = random.choice(['knight', 'samurai', 'blackguy'])
+ENEMY = 'blackguy'
 PLAYER = 'player'
 # ENEMY_IMG = 'samurai'
 # PLAYER_IMG = pygame.image.load(f'images/mobs/{PLAYER}/default.png')
 
-background = pygame.transform.scale(pygame.image.load(WINDOW.get_path('backgrounds/background_2.png')),
-                                    window.SIZE).convert_alpha()
+background = pygame.transform.scale(pygame.image.load(WINDOW.get_path('backgrounds/background_2.png')),window.SIZE).convert_alpha()
 
 GRAVITY = 0.75
 # scale = (60,92) # with sword
@@ -213,6 +212,7 @@ def play_level(username, user_id, level):
     timer = 0
     timing = 0
     portal_enter = False
+    questions = questions[:len(enemy_group.sprites())]
     while run:
         player.check_alive()
         camera.update(player, world)
@@ -307,11 +307,13 @@ def play_level(username, user_id, level):
 
         # portal handling
         portal_group.draw(window.screen, target=camera)
-        for portal in portal_group.sprites():
-            portal_enter = portal.update(player,camera)
-            if portal_enter and (not questions or not enemy_group.sprites()): # if all questions are answered or enemies are dead
-                start_fade = True
-                fade.direction = -1
+        if not portal_enter: # if the user hasn't already entered the portal
+            for portal in portal_group.sprites():
+                portal_enter = portal.update(player,camera)
+                if portal_enter and (not questions or not enemy_group.sprites()): # if all questions are answered or enemies are dead
+                    start_fade = True
+                    fade.direction = -1
+                    show_question=False
 
         # do fade animation
         if start_fade:
@@ -319,6 +321,7 @@ def play_level(username, user_id, level):
                 start_fade = False # don't show the intro fade anymore
                 if portal_enter and fade.direction == -1:
                     run = False
+                    show_question = False
                 # if fading out, check if there are still questions and enemies left to show a question, otherwise its just a normal fade
                 elif fade.direction == -1 and not player.remove:
                     show_question = True
