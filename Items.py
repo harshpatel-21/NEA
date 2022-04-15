@@ -25,36 +25,41 @@ class Item(pygame.sprite.Sprite):
         self.image = self.animation[self.animation_pointer]
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
-        self.rect.midtop = (x + Display.TILE_DIMENSION_X // 2, y + (
-                Display.TILE_DIMENSION_Y - self.image.get_height()))  # make it so that its at the center of a tile, even if the size isn't the same
+        self.rect.midtop = (x + Display.TILE_DIMENSION_X // 2, y)  # make it so that its at the center of a tile, even if the size isn't the same
         self.initial_time = pygame.time.get_ticks()
-        self.obj_type = 'Coin'
+        self.obj_type = item_type
 
     def draw(self, surface, target):
         temp = self.rect.copy()
-        temp.x -= target.rect.x
+        x, y = target.rect.topleft
+        temp.x = temp.x - x + Display.WIDTH//2
+        temp.y = temp.y - y + Display.HEIGHT//2
         # midtop = self.rect.midtop
         # self.rect.midtop = (midtop[0] - (Display.TILE_DIMENSION_X - self.rect.w)//2 - 2, midtop[1])
         pos = self.rect
         surface.blit(self.image, temp)
 
-    def update(self, obj=None):
+    def update(self, obj, camera):
         # do the animation handling
         self.animation_handling()
         # check for collision
         if not obj: return # if no object is passed then return
         # flips the mask of the image during collision detection
         obj_mask = pygame.mask.from_surface(pygame.transform.flip(obj.image, obj.direction==-1, False))
-        offset_x = obj.rect.x - self.rect.x
-        offset_y = obj.rect.y - self.rect.y
+        offset_x = camera.rect.x - self.rect.x
+        offset_y = camera.rect.y - self.rect.y
         collision = self.mask.overlap(obj_mask,(offset_x,offset_y))
         if collision:
-            if self.item_type == 'coin':
+            if self.obj_type == 'coin':
                 print('coin collected!')
-            self.kill() # remove the item from the group once its been interacted with
+                self.kill() # remove the item from the group once its been interacted with
+            return self
+        return collision
 
     def animation_handling(self):
         cooldown_time = 60
+        if self.obj_type == 'portal':
+            cooldown_time = 100
         current_time = pygame.time.get_ticks()
 
         if current_time - self.initial_time >= cooldown_time:
@@ -63,17 +68,17 @@ class Item(pygame.sprite.Sprite):
 
         self.image = self.animation[self.animation_pointer]
         rec = self.rect
-        self.rect = self.image.get_rect()
+        # self.rect = self.image.get_rect()
         self.mask = pygame.mask.from_surface(self.image)
         tile_x, tile_y = Display.TILE_DIMENSION_X, Display.TILE_DIMENSION_Y
 
         # make it so that its at the center of a tile, even if the tile size isn't the same as item size
         # self.rect.midtop = (self.x + tile_x // 2, self.y + (tile_y - self.image.get_height()))
-        self.rect.topleft = rec.topleft
+        # self.rect.topleft = rec.topleft
 
     def get_animations(self):
         item_path = os.path.join(image_path, self.item_type)
-        animation_scale = {'coin': (int(32 * 0.8), int(32 * 0.9))}
+        animation_scale = {'coin': (int(32 * 0.8), int(32 * 0.9)),'portal':(92,92)}
         images = os.listdir(item_path)  # get a list of the image names for the animation
         for image in images:
             image = pygame.image.load(os.path.join(item_path, image))
