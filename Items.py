@@ -14,7 +14,7 @@ image_path = os.path.join(current_path, 'images', 'items') # The image folder pa
 pygame.init()
 
 
-class Item(pygame.sprite.Sprite):
+class AnimatedTile(pygame.sprite.Sprite):
     def __init__(self, item_type, x, y, scale):
         pygame.sprite.Sprite.__init__(self)
         self.item_type = item_type

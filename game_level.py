@@ -2,7 +2,7 @@
 # if __name__ == 'Game_V4':
 from entity_class import Entity, Enemy, Projectile, Player, Group
 import pygame, WINDOW, QuestionWindow, os, sys, random, csv
-from Items import Item, Decoration, DeathBlock, Obstacle
+from Items import AnimatedTile, Decoration, DeathBlock, Obstacle
 from transition import ScreenFade
 
 pygame.init()
@@ -23,7 +23,8 @@ TILE_TYPES = os.listdir(f'images/level_images/{LEVEL}/Tiles')
 img_list = []
 TILE_SCALE = (window.TILE_DIMENSION_X, window.TILE_DIMENSION_Y)
 tile_x, tile_y = TILE_SCALE
-ENEMY = random.choice(['knight', 'samurai'])
+# ENEMY = random.choice(['knight', 'samurai'])
+ENEMY = 'samurai'
 PLAYER = 'player'
 # ENEMY_IMG = 'samurai'
 # PLAYER_IMG = pygame.image.load(f'images/mobs/{PLAYER}/default.png')
@@ -35,17 +36,21 @@ GRAVITY = 0.75
 # scale = (60,92) # with sword
 # load in game data
 tile_info = {
-    'obstacle': '0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 22 23',
-    'decoration': '21 28',
-    'kill_block': '26 27',
+    'obstacle': '0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 22 23'.split(),
+    'decoration': '21 28'.split(),
+    'kill_block': '26 27'.split(),
     'coin': '',
     'player': '24',
+    'portal': '30',
     'enemy': '25',
+    'enemy_scale': (int(70 * 2.4), 92),
+    'player_scale': (50, 83),
+    'move_radii': [0, 1, 2, 2, 0, 2, 0, 0, 1, 0, 1, 1]
 }
 
 enemy_scale = (int(70 * 2.4), 92)
 player_scale = (50, 83)
-move_radii = [1, 1, 1, 1, 1]
+move_radii = [0, 1, 2, 2, 0, 2, 0, 0, 1, 0, 1, 1]
 img_list = {}
 for i in TILE_TYPES:
     img = pygame.image.load(WINDOW.get_path(f'images/level_images/{LEVEL}/Tiles/{i}')).convert_alpha()
@@ -69,6 +74,7 @@ class World:
         death_blocks = []
         enemies = []
         coins = []
+        portals = []
 
         for ind, layer in enumerate(data.values()):
             for y, row in enumerate(layer):
@@ -81,14 +87,14 @@ class World:
                     #     tile = str(int(tile) - 2)
                     img = img_list[tile]  # get the image from the list of images
                     img_rect = img.get_rect()
-                    img_rect.topleft = (x * window.TILE_DIMENSION_X, y * window.TILE_DIMENSION_Y)
+                    # img_rect.topleft = (x * window.TILE_DIMENSION_X, y * window.TILE_DIMENSION_Y)
                     img_rect.bottomleft = (x * window.TILE_DIMENSION_X, y * window.TILE_DIMENSION_Y + 46)
                     img_mask = pygame.mask.from_surface(img)
-                    tile_data = (img, img_rect, img_mask)
+
                     obj = None
                     if tile in tile_info['obstacle']:
                         obj = Obstacle(img, img_rect)
-                        if ind != 0: self.obstacle_list.append(obj)
+                        if ind != 0: self.obstacle_list.append(obj) # if it isn't the 0th layer (for no collisions)
                     elif tile in tile_info['decoration']:  # grass / no collision decoration
                         obj = Decoration(img, img_rect)
                         # decorations.append(Decoration(img, img_rect))
@@ -97,7 +103,7 @@ class World:
                         obj = DeathBlock(img, img_rect)
                         death_blocks.append(obj)
                     elif tile == tile_info['coin']:  # coin
-                        obj = Item('coin', img_rect.x, img_rect.y, (32, 32))
+                        obj = AnimatedTile('coin', img_rect.x, img_rect.y, (32, 32))
                         coins += [obj]
                     elif tile == tile_info['player']:  # create player if there's one on the map
                         # print('player')
@@ -105,9 +111,12 @@ class World:
                     elif tile == tile_info['enemy']:
                         enemies += [Enemy(img_rect.x, img_rect.y, ENEMY, enemy_scale,
                                           all_animations=['Idle', 'Die', 'Running', 'Attack'],
-                                          max_health=100, x_vel=2, move_radius=1)]
+                                          max_health=100, x_vel=2, move_radius=tile_info['move_radii'][enemy_counter])]
+                        enemy_counter += 1
+                    elif tile == tile_info['portal']:
+                        portals += [AnimatedTile('portal', img_rect.x,img_rect.y, 2)]
                     if obj: self.all_tiles.append(obj)
-        return player, decorations, death_blocks, enemies, coins
+        return player, decorations, death_blocks, enemies, coins, portals
 
     def draw(self, background, target):
         background_width = background.get_width()
@@ -127,14 +136,11 @@ def load_level(level):
     layers = {}
     path = f'levels/{level}'
     files = os.listdir(path)
-    entities = []
-    for file in files:
-        if 'Entities' in file:
-            entities = file
-            files.remove(file)
 
-    ordered = sorted(files,
-                     key=lambda i: int(i.split('_')[1][:i.split('_')[1].index('.')]))  # sort layers based on numbers
+    ordered = sorted(files,key=lambda i: int(i.split('_')[1][:i.split('_')[1].index('.')]))  # sort layers based on numbers
+    # highest number == highest layer -> prioritised/placed above everything else
+    # so by sorting from lowest -> highest, lowest layer is blitted first, and highest layer is blitted last/ on top of everything else
+
     files = ordered  # sort the tiles such that highest layer is prioritised/ blitted over the other layers
     for index, file in enumerate(files):
         with open(os.path.join(path, file)) as file:
@@ -189,13 +195,13 @@ def play_level(username, user_id, level):
     # questions will be treated as a stack. Last in is first out
 
     # sprite groups
-    player, decorations, death_blocks, enemies, coins = world.process_data(game_level)
+    player, decorations, death_blocks, enemies, coins, portals = world.process_data(game_level)
     decoration_group = Group(*decorations)
     death_blocks_group = Group(*death_blocks)
     enemy_group = Group(*enemies)
     arrow_group = Group()
     coin_group = Group(*coins)
-
+    portal_group = Group(*portals)
     camera = Camera(player)
     points = 0
     run=True
@@ -206,11 +212,11 @@ def play_level(username, user_id, level):
     x1 = pygame.time.get_ticks()
     timer = 0
     timing = 0
+    portal_enter = False
     while run:
         player.check_alive()
-        extra_time = 0
-
         camera.update(player, world)
+
         # only perform actions based on these conditions
         move_conditions = not player.in_air and player.health and (
                     player.y_vel <= player.GRAVITY) and not start_fade # making sure player isn't in the air and is still alive
@@ -272,6 +278,7 @@ def play_level(username, user_id, level):
 
         keys = pygame.key.get_pressed()
 
+        # group handling
         moving_left = keys[pygame.K_a] and attack_conditions
         moving_right = keys[pygame.K_d] and attack_conditions
 
@@ -295,17 +302,34 @@ def play_level(username, user_id, level):
         death_blocks_group.update(player)  # do death block checking for player
 
         # # coin handling
-        # coin_group.draw(window.screen, screen_scroll)
-        # coin_group.update(player)  # check for player collision
+        coin_group.draw(window.screen, target=camera)
+        coin_group.update(player, camera)  # check for player collision
 
-        # if an enemy has died, present a question
-        enemy_dead = enemy_group.check_death()
-        if enemy_dead and questions: # if there are still questions left, then do the animation to goto question screen
-            start_fade = True
-            fade.direction = -1
+        # portal handling
+        portal_group.draw(window.screen, target=camera)
+        for portal in portal_group.sprites():
+            portal_enter = portal.update(player,camera)
+            if portal_enter and (not questions or not enemy_group.sprites()): # if all questions are answered or enemies are dead
+                start_fade = True
+                fade.direction = -1
+
+        # do fade animation
+        if start_fade:
+            if fade.fade(window.screen): # if the fade has completed
+                start_fade = False # don't show the intro fade anymore
+                if portal_enter and fade.direction == -1:
+                    run = False
+                # if fading out, check if there are still questions and enemies left to show a question, otherwise its just a normal fade
+                elif fade.direction == -1 and not player.remove:
+                    show_question = True
+                # if the player has died, then don't update their timer
+                elif fade.direction == -1 and player.remove:
+                    run = False
+                    timer = 0
+                    start_fade = False
 
         if show_question:
-            if enemy_group.sprites(): # making sure there are enough enemies left.
+            if questions: # making sure there are still questions left to pop
                 current_question = questions.pop() # pop the question at the top of the stack
                 QuestionWindow_values = QuestionWindow.StartQuestion(question=current_question, question_data=question_data, timer=timer,x1=x1)
                 # extract current stats for the question and adjust them based on result of the answer
@@ -331,21 +355,21 @@ def play_level(username, user_id, level):
             start_fade = True
             fade.direction = -1
 
-        if start_fade:
-            if fade.fade(window.screen): # if the fade has completed
-                start_fade = False # don't show the intro fade anymore
-                if fade.direction == -1 and player.check_alive() and questions and enemy_group.sprites(): # if fading out, and there are still questions then it means going to a question
-                    show_question = True
-                elif fade.direction == -1 and (not questions or not player.check_alive() or not enemy_group.sprites()):
-                    run = False
+         # if an enemy has died, present a question
+        enemy_dead = enemy_group.check_death()
+        if enemy_dead and questions: # if there are still questions left, then do the animation to goto question screen
+            start_fade = True
+            fade.direction = -1
 
         if (pygame.time.get_ticks() - x1) > 1000: # 1 ticks == 1 millisecond, 1000 millisecond = 1 second
             timer += 1  # account for the time in the question screen
             x1 = pygame.time.get_ticks()
 
-        window.draw_text(text=f'Time: {WINDOW.convert_time_format(timer)}', pos=(670,3), size='MEDIUM',center=True)
+        # draw text and back button
+        window.draw_text(text=f'Time: {WINDOW.convert_time_format(timer)}', pos=(670,3), size='MEDIUM', center=True)
         window.draw_back()
         window.draw_text(f'weapon: {["Sword", "Bow"][player.current_weapon - 1]}', (200, 5))
+
         pygame.display.update()  # make all the changes
         clock.tick(FPS)
 
@@ -354,10 +378,10 @@ def play_level(username, user_id, level):
     user_info = read_json(f'user_info/users.json')
     current_best = user_info[username][level]
 
-    # only update the completion time if the user answered all the questions
-    if current_best != 0 and len(questions)==0:
-        current_best = min(current_best,timer)
-    elif len(questions)==0:
+    # only update the completion time if the user answered all the questions/ defeated all enemies
+    if current_best != 0 and (not questions or not enemy_group.sprites()):
+        current_best = min(current_best, timer)
+    else:
         current_best = timer
 
     user_info[username][level] = current_best # update time if it was lower

@@ -160,6 +160,7 @@ class Entity(pygame.sprite.Sprite):
         self.health_rect.y -= self.rect.h // 2 + 10
         self.ground = 0
         self.remove = False
+        self.collision_rect = self.rect
 
     def move(self, moving_left, moving_right, world, death_blocks=0):  # handle player movement
         self.health_rect.y = self.rect.y - 10
@@ -202,7 +203,7 @@ class Entity(pygame.sprite.Sprite):
         # self.rect.h = 80
         for tile in world.obstacle_list:
             # check collision in x direction
-            if tile.rect.colliderect(self.rect.x + dx, self.rect.y, self.rect.w, self.rect.h):
+            if tile.rect.colliderect(self.collision_rect.x + dx, self.collision_rect.y, self.rect.w, self.rect.h):
                 dx = 0
                 # If AI collision with wall, turn em around
                 if isinstance(self, Enemy):
@@ -210,7 +211,7 @@ class Entity(pygame.sprite.Sprite):
                     # self.move_counter *= -1
                     self.wall_collision = True
 
-            if tile.rect.colliderect(self.rect.x, self.rect.y + dy, self.rect.w, self.rect.h):
+            if tile.rect.colliderect(self.collision_rect.x, self.collision_rect.y + dy, self.rect.w, self.rect.h):
                 dy = 0
                 # check if jumping and below ground
                 if self.y_vel < 0:
@@ -236,6 +237,7 @@ class Entity(pygame.sprite.Sprite):
         self.rect.y += dy
         self.health_rect.x += dx
         self.health_rect.y += dy
+        self.collision_rect.bottom = self.rect.bottom
 
         return screen_scroll
 
@@ -244,7 +246,7 @@ class Entity(pygame.sprite.Sprite):
         # self.health_rect.center = self.rect.center
         # self.health_rect.y -= self.rect.h//2 + 10
         temp = self.rect.copy()  # copy the rect of the current entity
-
+        temp.y = self.collision_rect.y
         temp.x = temp.x - target.rect.x + Display.WIDTH / 2.0
         temp.y = temp.y - target.rect.y + Display.HEIGHT // 2 - 10
 
@@ -281,15 +283,25 @@ class Entity(pygame.sprite.Sprite):
         #     cooldown_time = 90
         shoot_projectile = False
         # update entity image
+
         self.image = self.animations[self.current_action][self.animation_pointer]
         image_rect = self.image.get_rect()
 
-        if self.direction == 1:
-            image_rect.bottomleft = self.rect.bottomleft  # keep the entity on the ground
+        if self.obj_type != 'blackguy':
+            if self.direction == 1:
+                image_rect.bottomleft = self.rect.bottomleft  # keep the entity on the ground
+            else:
+                image_rect.bottomright = self.rect.bottomright
         else:
-            image_rect.bottomright = self.rect.bottomright
+            image_rect.midbottom = self.rect.midbottom
 
         self.rect = image_rect
+
+        if self.obj_type =='player': # only the player's hit box should be dynamic, for the rest it should just be normal
+            self.collision_rect = image_rect
+            # this fixes the issue of after enemies attack near a tile, if there was some particle that collided with a tile,
+            # it would check for collision and move them up even tho it shouldn't have
+
         self.mask = pygame.mask.from_surface(self.image)
         current_time = pygame.time.get_ticks()
         death_index = self.get_index('Die')
@@ -366,7 +378,7 @@ class Entity(pygame.sprite.Sprite):
             return
         if self.obj_type == 'knight':
             if self.health:  # if the player is alive
-                if self.in_air:  # if jumping
+                if self.in_air or self.y_vel > self.GRAVITY:  # if jumping
                     if self.y_vel < 0:  # if going upwards
                         self.update_action(self.get_index('Jumping'))
                         pass
@@ -422,6 +434,12 @@ class Entity(pygame.sprite.Sprite):
                 'Falling': (46, 92),
                 'Running': (46 * 1.5, 92),
                 'Die': (135, 60)
+            },
+            'blackguy': {
+                'Idle':(scale[0]*0.8,scale[1]*0.8),
+                'Running': (scale[0]*0.8,scale[1]*0.8),
+                'Attack':(scale[0]*2,scale[1]*2),
+                'Die':(scale[0]*0.8,130)
             }
         }
         temp = []
@@ -559,7 +577,7 @@ class Enemy(Entity):
             self.move_counter += 1
 
             self.change_direction = False
-            if self.move_counter > (self.move_radius * Display.TILE_DIMENSION_X) / self.x_vel or self.wall_collision:
+            if (self.move_counter > (self.move_radius * Display.TILE_DIMENSION_X) / self.x_vel or self.wall_collision) and self.y_vel <= self.GRAVITY:
                 self.change_direction = True
                 self.set_idling(world)
                 self.wall_collision = False
@@ -624,7 +642,7 @@ class Group(pygame.sprite.Group):
     def check_death(self):
         ask_question = False
         for obj in self.sprites():
-            if obj.health <= 0 and obj.animation_pointer == len(obj.all_animations[obj.get_index('Die')]):
+            if obj.remove:
                 ask_question = True
             if obj.trigger_removal:
                 obj.trigger_removal = False
