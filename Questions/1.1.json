@@ -29,7 +29,7 @@
             "Get a bigger motherboard"
         ],
         "feedback": " - Each core of a CPU can execute its own independent Fetch Decode Execute (FDE) cycle; increasing the number of cores can increase the amount of simultaneous FDE cycles executed to enhance processing power. \\n \\n - Another way to increase processing power is by increasing the clock speed. The clock speed is the time taken for one FDE cycle to complete, so by increasing this it results in more FDE cycles being completed per specified time frame. \\n \\n - Increasing the Cache memory is also another option to improve CPU performance. Cache memory is the CPU's onboard memory. Instructions fetched from main memory are copied to the cache so if required again, they can be accessed quicker. As cache fills up, unused instructions are replaced. ",
-        "Testing1": [4, 1, 0.8],
+        "Testing1": [4, 2, 0.6666666666666666],
         "Testing": [0, 0, 0]
     },
     "Which two CPU registers will regularly store the same value?": {
@@ -73,7 +73,7 @@
             "2"
         ],
         "feedback": " - The Von Neumann system architecture has one Control Unit, one shared block of memory for data and instructions, and one set of parallel wires called busses which connect two or more components inside the CPU and to external components such as Main Memory. \\n \\n - The Harvard Architecture contains one control unit and two separate chunks of memory with their own sets of busses allowing for simultaneous communication between data and instructions. \\n \\n - Contemporary processors  use a combination of Harvard and Von Neumann architecture. Von Neumann is used when working with data and instructions in main memory, but uses Harvard architecture to divide the cache into instruction cache and data cache",
-        "Testing1": [2, 2, 0.5],
+        "Testing1": [3, 3, 0.5],
         "Testing": [0, 0, 0]
     },
     "Which type of processor has a large instruction set built into it": {
@@ -84,7 +84,7 @@
             "BISC"
         ],
         "feedback": " - CISCs (Complex Instruction Set Computers) contain a large, and complex instruction sets where one line of code can represent several lines of machine code. This can make development much easier as it saves time coding and reduces files size however this does come at the cost of higher energy consumption and costs. \\n \\n - RISC (Reduced instruction set computers) have a reduced instruction set where one instruction translates to one machine code instruction which makes development harder, but uses up less power and are cheaper whilst also with being able to utilise pipelining because each instruction takes a single clock cycle.",
-        "Testing1": [0, 3, 0.0],
+        "Testing1": [0, 4, 0.0],
         "Testing": [0, 0, 0]
     },
     "Which of the following is True?": {
@@ -106,7 +106,7 @@
             "Virtual Memory"
         ],
         "feedback": "The order for speed goes: Flash -> magnetic -> Optical. In this case SSDs are the fastest, then HDDs, then Blu-Rays. Virtual Memory is regarded as a form of temporary RAM; this is because Virtual Memory is a small segment of secondary storage that is assigned to hold inactive running programs that are in RAM to free up space in the RAM. However constant use of virtual memory and switching back and forth from RAM to Hard Disk Drive can cause disk threshing.",
-        "Testing1": [2, 1, 0.6666666666666666],
+        "Testing1": [3, 1, 0.75],
         "Testing": [0, 0, 0]
     },
     "What are the two parts of a computer instruction?": {
