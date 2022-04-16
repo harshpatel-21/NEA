@@ -161,6 +161,7 @@ class Entity(pygame.sprite.Sprite):
         self.ground = 0
         self.remove = False
         self.collision_rect = self.rect
+        self.previous = None
 
     def move(self, moving_left, moving_right, world, death_blocks=0):  # handle player movement
         self.health_rect.y = self.rect.y - 10
@@ -203,6 +204,7 @@ class Entity(pygame.sprite.Sprite):
         # self.rect.h = 80
         for tile in world.obstacle_list:
             # check collision in x direction
+            prev_combat = self.previous in [self.get_index('Attack')]
             if tile.rect.colliderect(self.collision_rect.x + dx, self.collision_rect.y, self.rect.w, self.rect.h):
                 dx = 0
                 # If AI collision with wall, turn em around
@@ -223,7 +225,7 @@ class Entity(pygame.sprite.Sprite):
                     self.ground = min(5, self.ground + 1)
                     self.y_vel = 0
                     self.in_air = False
-                    self.rect.bottom = tile.rect.top
+                    if not self.sword_attack: self.rect.bottom = tile.rect.top
 
         # check if going off the sides
         if self.rect.y > world.height * 46 - self.rect.h:  # if the player is off screen
@@ -348,10 +350,11 @@ class Entity(pygame.sprite.Sprite):
             images = self.animations[melee_index]
             if any(self.check_image_collision(image, world) for image in
                    images):  # if wall collisions have occured in any of the frames
-                self.sword_attack = False
+                self.sword_attack = False # don't initiate with the attack
                 return
 
         if new_action != self.current_action:
+            self.previous = self.current_action
             self.current_action = new_action
             # reset the index at which the animation for the specific action starts at
             self.animation_pointer = 0
