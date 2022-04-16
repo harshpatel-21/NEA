@@ -245,8 +245,8 @@ class Entity(pygame.sprite.Sprite):
 
         # self.health_rect.center = self.rect.center
         # self.health_rect.y -= self.rect.h//2 + 10
-        temp = self.rect.copy()  # copy the rect of the current entity
-        temp.y = self.collision_rect.y
+        temp = self.collision_rect.copy()  # copy the rect of the current entity
+        # temp.y = self.collision_rect.y
         temp.x = temp.x - target.rect.x + Display.WIDTH / 2.0
         temp.y = temp.y - target.rect.y + Display.HEIGHT // 2 - 10
 
@@ -259,7 +259,7 @@ class Entity(pygame.sprite.Sprite):
             return
 
         self.health_rect.midtop = temp.midtop
-        if self.direction == -1 and isinstance(self, Enemy):  # adjusts the position of the health bar if need be
+        if self.direction == -1 and self.obj_type in ['knight', 'samurai']:  # adjusts the position of the health bar if need be
             self.health_rect.topright = temp.topright
 
         pygame.draw.rect(surface, (255, 0, 0), self.health_rect)
@@ -287,7 +287,7 @@ class Entity(pygame.sprite.Sprite):
         self.image = self.animations[self.current_action][self.animation_pointer]
         image_rect = self.image.get_rect()
 
-        if self.obj_type != 'blackguy':
+        if self.obj_type != 'stormy':
             if self.direction == 1:
                 image_rect.bottomleft = self.rect.bottomleft  # keep the entity on the ground
             else:
@@ -436,10 +436,10 @@ class Entity(pygame.sprite.Sprite):
                 'Running': (46 * 1.5, 92),
                 'Die': (135, 90)
             },
-            'blackguy': {
-                'Idle':(scale[0]*0.8,scale[1]*0.8),
-                'Running': (scale[0]*0.8,scale[1]*0.8),
-                'Attack':(scale[0]*2,scale[1]*2),
+            'stormy': {
+                'Idle':(scale[0]*0.4,scale[1]*0.9),
+                'Running': (scale[0]*0.4,scale[1]*0.9),
+                'Attack':(scale[0]*1.9,scale[1]*1.9),
                 'Die':(scale[0]*0.65,200)
             }
         }
@@ -454,8 +454,7 @@ class Entity(pygame.sprite.Sprite):
                 scale_data = scale_info.get(animation)
                 if scale_data: scale2 = [*map(int, scale_data)]
             scale2 = [*map(int, (scale2[0] * 0.8, scale2[1] * 0.8))]
-            temp += [pygame.transform.scale(pygame.image.load(eval(get_img)),
-                                            scale2).convert_alpha()]
+            temp += [pygame.transform.scale(pygame.image.load(eval(get_img)),scale2).convert_alpha()]
         self.animations += [temp]
 
     def draw(self, surface, target):
@@ -508,12 +507,20 @@ class Player(Entity):
 
 
 class Enemy(Entity):
-    def __init__(self, x, y, obj_type, scale, max_health=100, x_vel=2, all_animations=None, attack_radius=100,
+    def __init__(self, x, y, obj_type, scale, max_health=100, x_vel=2, all_animations=None, attack_radius=150,
                  move_radius=3, melee_dps=30):
         super().__init__(x, y, obj_type, scale, max_health, x_vel, all_animations, melee_dps=melee_dps)
         self.move_counter = 0
         self.idling = False
         self.idling_counter = 0
+        attack_animations = self.animations[self.get_index('Attack')]
+        idle_image = self.animations[self.get_index('Idle')][0]
+
+        attack_radius = max(attack_animations,key=lambda image: image.get_width()).get_width()
+        if self.obj_type == 'stormy':
+            attack_radius *= 0.3
+        else:
+            attack_radius -= idle_image.get_width() - 10
         self.attack_vision = pygame.Rect(0, 0, attack_radius, 20)
         self.combat_animations = [self.get_index('Attack')]
         self.attacked = False
@@ -543,6 +550,7 @@ class Enemy(Entity):
         AI_moving_right = False
         if self.sword_attack:
             return
+        
         # set up attack radius
         self.attack_vision.center = self.rect.center
         if self.direction == 1:
@@ -590,17 +598,22 @@ class Enemy(Entity):
         self.update_action(self.get_index('Idle'), world)
 
     def draw(self, surface, target):  # custom draw method for enemy class
-        debug = 1
-        temp = self.rect.copy()
-        temp.x = temp.x - target.rect.x + Display.WIDTH // 2
-        temp.y = temp.y - target.rect.y + Display.HEIGHT // 2
-        temp2 = self.collision_rect.copy()
-        temp2.x = temp2.x - target.rect.x + Display.WIDTH // 2
-        temp2.y = temp2.y - target.rect.y + Display.HEIGHT // 2
-        surface.blit(pygame.transform.flip(self.image, self.flip_image or self.direction == -1, False), temp)
+        debug = 0
+        obj_blit = self.rect.copy()
+        obj_blit.x = obj_blit.x - target.rect.x + Display.WIDTH // 2
+        obj_blit.y = obj_blit.y - target.rect.y + Display.HEIGHT // 2
+        
+        obj_rect = self.collision_rect.copy()
+        obj_rect.x = obj_rect.x - target.rect.x + Display.WIDTH // 2
+        obj_rect.y = obj_rect.y - target.rect.y + Display.HEIGHT // 2
+        surface.blit(pygame.transform.flip(self.image, self.flip_image or self.direction == -1, False), obj_blit)
+
+        obj_attack = self.attack_vision.copy()
+        obj_attack.x = obj_attack.x - target.rect.x + Display.WIDTH // 2
+        obj_attack.y = obj_attack.y - target.rect.y + Display.HEIGHT // 2
         if debug:
-            # pygame.draw.rect(surface, (255, 0, 0), self.attack_vision, 2)
-            pygame.draw.rect(surface, (255, 255, 0), temp2, 2)
+            pygame.draw.rect(surface, (255, 0, 0), obj_attack, 2)
+            pygame.draw.rect(surface, (255, 255, 0), obj_rect, 2)
         self.draw_health_bar(surface, target)
 
     def update(self, player, surface, world):

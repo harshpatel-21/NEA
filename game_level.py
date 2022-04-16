@@ -23,8 +23,8 @@ TILE_TYPES = os.listdir(f'images/level_images/{LEVEL}/Tiles')
 img_list = []
 TILE_SCALE = (window.TILE_DIMENSION_X, window.TILE_DIMENSION_Y)
 tile_x, tile_y = TILE_SCALE
-ENEMY = random.choice(['knight', 'samurai', 'blackguy'])
-ENEMY = 'blackguy'
+ENEMY = random.choice(['knight', 'samurai', 'stormy'])
+ENEMY = 'samurai'
 PLAYER = 'player'
 # ENEMY_IMG = 'samurai'
 # PLAYER_IMG = pygame.image.load(f'images/mobs/{PLAYER}/default.png')
@@ -44,7 +44,8 @@ tile_info = {
     'enemy': '25',
     'enemy_scale': (int(70 * 2.4), 92),
     'player_scale': (50, 83),
-    'move_radii': [4, 1, 2, 2, 0, 2, 0, 0, 1, 0, 1, 1]
+    'move_radii': [3, 1, 2, 2, 0, 2, 0, 0, 1, 0, 1, 1],
+
 }
 
 enemy_scale = (int(70 * 2.4), 92)
@@ -77,7 +78,7 @@ class World:
 
         for ind, layer in enumerate(data.values()):
             for y, row in enumerate(layer):
-                world.height = len(layer)
+                self.height = len(layer)
                 for x, tile in enumerate(row):
                     if tile == '-1':
                         continue
@@ -148,12 +149,6 @@ def load_level(level):
         # sys.exit()
     return layers
 
-
-game_level = load_level(LEVEL)
-# print(game_level)
-world = World()
-
-
 def draw_grid(scroll):
     tiles_x, tiles_y = window.TILE_DIMENSION_X, window.TILE_DIMENSION_Y
     lines_x = background.get_width() // tiles_x
@@ -169,7 +164,6 @@ def draw_grid(scroll):
         y = (i * tiles_y)
         pygame.draw.line(window.screen, (200, 200, 200), (0 + scroll, y), (window.WIDTH * 4 + scroll, y))
 
-
 class Camera:
     def __init__(self, target):
         self.rect = target.rect.copy()
@@ -184,6 +178,8 @@ class Camera:
                 self.rect.bottomright = target.rect.bottomright
 
 def play_level(username, user_id, level):
+    game_level = load_level(LEVEL)
+    world = World()
     # load in the questions
     question_data = read_json(f'Questions/{level}.json')
     # NOTE: question_data[question][username] = list(correct: int, incorrect: int, percentage: float)
@@ -382,10 +378,10 @@ def play_level(username, user_id, level):
     user_info = read_json(f'user_info/users.json')
     current_best = user_info[username][level]
 
-    # only update the completion time if the user answered all the questions/ defeated all enemies
-    if current_best != 0 and (not questions or not enemy_group.sprites()):
+    # only update the completion time if the user answered all the questions/ defeated all enemies and they didn't just instantly die
+    if current_best != 0 and (not questions or not enemy_group.sprites()) and timer:
         current_best = min(current_best, timer)
-    else:
+    elif current_best == 0 and timer:
         current_best = timer
 
     user_info[username][level] = current_best # update time if it was lower
