@@ -50,6 +50,7 @@ def StartQuestion(question, question_data,timer=0,x1=None):
     x1 = x1
     timer = timer
     paused = False
+
     while True:
         window.refresh()
         for event in pygame.event.get():

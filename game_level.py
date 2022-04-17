@@ -242,9 +242,7 @@ def play_level(username, user_id, level):
                 # jumping
                 # making sure the player is falling or jumping during
                 if event.key == pygame.K_w and move_conditions and attack_conditions and not player.in_air and player.y_vel <= 0.75:
-                    # print(pygame.time.get_ticks())
                     player.jumping = True
-                    # player.in_air = True
 
                 # attacking
                 if (event.key == pygame.K_SPACE) and move_conditions and attack_conditions:
@@ -337,9 +335,9 @@ def play_level(username, user_id, level):
                     result = QuestionWindow_values[0] # the actual result
                     # print((question_data[current_question])[username])
                     right, wrong, accuracy = (question_data[current_question])[username]
-                    if result: right += 1; points += 10
+                    if result: right += 1; points += 10 # if they got the question right, add 10 points
                     else: wrong += 1
-                    if wrong!=0 or right!=0: accuracy = right/(right+wrong)
+                    if wrong!=0 or right!=0: accuracy = right/(right+wrong) # to ensure that the denominator is not 0
                     question_data[current_question][username] = [right, wrong, accuracy]
                     timer = QuestionWindow_values[1]
                 else:

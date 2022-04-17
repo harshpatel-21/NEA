@@ -226,8 +226,6 @@ class Entity(pygame.sprite.Sprite):
                     self.y_vel = 0
                     self.in_air = False
                     self.rect.bottom = tile.rect.top
-                    if self.current_action in [self.get_index('Melee'), self.get_index('Attack')]:
-                        print('here')
 
         # check if going off the sides
         if self.rect.y > world.height * 46 - self.rect.h:  # if the player is off screen

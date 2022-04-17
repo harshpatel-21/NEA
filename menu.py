@@ -39,34 +39,43 @@ def show_leaderboards(surface, user_data):
 def show_graph(username, user_data):
     pass
 
+def get_accuracy(question_data, username):
+    total_attempted = 0
+    accuracy = 0
+    for question in question_data:
+        stats = question_data[question][username]
+        attempts = stats[0] + stats[1]
+        if attempts > 0: # if attempts were made
+            total_attempted += 1
+            accuracy += stats[2] # the index that points to the accuracy
+
+    if total_attempted: # making sure denominator is not 0
+        accuracy = (accuracy/total_attempted)*100
+
+    if accuracy>0:
+        accuracy = str(round(accuracy,1))+'%'
+    else:
+        accuracy = 'N/A'
+
+    return accuracy
+
 def get_topic_boxes(username, user_data):
     topics = []
     row_1 = ['Systems Architecture', 'Software and Software development', 'Exchanging Data']
     row_2 = ['Data types, Data structures, and Algorithms',
              'Elements of Computational thinking, Problem solving, and programming']
+
     accuracy_1 = []
     for topic in row_1:
         topic_number = WINDOW.topics[topic]
         question_data = WINDOW.read_json(f'Questions/{topic_number}.json')
-        # p = sum([question_data[question][username] for question in question_data])
-        accuracy = sum([question_data[question][username][2] for question in question_data])
-        if accuracy:
-            accuracy = str(round(accuracy*100/len(question_data),1))+'%'
-        else:
-            accuracy = 'N/A'
-        accuracy_1.append(accuracy)
+        accuracy_1.append(get_accuracy(question_data,username))
 
     accuracy_2 = []
     for topic in row_2:
         topic_number = WINDOW.topics[topic]
         question_data = WINDOW.read_json(f'Questions/{topic_number}.json')
-        # p = sum([question_data[question][username] for question in question_data])
-        accuracy = sum([question_data[question][username][2] for question in question_data])
-        if accuracy:
-            accuracy = str(round(accuracy*100/len(question_data),1))+'%'
-        else:
-            accuracy = 'N/A'
-        accuracy_2.append(accuracy)
+        accuracy_2.append(get_accuracy(question_data, username))
 
     # arrange topic selection
     width1 = 430
@@ -101,24 +110,15 @@ def update_topic_boxes(username,user_data,topic_boxes):
         topic_number = WINDOW.topics[topic]
         question_data = WINDOW.read_json(f'Questions/{topic_number}.json')
         # p = sum([question_data[question][username] for question in question_data])
-        accuracy = sum([question_data[question][username][2] for question in question_data])
-        if accuracy:
-            accuracy = str(round(accuracy*100/len(question_data),1))+'%'
-        else:
-            accuracy = 'N/A'
-        accuracy_1.append(accuracy)
+
+        accuracy_1.append(get_accuracy(question_data, username))
 
     accuracy_2 = []
     for topic in row_2:
         topic_number = WINDOW.topics[topic]
         question_data = WINDOW.read_json(f'Questions/{topic_number}.json')
         # p = sum([question_data[question][username] for question in question_data])
-        accuracy = sum([question_data[question][username][2] for question in question_data])
-        if accuracy:
-            accuracy = str(round(accuracy*100/len(question_data),1))+'%'
-        else:
-            accuracy = 'N/A'
-        accuracy_2.append(accuracy)
+        accuracy_2.append(get_accuracy(question_data, username))
 
     topic_boxes = topic_boxes
     for i in range(3):
@@ -135,14 +135,14 @@ def update_topic_boxes(username,user_data,topic_boxes):
             current_time = 'N/A'
         else:
             current_time = WINDOW.convert_time_format(current_time)
-        topic_boxes[3+j].update_text(row_2[j]+f' \\n \\n Accuracy: {accuracy_1[i]}  \\n Best Time: {current_time}')
+        topic_boxes[3+j].update_text(row_2[j]+f' \\n \\n Accuracy: {accuracy_2[j]}  \\n Best Time: {current_time}')
+
     return topic_boxes
-    pass
+
 def show_menu(username):
     user_data = WINDOW.read_json('user_info/users.json')
     question_files = ['1.1', '1.2', '1.3', '1.4', '2']
     topics = get_topic_boxes(username, user_data)
-
     rec = topics[2].rect
     username_width = DynamicBox.MEDIUM_FONT.render(f'username: {"W"*15}', 1, (255, 255,255)).get_width() + 42  # finding out the maximum width for a username since 'W' is largest width character
 
@@ -179,7 +179,7 @@ def show_menu(username):
                         # update user information after a change has been made by finishing a level don't do it constantly
                         user_data = WINDOW.read_json('user_info/users.json')
                         username_box.update_text(f'Username: {username} \\n Points: {sum(user_data[username]["points"])}')
-                        topics = get_topic_boxes(username,user_data) # alters the text_box size if points/ time changes
+                        topics = get_topic_boxes(username,user_data) # updates the text_box size and text after user completes a level
                         # topics = update_topic_boxes(username,user_data,topics) # this only alters the text, not the size which leads to inconsistent formatting
                         all_boxes = BoxGroup(*topics, username_box, leaderboard_box)
 
@@ -203,4 +203,5 @@ def show_menu(username):
 
 
 if __name__ == '__main__':
-    show_menu('Testing1')
+    import random
+    show_menu(random.choice(list(WINDOW.read_json('user_info/users.json'))))
