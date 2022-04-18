@@ -2,7 +2,7 @@ import pygame, os, re, sys, WINDOW, game_level
 from boxes import Textbox
 from boxes import BoxGroup, DynamicBox
 from transition import ScreenFade
-from matplotlib.pyplot import plot as plt
+import matplotlib.pyplot as plt
 pygame.init()
 
 x, y = WINDOW.x, WINDOW.y
@@ -36,8 +36,20 @@ def show_leaderboards(surface, user_data):
         surface.blit(rendered_name, (start_x, (padding_y * i) + (longest_name.height * i) + start_y))
         surface.blit(rendered_points, (start_x + padding_x, (padding_y * i) + (longest_name.height * i) + start_y))
 
-def show_graph(username, user_data):
-    pass
+def get_graph(username):
+    user_data = WINDOW.read_json('user_info/users.json')
+    points = user_data[username]['points']
+    # points = [sum(points[:i]) for i in range(1,len(points))] # cumulative points
+    color = 'black'
+    fig, axis = plt.subplots(nrows=1,ncols=1) # just one graph
+    plt.xticks(range(1, len(points)+1, 1),color=color)
+    axis.plot([*range(1, len(points)+1)], points)
+    plt.xlabel('Session', color=color)
+    plt.ylabel('Points', color=color)
+
+    plt.title('Points Progress')
+    plt.savefig('points.png')
+    # plt.show()
 
 def get_accuracy(question_data, username):
     total_attempted = 0
@@ -98,7 +110,7 @@ def get_topic_boxes(username, user_data):
             current_time = 'N/A'
         else:
             current_time = WINDOW.convert_time_format(current_time)
-        topics.append(DynamicBox(padding2 * j + (width2 * j) + padding2, topics[1].rect.h + padding_y + padding1,(width2, 0.35 * width2), row_2[j], text=row_2[j]+f' \\n \\n Accuracy: {accuracy_1[i]}  \\n Best Time: {current_time}'))
+        topics.append(DynamicBox(padding2 * j + (width2 * j) + padding2, topics[1].rect.h + padding_y + padding1,(width2, 0.35 * width2), row_2[j], text=row_2[j]+f' \\n \\n Accuracy: {accuracy_2[j]}  \\n Best Time: {current_time}'))
     return topics
 
 def update_topic_boxes(username,user_data,topic_boxes):
@@ -157,6 +169,7 @@ def show_menu(username):
     leaderboards = False
     fade = ScreenFade(1,(0,0,0))
     screen_fade = True
+    graph = False
     while True:
         window.refresh(back=True, show_mouse_pos=True)
         for event in pygame.event.get():
@@ -172,6 +185,7 @@ def show_menu(username):
             if event.type == pygame.MOUSEBUTTONDOWN:
                 # check for button clicks
                 clicked = all_boxes.check_clicks()
+
                 if bool(clicked): # if something was returned
                     corresponding_num = WINDOW.topics.get(clicked.obj_type)
                     if corresponding_num: # if the clicked box is a topic
@@ -186,15 +200,26 @@ def show_menu(username):
                     elif clicked.obj_type == 'leaderboard':
                         leaderboards = True
 
+                    elif clicked.obj_type == 'username':
+                        graph = True
+                        get_graph(username)
+
                 # check for back click
                 elif window.check_return():
                     if leaderboards:
                         leaderboards = False
+                    elif graph:
+                        graph = False
                     else:
                         return
 
         if leaderboards:
             show_leaderboards(window.screen, user_data)
+
+        elif graph:
+            graph_img = pygame.image.load('points.png')
+            img_rect = graph_img.get_rect()
+            window.screen.blit(graph_img, ((window.WIDTH - img_rect.w)//2, (window.HEIGHT - img_rect.h)//2))
         else:
             all_boxes.update_boxes(window.screen)
 
