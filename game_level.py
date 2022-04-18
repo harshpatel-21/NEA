@@ -149,20 +149,17 @@ def load_level(level):
         # sys.exit()
     return layers
 
-def draw_grid(scroll):
-    tiles_x, tiles_y = window.TILE_DIMENSION_X, window.TILE_DIMENSION_Y
-    lines_x = background.get_width() // tiles_x
-    lines_y = background.get_height() // tiles_y
+def show_summary(right, wrong, accuracy, streak, timer):
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if window.check_return():
+                    return
 
-    # vertical lines
-    for j in range(window.MAX_BLOCKS_X + 1):
-        x = (j * tiles_x)
-        pygame.draw.line(window.screen, (200, 200, 200), (x + scroll, 0), (x + scroll, background.get_height()))
-
-    # horizontal liens
-    for i in range(lines_y + 1):
-        y = (i * tiles_y)
-        pygame.draw.line(window.screen, (200, 200, 200), (0 + scroll, y), (window.WIDTH * 4 + scroll, y))
+            if event.type == pygame.QUIT:
+                return
+        window.draw_text('right',(30,10),center=True)
+    pass
 
 class Camera:
     def __init__(self, target):
@@ -209,6 +206,9 @@ def play_level(username, user_id, level):
     timing = 0
     portal_enter = False
     questions = questions[:len(enemy_group.sprites())]
+    total_right = total_wrong = total_accuracy = 0
+    streak = 0
+    max_streak = 0
     while run:
         player.check_alive()
         camera.update(player, world)
@@ -330,15 +330,17 @@ def play_level(username, user_id, level):
             if questions: # making sure there are still questions left to pop
                 current_question = questions.pop() # pop the question at the top of the stack
                 QuestionWindow_values = QuestionWindow.StartQuestion(question=current_question, question_data=question_data, timer=timer,x1=x1)
-                # extract current stats for the question and adjust them based on result of the answer
-                if isinstance(QuestionWindow_values,tuple): # if the result and timer was returned
-                    result = QuestionWindow_values[0] # the actual result
-                    # print((question_data[current_question])[username])
-                    right, wrong, accuracy = (question_data[current_question])[username]
-                    if result: right += 1; points += 10 # if they got the question right, add 10 points
-                    else: wrong += 1
-                    if wrong!=0 or right!=0: accuracy = right/(right+wrong) # to ensure that the denominator is not 0
-                    question_data[current_question][username] = [right, wrong, accuracy]
+
+                # extract current stats for the question and adjust them based on result of the user's choice
+                if isinstance(QuestionWindow_values, tuple): # if the result and timer was returned
+                    result = QuestionWindow_values[0] # the outcome of the question displayed
+                    user_right, user_wrong, user_accuracy = (question_data[current_question])[username]
+                    if result: user_right += 1; points += 10; total_right+=1; streak += 1 # if they got the question right, add 10 points
+                    else: user_wrong += 1; total_wrong += 1; streak = 0; max_streak = max(streak,max_streak)
+                    if user_wrong!=0 or user_right!=0:
+                        user_accuracy = user_right/(user_right+user_wrong) # to ensure that the denominator is not 0
+                        total_accuracy = total_right/(total_right+total_wrong)
+                    question_data[current_question][username] = [user_right, user_wrong, user_accuracy] # update statistics of the user on the question displayed
                     timer = QuestionWindow_values[1]
                 else:
                     timer = QuestionWindow_values
@@ -364,13 +366,14 @@ def play_level(username, user_id, level):
             x1 = pygame.time.get_ticks()
 
         # draw text and back button
-        window.draw_text(text=f'Time: {WINDOW.convert_time_format(timer)}', pos=(670,3), size='MEDIUM', center=True)
+        window.draw_text(text=f'Time: {WINDOW.convert_time_format(timer)}', pos=(670,3), size='MEDIUM', center=(True,False))
         window.draw_back()
         window.draw_text(f'weapon: {["Sword", "Bow"][player.current_weapon - 1]}', (200, 5))
 
         pygame.display.update()  # make all the changes
         clock.tick(FPS)
-
+    # show the user their summary statistics:
+    show_summary(total_right, total_wrong, total_accuracy, max_streak, timer)
     # update question data and user data when/ if run == False, if they just finished level/died
     write_json(question_data, f'Questions/{level}.json')
     user_info = read_json(f'user_info/users.json')

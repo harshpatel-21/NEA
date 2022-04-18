@@ -129,7 +129,7 @@ def StartQuestion(question, question_data,timer=0,x1=None):
             timer += 1  # account for the time in the question screen
             x1 = pygame.time.get_ticks()
 
-        window.draw_text(text=f'Time: {WINDOW.convert_time_format(timer)}', pos=(670,3), size='MEDIUM',center=True)
+        window.draw_text(text=f'Time: {WINDOW.convert_time_format(timer)}', pos=(670,3), size='MEDIUM',center=(True,False))
         pygame.display.update()
         clock.tick(FPS)
 

@@ -186,12 +186,15 @@ class Display:
 
         if self.arrow_rect.collidepoint(mouse_pos) and pygame.mouse.get_pressed()[0]: return 1
 
-    def draw_text(self,text,pos,size='MEDIUM',color=WHITE,center=False):
+    def draw_text(self,text,pos,size='MEDIUM',color=WHITE, center=(False, False)):
+        center_x, center_y = center
         text = eval(f'self.{size.upper()}_FONT.render(text, True, color)')
         rec=text.get_rect()
         x, y = pos
-        if center:
+        if center_x:
             x = (self.WIDTH-rec.w)//2
+        if center_y:
+            y = (self.HEIGHT-rec.h)//2
         self.screen.blit(text,(x,y))
 
 

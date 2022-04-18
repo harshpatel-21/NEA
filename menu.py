@@ -48,7 +48,7 @@ def get_graph(username):
     plt.ylabel('Points', color=color)
 
     plt.title('Points Progress')
-    plt.savefig('points.png')
+    plt.savefig('points.png') # save the image of the graph in a png file, which will then be loaded and blitted
     # plt.show()
 
 def get_accuracy(question_data, username):

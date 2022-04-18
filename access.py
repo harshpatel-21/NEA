@@ -153,18 +153,18 @@ def input_information(state):
                     incorrect_details = display_string_length = successful_signUp = False
 
         if incorrect_details and state=='login':
-            window.draw_text(text='Incorrect username or password',pos=(window.screen.get_width()//2 - 100,590),color=(255,0,0),size='MEDLARGE',center=True)
+            window.draw_text(text='Incorrect username or password',pos=(window.screen.get_width()//2 - 100,590),color=(255,0,0),size='MEDLARGE',center=(True,False))
         
         elif incorrect_details and state=='sign up':
-            window.draw_text(text='Username already taken',pos=(window.screen.get_width()//2 - 130,590),color=(255,0,0),size='MEDLARGE',center=True)
+            window.draw_text(text='Username already taken',pos=(window.screen.get_width()//2 - 130,590),color=(255,0,0),size='MEDLARGE',center=(True,False))
 
         elif display_string_length and state == 'sign up':
-            window.draw_text(text='Username must be between 4 and 15 characters long',pos=(window.screen.get_width()//2 - 380,590),color=(255,0,0),size='MEDLARGE',center=True)
+            window.draw_text(text='Username must be between 4 and 15 characters long',pos=(window.screen.get_width()//2 - 380,590),color=(255,0,0),size='MEDLARGE',center=(True,False))
 
         elif display_password_text and state=='sign up':
-            window.draw_text(text='Password must contain 4-15 characters, minimum [one uppercase and lowercase letters, one number] and optional special character',size='MEDIUM',color=(255,0,0),pos=(window.screen.get_width()//2 - 400,600),center=True)
+            window.draw_text(text='Password must contain 4-15 characters, minimum [one uppercase and lowercase letters, one number] and optional special character',size='MEDIUM',color=(255,0,0),pos=(window.screen.get_width()//2 - 400,600),center=(True,False))
         elif successful_signUp:
-            window.draw_text(text='New user has been signed up', pos=(window.screen.get_width()//2 - 160,590),color=(0,255,0),size='MEDLARGE',center=True)
+            window.draw_text(text='New user has been signed up', pos=(window.screen.get_width()//2 - 160,590),color=(0,255,0),size='MEDLARGE',center=(True,False))
 
         if successful_login: # if username and password were correct
             return username, list(data).index(username)
