@@ -97,7 +97,7 @@
             "Virtual Memory"
         ],
         "feedback": "The order for speed goes: Flash -> magnetic -> Optical. In this case SSDs are the fastest, then HDDs, then Blu-Rays. Virtual Memory is regarded as a form of temporary RAM; this is because Virtual Memory is a small segment of secondary storage that is assigned to hold inactive running programs that are in RAM to free up space in the RAM. However constant use of virtual memory and switching back and forth from RAM to Hard Disk Drive can cause disk threshing.",
-        "Harsh21": [0, 0, 0.6]
+        "Harsh21": [1, 0, 1.0]
     },
     "What are the two parts of a computer instruction?": {
         "options": [
@@ -117,7 +117,7 @@
             "Blu-Rays"
         ],
         "feedback": " - CDs/Blu-Rays: slow access times, not enough storage space and not durable/reliable enough for storing backup; not a suitable option. \\n \\n - Solid State Drives: fast access times, durable, can have high storage but can be very expensive; not a suitable option. \\n \\n - Hard Disk Drives: Medium access times, very high capacity, not too expensive, highly durable and reliable; most suitable option",
-        "Harsh21": [0, 0, 0.6]
+        "Harsh21": [0, 1, 0.0]
     },
     "What is the name given to the areas on a CD's surface which have burned into grooves by a laser?": {
         "options": [
