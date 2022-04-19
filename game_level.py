@@ -197,6 +197,8 @@ class Camera:
             else:
                 self.rect.bottomright = target.rect.bottomright
 
+
+# noinspection PyTypeChecker
 def get_questions(level, username):
     # select the (max_quota) number of questions for each of the [red, amber, green] category, no longer random selection using sample alone, no longer selecting 10 worst
     question_data = read_json(f'Questions/{level}.json')
@@ -211,17 +213,22 @@ def get_questions(level, username):
 
     final_list = [] # a list of the final questions
     lists = sorted([green,red,amber], key=lambda i: len(i)) # smallest -> largest lists
-    max_quota = 3 # means, that in total there should be 9 questions because 3 * 3 -> (red, amber, green) == 9
+    max_quota = 4 # means, that in total there should be 9 questions because 3 * 3 -> (red, amber, green) == 9
     quota = max_quota # set the current quota to the max quota
+    quotas = [max_quota]*3 # initially ,3 reds, 3 ambers, 3 greens
 
-    for category in lists:
-        current_quota = min(quota, len(category)) # fit as much of the quota as possible from the current category
-        if current_quota < max_quota: # if the current quota isn't as big as the max quota for the category:
-            quota = max_quota + max(0, max_quota-len(category)) # carry over the remaining quotas to the next category to fill in the space
+    # find out how many of each category should be picked
+    for index, category in enumerate(lists[:-1]): # loop until n-1
+        if len(category) < quotas[index]: # if the current category doesn't have enough questions for its assigned quota
+            quotas[index+1] += quotas[index] - len(category) # carry over the remaining ones to the next category
+            quotas[index] = len(category) # change the quota for the current category to it's length as it can only fit that much
 
-        # select a random order of (n = quota) questions from the current category
-        category = [question[0] for question in category]
-        sample = random.sample(category, current_quota)
+    quotas[-1] = min(quotas[-1], len(lists[-1])) # if everything has been carried over to the last one, it should only pick how ever much it can
+
+    for index, category in enumerate(lists):
+        current_quota = quotas[index] # get the quota that points to the current question
+        category = [question[0] for question in category] # remove the accuracy used to sort the data initially
+        sample = random.sample(category, current_quota)# select a random order of (n = quota) questions from the current category
         final_list +=[*sample] # add the question to the final list of questions
 
     return final_list
