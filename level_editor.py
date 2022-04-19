@@ -31,18 +31,20 @@ FLOOR_BLOCK = 1
 background = pygame.transform.scale(pygame.image.load(WINDOW.get_path('backgrounds/background_1.png')),window.SIZE)
 
 # load tiles
-tile_num = 19
+tile_num = 20
 tiles = []
+flip_images = [15]
+entities = [17,18]
 
 for i in range(tile_num):
 	img = pygame.transform.scale(pygame.image.load(get_path(f'images/tiles/{theme}/{i}.png')).convert_alpha(),(46,46))
-	if i in [11,15] : img = pygame.transform.flip(img, False, True)
-	if i in [17,18]: img = pygame.transform.scale(img,(46, 92))
+	if i in flip_images: img = pygame.transform.flip(img, False, True)
+	if i in entities: img = pygame.transform.scale(img,(46, 92))
 	tiles += [img]
 
 # player_tile = pygame.transform.scale(pygame.image.load(f'images/player/Idle/1.png'),(46,92))
 # tiles += [player_tile]
-tiles_1d = tiles.copy()
+tiles_list = tiles.copy()
 
 # create buttons
 group_num = 4 # how many tiles in one row
@@ -77,41 +79,56 @@ def draw_grid(scroll):
 		pygame.draw.line(window.screen,(200,200,200),(0 + scroll,y),(SCREEN_WIDTH*4+scroll,y))
 
 #draw map
-def draw_map(scroll,arr):
+def draw_map(scroll, arr, layers=None):
+	if layers:
+		lis = list(layers.values())
+		for layer in lis:
+			for y, row in enumerate(layer):
+				for x, tile in enumerate(row):
+					if tile == -1:
+						continue
+					window.screen.blit(tiles_list[tile], (x*46 + scroll, y*46))
+		return
 	for y,row in enumerate(arr):
 		for x,tile in enumerate(row):
 			if tile == -1:
 				continue
-			window.screen.blit(tiles_1d[tile],(x*46 + scroll,y*46))
+			window.screen.blit(tiles_list[tile],(x*46 + scroll,y*46))
 
 # load level
 def load_level(level):
 	level_path = f'levels/level{level}.txt'
 	array = []
-	if not get_path(level_path): return generate_new_map()
+	layers = {}
+	if not get_path(level_path): return {0 : generate_new_map()}
 	with open(level_path,'r') as file:
 		data = file.read().replace('\n','')
 		array = [*eval(data)] # turns the data into a 2d array and converts all info to integers without having to do extra steps
-	return array
+
+	for ind, layer in enumerate(array):
+		# print(layer)
+		layers[ind] = layer
+	return layers
 
 # save level
 def save_level(level,arr): #iterative development: ask if the user is sure they wanna overwrite a pre-made level
 	# print('save')
+	arr = list(arr.values())
 	with open(f'levels/level{level}.txt','w+') as file:
 		file.write(','.join(str(i) for i in arr))
 		# for j in map_array:
 		# 	file.write(str(j))
-def generate_new_map():
+def generate_new_map(fill_floor = True):
 	default_arr = [[-1 for i in range(window.MAX_BLOCKS_X)] for j in range(window.BLOCKS_Y)]
-	default_arr[-1] = [GROUND_BLOCK for j in range(window.MAX_BLOCKS_X)]
-	default_arr[-2] = [FLOOR_BLOCK for j in range(window.MAX_BLOCKS_X)]
+	if fill_floor:
+		default_arr[-1] = [GROUND_BLOCK for j in range(window.MAX_BLOCKS_X)]
+		default_arr[-2] = [FLOOR_BLOCK for j in range(window.MAX_BLOCKS_X)]
 	return default_arr.copy()
 
 def draw_outline(scroll):
 	x,y = pygame.mouse.get_pos()
 	x,y = 46*(x//46),46*(y//46)
 	# pygame.draw.rect(window.screen,(255,0,0),(x-(scroll,y,46,46),2)
-
 
 def main():
 	#game variables
@@ -123,8 +140,8 @@ def main():
 
 	current_tile = 0
 
-	save_button = Textbox(1020,500,'Save','medlarge',size=(80,40),padding=(5,10))
-	load_button = Textbox(1110,500,'Load','medlarge',size=(80,40),padding=(5,10))
+	save_button = Textbox(1020,470,'Save','medlarge',size=(80,40),padding=(5,10))
+	load_button = Textbox(1110,470,'Load','medlarge',size=(80,40),padding=(5,10))
 	save_button.create_rect()
 	load_button.create_rect()
 
@@ -134,6 +151,9 @@ def main():
 	x=0
 	delete = False
 	place = False
+
+	layers = {0 : map_array}
+	current_layer = 0
 	while True:
 		window.refresh()
 
@@ -143,6 +163,10 @@ def main():
 				return
 
 			if event.type == pygame.KEYDOWN:
+				if event.key== pygame.K_ESCAPE:
+					pygame.quit()
+					return
+
 				if event.key == pygame.K_LEFT:
 					scroll_left = True
 				if event.key == pygame.K_RIGHT:
@@ -153,12 +177,17 @@ def main():
 					level += 1
 				if event.key == pygame.K_DOWN:
 					level = max(level-1, 1)
-				if event.key == pygame.K_r: # r key maps to resetting the map
-					map_array = generate_new_map()
-				if event.key == pygame.K_d:
+				if event.key == pygame.K_r: # r key maps to resetting the layer
+					layers[current_layer] = generate_new_map(fill_floor=1*(current_layer==0))
+				if event.key == pygame.K_d: # deletion mode
 					delete=True
-				if event.key == pygame.K_LSHIFT:
+				if event.key == pygame.K_LSHIFT: # placement mode
 					place = True
+				if event.key == pygame.K_s: # go up layers
+					current_layer = max(0, current_layer-1)
+				if event.key == pygame.K_w: # go down layers
+					current_layer += 1
+					layers.setdefault(current_layer, generate_new_map(fill_floor=False))
 
 			if event.type == pygame.KEYUP:
 				if event.key == pygame.K_LEFT:
@@ -174,12 +203,13 @@ def main():
 
 			if event.type == pygame.MOUSEBUTTONDOWN:
 				if save_button.check_click(pygame.mouse.get_pos()):
-					save_level(level,map_array)
+					# save_level(level,map_array)
+					save_level(level, layers)
 
 				if load_button.check_click(pygame.mouse.get_pos()):
-					loaded_level = load_level(level)
-					if loaded_level:
-						map_array = loaded_level
+					loaded_level = load_level(level) # data for the level
+					if loaded_level: # if something was returned
+						layers = loaded_level # change the contents of the current level
 
 		#scroll the map
 		if scroll_left:
@@ -197,7 +227,7 @@ def main():
 		#draw background
 		draw_bg(scroll)
 		draw_grid(scroll)
-		draw_map(scroll,map_array)
+		draw_map(scroll, map_array, layers)
 		draw_outline(scroll)
 
 		#draw rectangle area for tiles selection
@@ -219,19 +249,21 @@ def main():
 		if x < 1012: # making sure that the user has clicked on grid and not area for buttons
 			arr_x = (x-scroll)//46
 			arr_y = y//46
-			if delete: map_array[arr_y][arr_x] = -1
-			if place: map_array[arr_y][arr_x] = current_tile
-		if mouse_press[0] or mouse_press[2]: # if left or right mousebutton have been clicked
-			x,y = pygame.mouse.get_pos()
-			if x < 1012: # making sure that the user has clicked on grid and not area for buttons
-				arr_x = (x-scroll)//46
-				arr_y = y//46
+			if delete: layers.get(current_layer)[arr_y][arr_x] = -1
 
-				if mouse_press[0]:
-					map_array[arr_y][arr_x] = current_tile
-
-				if mouse_press[2] or pygame.key.get_pressed()[pygame.K_d]:
-					map_array[arr_y][arr_x] = -1
+			if place: layers.get(current_layer)[arr_y][arr_x] = current_tile
+		#
+		# if mouse_press[0] or mouse_press[2]: # if left or right mousebutton have been clicked
+		# 	x,y = pygame.mouse.get_pos()
+		# 	if x < 1012: # making sure that the user has clicked on grid and not area for buttons
+		# 		arr_x = (x-scroll)//46
+		# 		arr_y = y//46
+		#
+		# 		if mouse_press[0]:
+		# 			map_array[arr_y][arr_x] = current_tile
+		#
+		# 		if mouse_press[2] or pygame.key.get_pressed()[pygame.K_d]:
+		# 			map_array[arr_y][arr_x] = -1
 
 		# blit save and/or load level text
 		save_button.check_hover()
@@ -243,10 +275,13 @@ def main():
 		# window.screen.blit(player[int(x)%len(player)],(500,500))
 		x+=0.099
 		# draw level
-		window.draw_text(f'level:{level}',(1200,500),'medlarge')
-		window.draw_text('Press UP or DOWN keys to change levels',(1020,550),'small')
-		window.draw_text('Press [ r ] key to reset the level',(1055,570),'small')
-		window.draw_text('Hold [LSHIFT/d] and hover to place/delete',(1020,600),'small')
+		window.draw_text('- Use left and right arrow keys to scroll',(1030,440),'small')
+		window.draw_text(f'level:{level}',(1200,470),'medlarge')
+		window.draw_text('- Press UP or DOWN keys to change levels',(1020,520),'small')
+		window.draw_text('- Press [ r ] key to reset the layer',(1055,540),'small')
+		window.draw_text('- Hold [LSHIFT/d] and hover to place/delete',(1020,570),'small')
+		window.draw_text(f'Layer: {current_layer}',(1110,600))
+		window.draw_text(f'- [w/s] to move up and down layers', (1035,620),'small')
 		# alpha_counter += 1
 		pygame.display.update()
 		clock.tick(FPS)

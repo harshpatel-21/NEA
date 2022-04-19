@@ -1,7 +1,7 @@
 try:
     import pygame,os
     from WINDOW import Display
-    from boxes import Textbox, Inputbox
+    from boxes import Textbox
     import re,json
     import WINDOW
 except ImportError as error:
@@ -31,33 +31,42 @@ def read(path):
 
 def write(data,path):
     details = get_path(path)
-    with open(details,'w') as file:
+    with open(details, 'w') as file:
         file.seek(0)
         json.dump(data,file)
 #----------------------------------- Login -----------------------------------#
-def check_details(username,password,state):
+def check_details(username, password, state):
     data = read('user_info/users.json')
-
     if state=='login':
-        if data.get(username) == password:return 1
+        info = data.get(username)
+        if info: return info.get("password") == password
         return -1
     elif state=='sign up':
-        if username in data.keys():return -1
-        else: data[username] = password; write(data,'user_info/users.json');return 1
+        if username in data.keys():
+            return -1
+        else:
+            add_info(data, username, password)
+            return 1
     return 0
 
-    write(data,'user_info/users.json')
+def add_info(data, username, password):
+    data[username] = {"password": "", "coins": 0, "1.1": 0, "1.2": 0, "1.3": 0, "1.4": 0, "1.5": 0, "2":0}
+    data[username]['password'] = password
 
+    write(data, 'user_info/users.json')
 
-def validate_character(string,click,character):
+    questions = os.listdir('Questions json')
+    print(questions)
+
+def validate_character(string, click, character):
     # Only allow characters, numbers and certain symbols
     valid_chars = (re.match('''[A-Za-z0-9]{1,15}[-!$%^&*()_+|~=`{}\[\]:";'<>?,.\/]*''',character))
     # return True if the username as long as the length is 
     # < 15 and typing in the username box
-    return (len(string)<15 and (click) and bool(valid_chars))
+    return len(string) < 15 and click and bool(valid_chars)
 
 def validate_info(string):
-    return (4 <= len(string) <= 15)
+    return 4 <= len(string) <= 15
 
 def input_information(state):
     max_length=15
@@ -71,10 +80,10 @@ def input_information(state):
     username_click = False
     password_click = False
     
-    random_box = Inputbox(100,200,text='j',text_size='medlarge',padding=(0,0),limit=False)
+    random_box = Textbox(100,200,text='j',text_size='medlarge',padding=(0,0),limit=False)
     
-    username_box = Inputbox(100,460,text=fill_text.center(15),text_size='medlarge',padding=(0,0),size=(300,60))
-    password_box = Inputbox(100,530,text=fillpass_text.center(15),text_size='medlarge',size=(300,60))
+    username_box = Textbox(100,460,text=fill_text.center(15),text_size='medlarge',padding=(0,0),size=(300,60))
+    password_box = Textbox(100,530,text=fillpass_text.center(15),text_size='medlarge',size=(300,60))
 
     continue_button = Textbox(100,635,text='Continue',size=(150,50),text_size='medlarge')
     continue_button.create_rect()
@@ -93,6 +102,7 @@ def input_information(state):
     delete_counter = 0
 
     while True:
+        data = read('user_info/users.json')
         window.refresh(back=True)
 
         username_box.text=fill_text
@@ -159,8 +169,8 @@ def input_information(state):
             window.draw_text(text='New user has been signed up',pos=(window.screen.get_width()//2 - 160,590),color=(0,255,0),size='MEDLARGE')
             # pygame.time.delay(60)
             # return 1
-        if successful_login:
-            return 1
+        if successful_login: #
+            return username, list(data).index(username)
 
         if continue_state: # if the username and password fields are filled make the continue button brighter
             continue_button.surface.set_alpha(300)
@@ -173,8 +183,8 @@ def input_information(state):
             delete_counter = 0
 
         if delete_counter > 8 and (delete_counter%2)==0: # allows for singular + held down deletion
-            if username_click:username=username[:-1]
-            if password_click:password=password[:-1]
+            if username_click: username=username[:-1]
+            if password_click: password=password[:-1]
             random_box.text = random_box.text[:-1]
         
         if not username: # if nothing has been typed in the username box, it should display 'Username'

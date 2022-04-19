@@ -1,6 +1,6 @@
 import pygame
 import pygame.freetype
-import os, sys
+import os, sys, json
 pygame.init()
 x,y = 50,80
 
@@ -13,6 +13,17 @@ def get_path(path):
         return absolute_path
     else:
         return 0
+
+def read_json(path):
+    details = get_path(path)
+    with open(details,'r') as file:
+        return json.load(file)
+
+def write_json(data,path):
+    details = get_path(path)
+    with open(details, 'w') as file:
+        file.seek(0)
+        json.dump(data,file)
 
 class Display:
     RED = (255,0,0)
@@ -42,7 +53,8 @@ class Display:
     def __init__(self, background=GREEN, caption='Game',size=None,new_window=True,arrow_pos=None):
         if size is not None:
             self.SIZE = size
-            self.width,self.height = size
+            self.width, self.height = size
+            self.WIDTH, self.HEIGHT = size
 
         if arrow_pos is not None:
             self.ARROW_X, self.ARROW_Y = arrow_pos

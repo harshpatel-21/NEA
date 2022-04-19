@@ -3,15 +3,15 @@
 try:
     import pygame,os
     from WINDOW import Display
-    from boxes import Textbox, Inputbox
+    from boxes import Textbox
     import re,json
     from access import input_information
     import WINDOW
-    from Game_files import Game_V4
+    import Game_V4
 except ImportError as error:
     print(error)
 
-# lapto
+# laptop
 x,y = WINDOW.x,WINDOW.y
 # school computer
 # x,y = 50,80
@@ -95,9 +95,10 @@ def main():
             pass
 
         if login_result:
-            Game_V4.main(1)
-            login_result = False
-
+            selected_topic = 2.1
+            username, id = login_result
+            # Game_V4.main(username,id,selected_topic)
+            login_result = False # if come back to main menu, they should no longer be logged in
 
         pygame.display.update()
         clock.tick()
