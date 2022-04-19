@@ -28,7 +28,7 @@ window.background = background
 pygame.init()
 #------------------------------ update details ------------------------------#
 def update_details():
-    # fill in missing user data in question files. ie when a new question is added, dont have to do it manually
+    # fill in missing user data in question files. ie when a new question is added, don't have to do it manually
     for user in read_json('user_info/users.json'):
         for topic_name in os.listdir('Questions'):
             question_path = f'Questions/{topic_name}'
@@ -36,13 +36,6 @@ def update_details():
             for question in topic_data:
                 topic_data[question].setdefault(user, [0, 0, 0])
             write_json(topic_data, question_path)
-#------------------------------- Validate Info -------------------------------#
-
-def validator(string,click,letter):
-    # Only allow letters, numbers and certain symbols
-    valid_chars = (re.match('''[A-Za-z0-9]{1,15}[-!$%^&*()_+|~=`{}\[\]:";'<>?,.\/]*''',letter))
-    # return True if the username as long as the length is < 15 and typing in the username box
-    return (len(string)<15 and (click) and bool(valid_chars))
 
 #------------------------------- Main Game Loop ------------------------------#
 
@@ -50,7 +43,7 @@ def main():
     update_details() # if there's any user info missing from question data, fill it in before proceeding, ie when I decide
     # to add in a new question, I don't wanna manually type in user info
 
-    username_box = Textbox(100,460,'Login',text_size='medlarge',padding=(200,35),size=(300,60))
+    login_box = Textbox(100,460,'Login',text_size='medlarge',padding=(200,35),size=(300,60))
     signUp_box = Textbox(100,530,'Sign Up',text_size='medlarge',padding=(175,35),size=(300,60))
 
     login=sign_up=False
@@ -65,7 +58,7 @@ def main():
                 return
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
-                login = username_box.check_click(mouse_pos)
+                login = login_box.check_click(mouse_pos)
                 sign_up = signUp_box.check_click(mouse_pos)
 
             if event.type == pygame.KEYDOWN:
@@ -74,10 +67,10 @@ def main():
                     return
 
         mouse_pos = pygame.mouse.get_pos()
-        username_box.check_hover(mouse_pos)
+        login_box.check_hover(mouse_pos)
         signUp_box.check_hover(mouse_pos)
 
-        username_box.show(window.screen,center=True)
+        login_box.show(window.screen,center=True)
         signUp_box.show(window.screen,center=True)
 
         if login:

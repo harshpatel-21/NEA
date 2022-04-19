@@ -12,10 +12,13 @@ FPS = 60
 clock = pygame.time.Clock()
 window = WINDOW.Display(new_window=True)
 
-def show_leaderboards(surface, user_data):
-    highest_points = lambda user: sum(user_data[user]['points'])
-    top_ten = sorted(user_data, key=highest_points,reverse=True)[:10] # highest -> lowest
-    font = pygame.font.SysFont('Sans',30)
+
+
+def show_leaderboards(surface, user_data) -> None:
+    sum_points = lambda user: sum(user_data[user]['points'])
+    user_points = [[username, sum(user_data[username]['points'])] for username in user_data] # create a 2D array with [[username,points] for each user]
+    top_ten = WINDOW.bubble_sort(user_points)[:10] # highest -> lowest of the top 10
+    font = pygame.font.SysFont('Sans', 30)
     longest_name = font.render('W'*15, 1, (255, 255, 255)).get_rect()  # longest name's data
     padding_y = 20
     padding_x = longest_name.width + 20
@@ -31,12 +34,12 @@ def show_leaderboards(surface, user_data):
 
     # draw the actual values for each user
     for i in range(len(top_ten)):
-        rendered_name = font.render(top_ten[i], 1, (255, 255, 255))
-        rendered_points = font.render(str(sum(user_data[top_ten[i]]['points'])), 1, (255, 255, 255))
+        rendered_name = font.render(top_ten[i][0], 1, (255, 255, 255))
+        rendered_points = font.render(str(top_ten[i][1]), 1, (255, 255, 255))
         surface.blit(rendered_name, (start_x, (padding_y * i) + (longest_name.height * i) + start_y))
         surface.blit(rendered_points, (start_x + padding_x, (padding_y * i) + (longest_name.height * i) + start_y))
 
-def get_graph(username):
+def get_graph(username) -> None:
     user_data = WINDOW.read_json('user_info/users.json')
     points = user_data[username]['points']
     # points = [sum(points[:i]) for i in range(1,len(points))] # cumulative points
@@ -47,11 +50,11 @@ def get_graph(username):
     plt.xlabel('Session', color=color)
     plt.ylabel('Points', color=color)
 
-    plt.title('Points Progress')
+    plt.title('Points Gained At Each Attempt')
     plt.savefig('points.png') # save the image of the graph in a png file, which will then be loaded and blitted
     # plt.show()
 
-def get_accuracy(question_data, username):
+def get_accuracy(question_data, username) -> str:
     total_attempted = 0
     accuracy = 0
     for question in question_data:
@@ -71,7 +74,7 @@ def get_accuracy(question_data, username):
 
     return accuracy
 
-def get_topic_boxes(username, user_data):
+def get_topic_boxes(username, user_data) -> list:
     topics = []
     row_1 = ['Systems Architecture', 'Software and Software development', 'Exchanging Data']
     row_2 = ['Data types, Data structures, and Algorithms',
@@ -99,7 +102,7 @@ def get_topic_boxes(username, user_data):
         else:
             current_time = WINDOW.convert_time_format(current_time)
         topics.append(
-            DynamicBox(padding1 * i + (width1 * i) + padding1, 200, (width1, 0.4 * width1), row_1[i], text=row_1[i]+f' \\n \\n Accuracy: {accuracy_1[i]}  \\n Best Time: {current_time}'))
+            DynamicBox(padding1 * i + (width1 * i) + padding1, 200, (width1, 0.4 * width1), row_1[i], text=row_1[i]+f' \\n \\n Accuracy: {accuracy_1[i]}  \\n Best Time: {current_time}',center_text=(False,True)))
 
     width2 = 520
     padding2 = (window.WIDTH - 2 * width2) // 3
@@ -110,10 +113,10 @@ def get_topic_boxes(username, user_data):
             current_time = 'N/A'
         else:
             current_time = WINDOW.convert_time_format(current_time)
-        topics.append(DynamicBox(padding2 * j + (width2 * j) + padding2, topics[1].rect.h + padding_y + padding1,(width2, 0.35 * width2), row_2[j], text=row_2[j]+f' \\n \\n Accuracy: {accuracy_2[j]}  \\n Best Time: {current_time}'))
+        topics.append(DynamicBox(padding2 * j + (width2 * j) + padding2, topics[1].rect.h + padding_y + padding1,(width2, 0.35 * width2), row_2[j], text=row_2[j]+f' \\n \\n Accuracy: {accuracy_2[j]}  \\n Best Time: {current_time}',center_text=(False,True)))
     return topics
 
-def update_topic_boxes(username,user_data,topic_boxes):
+def update_topic_boxes(username,user_data,topic_boxes) -> list:
     row_1 = ['Systems Architecture', 'Software and Software development', 'Exchanging Data']
     row_2 = ['Data types, Data structures, and Algorithms',
              'Elements of Computational thinking, Problem solving, and programming']
@@ -151,7 +154,12 @@ def update_topic_boxes(username,user_data,topic_boxes):
 
     return topic_boxes
 
-def show_menu(username):
+def show_graph(surface, graph_img):
+    img_rect = graph_img.get_rect()
+    surface.screen.blit(graph_img, ((surface.WIDTH - img_rect.w)//2, (surface.HEIGHT - img_rect.h)//2))
+
+
+def show_menu(username) -> None:
     user_data = WINDOW.read_json('user_info/users.json')
     question_files = ['1.1', '1.2', '1.3', '1.4', '2']
     topics = get_topic_boxes(username, user_data)
@@ -218,8 +226,7 @@ def show_menu(username):
 
         elif graph:
             graph_img = pygame.image.load('points.png')
-            img_rect = graph_img.get_rect()
-            window.screen.blit(graph_img, ((window.WIDTH - img_rect.w)//2, (window.HEIGHT - img_rect.h)//2))
+            show_graph(window, graph_img)
         else:
             all_boxes.update_boxes(window.screen)
 
@@ -229,4 +236,5 @@ def show_menu(username):
 
 if __name__ == '__main__':
     import random
-    show_menu(random.choice(list(WINDOW.read_json('user_info/users.json'))))
+    # show_menu(random.choice(list(WINDOW.read_json('user_info/users.json'))))
+    show_menu('Harsh21')

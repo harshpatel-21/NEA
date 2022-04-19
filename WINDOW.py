@@ -109,6 +109,18 @@ def delete_user(username):
 
     delete_json_key(f'user_info/users.json',key=username)
 
+def bubble_sort(array) -> list: # sort a 2D array
+    # We want to stop passing through the list
+    # as soon as we pass through without swapping any elements
+    swapped = True
+    while swapped:
+        swapped = False
+        for i in range(len(array) - 1):
+            if array[i][1] < array[i+1][1]: # comparing the key index, can be points or accuracy
+                array[i], array[i+1] = array[i+1], array[i]
+                swapped = True
+    return array # return the sorted 2D array
+
 class Display:
     pygame.init()
     RED = (255,0,0)
@@ -197,4 +209,18 @@ class Display:
             y = (self.HEIGHT-rec.h)//2
         self.screen.blit(text,(x,y))
 
+    def draw_multi_lines(self,text,pos,size='MEDIUM',color=WHITE, center=(False, False), space=0):
+        text = text.split('\\n')
+        h=0
+        for index, line in enumerate(text):
+            center_x, center_y = center
+            text = eval(f'self.{size.upper()}_FONT.render(line, True, color)')
+            rec=text.get_rect()
+            x, y = pos
+            if center_x:
+                x = (self.WIDTH-rec.w)//2
+            if center_y:
+                y = (self.HEIGHT-rec.h)//2
+            self.screen.blit(text, (x, y+((h+3)*index)))
+            h = rec.h
 

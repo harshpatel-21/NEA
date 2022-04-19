@@ -21,24 +21,28 @@ image = pygame.image.load(background)
 background = pygame.transform.scale(image,(1426, 690))
 window.background = background
 #----------------------------------- Login -----------------------------------#
+def presence_in_file(username: str, data: dict):
+    return data.get(username)
+
 def check_details(username, password, state):
-    data = read_json('user_info/users.json')
+    data = read_json('user_info/users.json') # extract user details
+    username_data = presence_in_file(username, data) # .get checks if the key exists, and if it does, it returns the value, else None
+
     if state=='login':
-        info = data.get(username)
-        if not info: return -1
-        return info.get('password') == password
+        if not username_data: return -1 # if there is no key that matches to the username, it doesnt exist
+        return username_data.get('password') == password # check if the username's password is the same as the one entered
+
     elif state=='sign up':
-        if username in data.keys():
+        if username_data: # if there is a key that matches to the username, it already exists
             return -1
-        else:
-            add_info(data, username, password)
+        else: # if the username does not exist
+            add_info(data, username, password) # add in user info to users.json and all question files
             return 1
     return 0
 
 def add_info(data, username, password):
-    data[username] = {"password": "", "points": [0], "1.1": 0, "1.2": 0, "1.3": 0, "1.4": 0, "2": 0}
+    data[username] = {"password": "", "points": [], "1.1": [], "1.2": [], "1.3": [], "1.4": [], "2": []}
     data[username]['password'] = password
-
 
     questions = os.listdir('Questions')
     for file in questions:
@@ -59,9 +63,11 @@ def validate_username(username):
     # length error, not unique error
     if not(4 <= len(username) <= 15):
         return 1, 0
-    if username in WINDOW.read_json('user_info/users.json'):
+    if presence_in_file(username, WINDOW.read_json('user_info/users.json')):
         return 0, 1
+
     return 0, 0 # no errors
+
 def validate_password(string):
     return re.match("^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d$@$!%*?&]{4,15}",string)
 
@@ -226,15 +232,17 @@ def input_information(state):
                 display_string_length = False # don't show error messages
                 correct = check_details(username, password, state)
                 incorrect_details = correct < 1
+
                 if not(incorrect_details) and state == 'sign up':
                     successful_signUp = True
+
                 elif not(incorrect_details) and state == 'login':
                     successful_login = True
 
             continue_click = False # once the button has been pressed, it should be counted as 'not pressed' after this section is ran
             # if not incorrect_details: return 1
 
-        if username_box.rect.width > 290: 
+        if username_box.rect.width > 290:
             username=username[:-1]
         if password_box.rect.width > 290:
             password=password[:-1]

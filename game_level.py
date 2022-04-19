@@ -149,16 +149,39 @@ def load_level(level):
         # sys.exit()
     return layers
 
-def show_summary(right, wrong, accuracy, streak, timer):
+def get_time_units(timer):
+    time_split = timer.split(':')
+    units = ''
+    if time_split[2].lstrip('0'): # remove leading 0s
+        units = ' seconds'
+    if time_split[1].lstrip('0'): # remove leading 0s
+        units = ' minutes'
+    if time_split[0].lstrip('0'): # remove leading 0s
+        units = ' hours'
+    return units
+
+def show_summary(right, wrong, accuracy, streak, points, timer):
+    timer = WINDOW.convert_time_format(timer)
+    accuracy = str(round(accuracy*100,1))+'%'
+    units = get_time_units(timer)
+    timer = str(timer) + units
     while True:
+        window.refresh(back=True)
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if window.check_return():
                     return
 
             if event.type == pygame.QUIT:
-                return
-        window.draw_text('right',(30,10),center=True)
+                sys.exit()
+        spaces = lambda word: ' '*(100-len(word))
+        for i,line in enumerate(['Right','Wrong','Accuracy','Best Streak','Points Gained','Time Survived']):
+            window.draw_text(line+':', (300,50+(40*i)), center=(False,False))
+        for j,value in enumerate([right, wrong, accuracy, streak, points, timer]):
+            window.draw_text(str(value),(600,50+(j*40)))
+
+        # window.draw_multi_lines(text, (300,50), center=(False,False))
+        pygame.display.update()
     pass
 
 class Camera:
@@ -174,41 +197,62 @@ class Camera:
             else:
                 self.rect.bottomright = target.rect.bottomright
 
+def get_questions(level, username):
+    # select the (max_quota) number of questions for each of the [red, amber, green] category, no longer random selection using sample alone, no longer selecting 10 worst
+    question_data = read_json(f'Questions/{level}.json')
+    # green = > 75, amber = 50 < x < 75, red = < 50
+    # quota = 4, 4, 4
+    questions = WINDOW.bubble_sort([[question, question_data[question][username][2]] for question in question_data])
+
+    # separate the questions based on which category they fit in
+    green = list(filter(lambda question: question[1] >= 0.75 or question[1] == 0, questions)) # never attempted or strong knowledge
+    amber = list(filter(lambda question: 0.5 <= question[1] < 0.75, questions)) # moderate knowledge
+    red = list(filter(lambda question: 0 < question[1] < 0.5, questions)) # absolute shit-housery
+
+    final_list = [] # a list of the final questions
+    lists = sorted([green,red,amber], key=lambda i: len(i)) # smallest -> largest lists
+    max_quota = 3 # means, that in total there should be 9 questions because 3 * 3 -> (red, amber, green) == 9
+    quota = max_quota # set the current quota to the max quota
+
+    for category in lists:
+        current_quota = min(quota, len(category)) # if the length of the current category of questions is lower than the quota, then reduce the quota size
+        quota += max(0, max_quota-len(category)) # carry over the remaining quotas to the next category to fill in the space
+        # print(random.sample(category, current_quota)) # select a random order of (n = quota) questions from the current category
+        final_list +=[*random.sample(category, current_quota)] # add the question to the
+
+    return final_list
 def play_level(username, user_id, level):
     game_level = load_level(LEVEL)
     world = World()
     # load in the questions
     question_data = read_json(f'Questions/{level}.json')
     # NOTE: question_data[question][username] = list(correct: int, incorrect: int, percentage: float)
-
-    # select the 10 questions the user performed worst at, no longer random selection using sample alone
-    questions = sorted(question_data, key=lambda question: (question_data[question][username])[2], reverse=True)[:10] # biggest -> smallest correct %
+    questions = get_questions(level, username)
     questions = random.sample(questions, len(questions)) # shuffle the order of selected questions
     # questions will be treated as a stack. Last in is first out
 
     # sprite groups
     player, decorations, death_blocks, enemies, coins, portals = world.process_data(game_level)
-    decoration_group = Group(*decorations)
     death_blocks_group = Group(*death_blocks)
     enemy_group = Group(*enemies)
     arrow_group = Group()
     coin_group = Group(*coins)
     portal_group = Group(*portals)
-    camera = Camera(player)
-    points = 0
-    run=True
 
-    show_question = False
+    camera = Camera(player)
     fade = ScreenFade(1, (0, 0, 0))
     start_fade = True
+    run=True
+    show_question = False
     x1 = pygame.time.get_ticks()
     timer = 0
-    timing = 0
-    portal_enter = False
-    questions = questions[:len(enemy_group.sprites())]
+    points = 0
     total_right = total_wrong = total_accuracy = 0
     streak = 0
     max_streak = 0
+    portal_enter = False
+    questions = questions[:len(enemy_group.sprites())]
+
     while run:
         player.check_alive()
         camera.update(player, world)
@@ -323,7 +367,6 @@ def play_level(username, user_id, level):
                 # if the player has died, then don't update their timer
                 elif fade.direction == -1 and player.remove:
                     run = False
-                    timer = 0
                     start_fade = False
 
         if show_question:
@@ -336,14 +379,15 @@ def play_level(username, user_id, level):
                     result = QuestionWindow_values[0] # the outcome of the question displayed
                     user_right, user_wrong, user_accuracy = (question_data[current_question])[username]
                     if result: user_right += 1; points += 10; total_right+=1; streak += 1 # if they got the question right, add 10 points
-                    else: user_wrong += 1; total_wrong += 1; streak = 0; max_streak = max(streak,max_streak)
+                    else: user_wrong += 1; total_wrong += 1; streak = 0
                     if user_wrong!=0 or user_right!=0:
                         user_accuracy = user_right/(user_right+user_wrong) # to ensure that the denominator is not 0
-                        total_accuracy = total_right/(total_right+total_wrong)
+                        total_accuracy = round(total_right/(total_right+total_wrong),1)
                     question_data[current_question][username] = [user_right, user_wrong, user_accuracy] # update statistics of the user on the question displayed
                     timer = QuestionWindow_values[1]
                 else:
                     timer = QuestionWindow_values
+                max_streak = max(streak,max_streak)
 
                 # inwards fade
                 start_fade = True
@@ -361,28 +405,32 @@ def play_level(username, user_id, level):
             start_fade = True
             fade.direction = -1
 
-        if (pygame.time.get_ticks() - x1) > 1000: # 1 ticks == 1 millisecond, 1000 millisecond = 1 second
+        if (pygame.time.get_ticks() - x1) > 1000 and not player.remove: # 1 ticks == 1 millisecond, 1000 millisecond = 1 second
             timer += 1  # account for the time in the question screen
             x1 = pygame.time.get_ticks()
 
         # draw text and back button
         window.draw_text(text=f'Time: {WINDOW.convert_time_format(timer)}', pos=(670,3), size='MEDIUM', center=(True,False))
         window.draw_back()
-        window.draw_text(f'weapon: {["Sword", "Bow"][player.current_weapon - 1]}', (200, 5))
+        window.draw_text(f'Current Weapon: {["Sword", "Bow"][player.current_weapon - 1]}', (200, 5))
+        window.draw_text(f'Points: {points}',(490,5))
 
         pygame.display.update()  # make all the changes
         clock.tick(FPS)
+
     # show the user their summary statistics:
-    show_summary(total_right, total_wrong, total_accuracy, max_streak, timer)
+    print(timer)
+    show_summary(total_right, total_wrong, total_accuracy, max_streak, points, timer)
+
     # update question data and user data when/ if run == False, if they just finished level/died
     write_json(question_data, f'Questions/{level}.json')
     user_info = read_json(f'user_info/users.json')
     current_best = user_info[username][level]
 
-    # only update the completion time if the user answered all the questions/ defeated all enemies and they didn't just instantly die
-    if current_best != 0 and (not questions or not enemy_group.sprites()) and timer:
+    # only update the completion time if the user answered all the questions/ defeated all enemies and they made it to the portal
+    if current_best != 0 and (not questions or not enemy_group.sprites()) and portal_enter:
         current_best = min(current_best, timer)
-    elif current_best == 0 and timer:
+    elif current_best == 0 and portal_enter: # if they did complete the level and it was their first time:
         current_best = timer
 
     user_info[username][level] = current_best # update time if it was lower
