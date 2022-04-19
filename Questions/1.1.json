@@ -67,7 +67,7 @@
             "2"
         ],
         "feedback": " - The Von Neumann system architecture has one Control Unit, one shared block of memory for data and instructions, and one set of parallel wires called busses which connect two or more components inside the CPU and to external components such as Main Memory. \\n \\n - The Harvard Architecture contains one control unit and two separate chunks of memory with their own sets of busses allowing for simultaneous communication between data and instructions. \\n \\n - Contemporary processors  use a combination of Harvard and Von Neumann architecture. Von Neumann is used when working with data and instructions in main memory, but uses Harvard architecture to divide the cache into instruction cache and data cache",
-        "Harsh21": [0, 0, 0]
+        "Harsh21": [0, 0, 0.6]
     },
     "Which type of processor has a large instruction set built into it": {
         "options": [
@@ -77,7 +77,7 @@
             "BISC"
         ],
         "feedback": " - CISCs (Complex Instruction Set Computers) contain a large, and complex instruction sets where one line of code can represent several lines of machine code. This can make development much easier as it saves time coding and reduces files size however this does come at the cost of higher energy consumption and costs. \\n \\n - RISC (Reduced instruction set computers) have a reduced instruction set where one instruction translates to one machine code instruction which makes development harder, but uses up less power and are cheaper whilst also with being able to utilise pipelining because each instruction takes a single clock cycle.",
-        "Harsh21": [0, 0, 0]
+        "Harsh21": [0, 0, 0.6]
     },
     "Which of the following is True?": {
         "options": [
@@ -87,7 +87,7 @@
             "Programmers have to write more code for CISC processors"
         ],
         "feedback": " - CISCs (Complex Instruction Set Computers) contain a large, and complex instruction sets where one line of code can represent several lines of machine code. This can make development much easier as it saves time coding and reduces files size however this does come at the cost of higher energy consumption and costs. \\n \\n - RISC (Reduced instruction set computers) have a reduced instruction set where one instruction translates to one machine code instruction which makes development harder, but uses up less power and are cheaper whilst also with being able to utilise pipelining because each instruction takes a single clock cycle.",
-        "Harsh21": [0, 0, 0]
+        "Harsh21": [0, 0, 0.6]
     },
     "What is the fastest form of storage from these?": {
         "options": [
@@ -117,7 +117,7 @@
             "Blu-Rays"
         ],
         "feedback": " - CDs/Blu-Rays: slow access times, not enough storage space and not durable/reliable enough for storing backup; not a suitable option. \\n \\n - Solid State Drives: fast access times, durable, can have high storage but can be very expensive; not a suitable option. \\n \\n - Hard Disk Drives: Medium access times, very high capacity, not too expensive, highly durable and reliable; most suitable option",
-        "Harsh21": [0, 1, 0.0]
+        "Harsh21": [0, 1, 0]
     },
     "What is the name given to the areas on a CD's surface which have burned into grooves by a laser?": {
         "options": [
@@ -127,7 +127,7 @@
             "Holes"
         ],
         "feedback": "Burnt areas are referred to as pits and unburnt areas are referred to as lands. pits represent 1s and lands represent 0s. Logically, a brand new CD would have no pits because the nothing has been written to it, meaning that it is 100% lands, therefore lands must correspond to a 0 to represent an unburnt area, and pits 1 to represent burnt areas.",
-        "Harsh21": [0, 0, 0.1]
+        "Harsh21": [0, 0, 0]
     },
     "This form of memory is volatile": {
         "options": [

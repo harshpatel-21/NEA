@@ -215,11 +215,14 @@ def get_questions(level, username):
     quota = max_quota # set the current quota to the max quota
 
     for category in lists:
-        current_quota = min(quota, len(category)) # if the length of the current category of questions is lower than the quota, then reduce the quota size
-        quota += max(0, max_quota-len(category)) # carry over the remaining quotas to the next category to fill in the space
-        # print(random.sample(category, current_quota)) # select a random order of (n = quota) questions from the current category
+        current_quota = min(quota, len(category)) # fit as much of the quota as possible from the current category
+        if current_quota < max_quota: # if the current quota isn't as big as the max quota for the category:
+            quota = max_quota + max(0, max_quota-len(category)) # carry over the remaining quotas to the next category to fill in the space
+
+        # select a random order of (n = quota) questions from the current category
         category = [question[0] for question in category]
-        final_list +=[*random.sample(category, current_quota)] # add the question to the
+        sample = random.sample(category, current_quota)
+        final_list +=[*sample] # add the question to the final list of questions
 
     return final_list
 
