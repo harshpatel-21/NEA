@@ -67,10 +67,10 @@ def StartQuestion(question, question_data,timer=0,x1=None):
                 if pygame.time.get_ticks() - time1 > move_to_feedback and time1 and options_screen: # wait a bit of time
                     if main_continue.check_click():
                         options_screen = False # don't display options anymore, signalling the feedback screen to show
-                        if result: # if they were right, then go back immediately, don't go to feedback screen
-                            going_back = True
-                            start_fade = True
-                            options_screen = True
+                        # if result: # if they were right, then go back immediately, don't go to feedback screen
+                        #     going_back = True
+                        #     start_fade = True
+                        #     options_screen = True
 
                 # check for continue button click on the feedback screen
                 if feedback_continue.check_click() and not options_screen:

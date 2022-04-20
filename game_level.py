@@ -18,44 +18,11 @@ coin_path = os.path.join(image_path, 'coin')
 FPS = 60
 clock = pygame.time.Clock()
 window = WINDOW.Display(new_window=True)
-LEVEL = 2
-TILE_TYPES = os.listdir(f'images/level_images/{LEVEL}/Tiles')
-img_list = []
-TILE_SCALE = (window.TILE_DIMENSION_X, window.TILE_DIMENSION_Y)
-tile_x, tile_y = TILE_SCALE
 ENEMY = random.choice(['knight', 'samurai', 'stormy'])
 ENEMY = 'stormy'
 PLAYER = 'player'
 # ENEMY_IMG = 'samurai'
 # PLAYER_IMG = pygame.image.load(f'images/mobs/{PLAYER}/default.png')
-
-background = pygame.transform.scale(pygame.image.load(WINDOW.get_path('backgrounds/background_2.png')),window.SIZE).convert_alpha()
-
-GRAVITY = 0.75
-# scale = (60,92) # with sword
-# load in game data
-tile_info = {
-    'obstacle': '0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 22 23'.split(),
-    'decoration': '21 28'.split(),
-    'kill_block': '26 27'.split(),
-    'coin': '',
-    'player': '24',
-    'portal': '30',
-    'enemy': '25',
-    'enemy_scale': (int(70 * 2.4), 92),
-    'player_scale': (50, 83),
-    'move_radii': [3, 1, 2, 2, 0, 2, 0, 0, 1, 0, 1, 1],
-
-}
-
-enemy_scale = (int(70 * 2.4), 92)
-player_scale = (50, 83)
-move_radii = [0, 1, 2, 2, 0, 2, 0, 0, 1, 0, 1, 1]
-img_list = {}
-for i in TILE_TYPES:
-    img = pygame.image.load(WINDOW.get_path(f'images/level_images/{LEVEL}/Tiles/{i}')).convert_alpha()
-    name = i[:i.index('.')]
-    img_list[name] = img
 
 
 class World:
@@ -66,9 +33,10 @@ class World:
         self.height = 0
         self.all_tiles = []
 
-    def process_data(self, data):
+    def process_data(self, data, tile_info, img_list):
+
         enemy_counter = 0
-        player = Player(500, 500, 'player', player_scale, melee_dps=50)
+        player = Player(500, 500, 'player', tile_info['player_scale'], melee_dps=50)
         # iterate through each value in level data file
         decorations = []  # add in all the tiles that don't need to be checked for collision
         death_blocks = []
@@ -92,24 +60,22 @@ class World:
                     img_mask = pygame.mask.from_surface(img)
 
                     obj = None
-                    if tile in tile_info['obstacle']:
+                    if tile in tile_info['obstacle'].split():
                         obj = Obstacle(img, img_rect)
                         if ind != 0: self.obstacle_list.append(obj) # if it isn't the 0th layer (for no collisions)
-                    elif tile in tile_info['decoration']:  # grass / no collision decoration
+                    elif tile in tile_info['decoration'].split():  # grass / no collision decoration
                         obj = Decoration(img, img_rect)
-                        # decorations.append(Decoration(img, img_rect))
-                        # self.obstacle_list.append(obs) # add them onto the obstacle draw list
-                    elif tile in tile_info['kill_block']:  # water
+                    elif tile in tile_info['kill_block'].split():  # water
                         obj = DeathBlock(img, img_rect)
                         death_blocks.append(obj)
-                    elif tile == tile_info['coin']:  # coin
+                    elif tile == tile_info['coin'].split():  # coin
                         obj = AnimatedTile('coin', img_rect.x, img_rect.y, (32, 32))
                         coins += [obj]
-                    elif tile == tile_info['player']:  # create player if there's one on the map
+                    elif tile in tile_info['player'].split():  # create player if there's one on the map
                         # print('player')
-                        player = Player(img_rect.x, img_rect.y, PLAYER, player_scale, melee_dps=1000)
-                    elif tile == tile_info['enemy']:
-                        enemies += [Enemy(img_rect.x, img_rect.y, ENEMY, enemy_scale,
+                        player = Player(img_rect.x, img_rect.y, PLAYER, tile_info['player_scale'], melee_dps=1000)
+                    elif tile in tile_info['enemy'].split():
+                        enemies += [Enemy(img_rect.x, img_rect.y, ENEMY, tile_info['enemy_scale'],
                                           all_animations=['Idle', 'Die', 'Running', 'Attack'],
                                           max_health=100, x_vel=2, move_radius=tile_info['move_radii'][enemy_counter])]
                         enemy_counter += 1
@@ -175,10 +141,11 @@ def show_summary(right, wrong, accuracy, streak, points, timer):
             if event.type == pygame.QUIT:
                 sys.exit()
         spaces = lambda word: ' '*(100-len(word))
+        initial_x = 430
         for i,line in enumerate(['Right','Wrong','Accuracy','Best Streak','Points Gained','Time Survived']):
-            window.draw_text(line+':', (300,50+(40*i)), center=(False,False))
+            window.draw_text(line+':', (initial_x,150+(50*i)), center=(False,False))
         for j,value in enumerate([right, wrong, accuracy, streak, points, timer]):
-            window.draw_text(str(value),(600,50+(j*40)))
+            window.draw_text(str(value),(initial_x*2,150+(j*50)))
 
         # window.draw_multi_lines(text, (300,50), center=(False,False))
         pygame.display.update()
@@ -234,7 +201,19 @@ def get_questions(level, username):
     return final_list
 
 def play_level(username, user_id, level):
+    LEVEL = 2 # random.randint(1,4) # choose a random map layout
     game_level = load_level(LEVEL)
+    TILE_TYPES = os.listdir(f'images/level_images/{LEVEL}/Tiles')
+
+    background = pygame.transform.scale(pygame.image.load(WINDOW.get_path('backgrounds/background_2.png')),window.SIZE).convert_alpha()
+
+    # load in game data
+    img_dict = {}
+    for i in TILE_TYPES:
+        img = pygame.image.load(WINDOW.get_path(f'images/level_images/{LEVEL}/Tiles/{i}')).convert_alpha()
+        name = i[:i.index('.')]
+        img_dict[name] = img
+
     world = World()
     # load in the questions
     question_data = read_json(f'Questions/{level}.json')
@@ -242,9 +221,10 @@ def play_level(username, user_id, level):
     questions = get_questions(level, username)
     questions = random.sample(questions, len(questions)) # shuffle the order of selected questions
     # questions will be treated as a stack. Last in is first out
-
+    tile_info = WINDOW.read_json(f'images/level_images/{LEVEL}/tile_info.json')
     # sprite groups
-    player, decorations, death_blocks, enemies, coins, portals = world.process_data(game_level)
+    player, decorations, death_blocks, enemies, coins, portals = world.process_data(game_level, tile_info, img_dict)
+
     death_blocks_group = Group(*death_blocks)
     enemy_group = Group(*enemies)
     arrow_group = Group()
@@ -264,7 +244,7 @@ def play_level(username, user_id, level):
     max_streak = 0
     portal_enter = False
     questions = questions[:len(enemy_group.sprites())]
-
+    max_questions = len(questions)
     while run:
         player.check_alive()
         camera.update(player, world)
@@ -323,8 +303,9 @@ def play_level(username, user_id, level):
                 pass
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if window.check_return():
-                    run = False
-                    continue
+                    if len(questions) == max_questions: # if they haven't answered any questions
+                        return
+                    run = False # otherwise, save the user's attempts and don't add any points
 
         keys = pygame.key.get_pressed()
 
@@ -445,7 +426,7 @@ def play_level(username, user_id, level):
         current_best = timer
 
     user_info[username][level] = current_best # update time if it was lower
-    user_info[username]['points'].append(points) # adding points onto the player's history for graph plotting
+    if len(questions) != max_questions: user_info[username]['points'].append(points) # adding points onto the player's history for graph plotting; if they answered questions
     write_json(user_info, f'user_info/users.json') # save all the changes
 
 def main(username, user_id, level):

@@ -64,10 +64,10 @@ def get_accuracy(question_data, username) -> str:
             total_attempted += 1
             accuracy += stats[2] # the index that points to the accuracy
 
-    if total_attempted: # making sure denominator is not 0
+    if total_attempted: # making sure denominator is not 0, and that they have attempted questions
         accuracy = (accuracy/total_attempted)*100
 
-    if accuracy>0:
+    if total_attempted: # if they've answered at least one question and got it right/wrong
         accuracy = str(round(accuracy,1))+'%'
     else:
         accuracy = 'N/A'
@@ -98,7 +98,7 @@ def get_topic_boxes(username, user_data) -> list:
     for i in range(3):
         current_time = user_data[username][WINDOW.topics[row_1[i]]]
         if not current_time:
-            current_time = 'N/A'
+            current_time = 'level not fully completed'
         else:
             current_time = WINDOW.convert_time_format(current_time)
         topics.append(
@@ -110,7 +110,7 @@ def get_topic_boxes(username, user_data) -> list:
     for j in range(2):
         current_time = user_data[username][WINDOW.topics[row_2[j]]]
         if not current_time:
-            current_time = 'N/A'
+            current_time = 'level not fully completed'
         else:
             current_time = WINDOW.convert_time_format(current_time)
         topics.append(DynamicBox(padding2 * j + (width2 * j) + padding2, topics[1].rect.h + padding_y + padding1,(width2, 0.35 * width2), row_2[j], text=row_2[j]+f' \\n \\n Accuracy: {accuracy_2[j]}  \\n Best Time: {current_time}',center_text=(False,True)))
