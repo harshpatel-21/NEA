@@ -41,7 +41,7 @@ def check_details(username, password, state):
     return 0
 
 def add_info(data, username, password):
-    data[username] = {"password": "", "points": [], "1.1": [], "1.2": [], "1.3": [], "1.4": [], "2": []}
+    data[username] = {"password": "", "points": 0, "1.1": 0, "1.2":0, "1.3": 0, "1.4": 0, "2": 0}
     data[username]['password'] = password
 
     questions = os.listdir('Questions')
