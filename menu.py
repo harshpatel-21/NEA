@@ -158,6 +158,9 @@ def show_graph(surface, graph_img):
     img_rect = graph_img.get_rect()
     surface.screen.blit(graph_img, ((surface.WIDTH - img_rect.w)//2, (surface.HEIGHT - img_rect.h)//2))
 
+def show_instructions(surface):
+    instructions = pygame.image.load('instructions.png')
+    surface.screen.blit(instructions, (0, 0))
 
 def show_menu(username) -> None:
     user_data = WINDOW.read_json('user_info/users.json')
@@ -171,15 +174,17 @@ def show_menu(username) -> None:
     width = DynamicBox.MEDIUM_FONT.render(f'Leaderboards', 1, (255, 255, 255)).get_width() * 1.3
     rec = topics[1].rect # the 2nd topic's rect
     # position the leaderboards box at the centered x position relative to the 2nd topic box
-    leaderboard_box = DynamicBox(rec.x + (rec.w - width)//2, 40, (width, topics[1].rect.h // 2), 'leaderboard',text='Leaderboards',center_text=(True,True))
-
-    all_boxes = BoxGroup(*topics, username_box, leaderboard_box)
+    leaderboard_box = DynamicBox(rec.x + (rec.w - width)//2, 40, (width, topics[1].rect.h // 2), 'leaderboard',text='Leaderboards', center_text=(True,True))
+    instructions_box = DynamicBox(leaderboard_box.rect.x - width - 200, 40, (width, topics[1].rect.h // 2), 'instructions',text='How-To-Play', center_text=(True,True))
+    all_boxes = BoxGroup(*topics, username_box, leaderboard_box, instructions_box)
     leaderboards = False
     fade = ScreenFade(1,(0,0,0))
     screen_fade = True
     graph = False
+    instructions = False
+    back_pos = None
     while True:
-        window.refresh(back=True, show_mouse_pos=True)
+        window.refresh(back=True, show_mouse_pos=True, pos=back_pos)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -194,7 +199,19 @@ def show_menu(username) -> None:
                 # check for button clicks
                 clicked = all_boxes.check_clicks()
 
-                if bool(clicked): # if something was returned
+                # check for back click
+                if window.check_return():
+                    if leaderboards:
+                        leaderboards = False
+                    elif graph:
+                        graph = False
+                    elif instructions:
+                        instructions = False
+                        back_pos = None
+                    else:
+                        return
+
+                elif bool(clicked): # if something was returned
                     corresponding_num = WINDOW.topics.get(clicked.obj_type)
                     if corresponding_num: # if the clicked box is a topic
                         game_level.play_level(username, 0, corresponding_num)
@@ -203,7 +220,7 @@ def show_menu(username) -> None:
                         username_box.update_text(f'Username: {username} \\n Points: {sum(user_data[username]["points"])}')
                         topics = get_topic_boxes(username,user_data) # updates the text_box size and text after user completes a level
                         # topics = update_topic_boxes(username,user_data,topics) # this only alters the text, not the size which leads to inconsistent formatting
-                        all_boxes = BoxGroup(*topics, username_box, leaderboard_box)
+                        all_boxes = BoxGroup(*topics, username_box, leaderboard_box, instructions_box)
 
                     elif clicked.obj_type == 'leaderboard':
                         leaderboards = True
@@ -212,14 +229,11 @@ def show_menu(username) -> None:
                         graph = True
                         get_graph(username)
 
-                # check for back click
-                elif window.check_return():
-                    if leaderboards:
-                        leaderboards = False
-                    elif graph:
-                        graph = False
-                    else:
-                        return
+                    elif clicked.obj_type == 'instructions':
+                        instructions = True
+                        back_pos = (180, 420)
+
+
 
         if leaderboards:
             show_leaderboards(window.screen, user_data)
@@ -227,9 +241,12 @@ def show_menu(username) -> None:
         elif graph:
             graph_img = pygame.image.load('points.png')
             show_graph(window, graph_img)
+        elif instructions:
+            show_instructions(window)
         else:
             all_boxes.update_boxes(window.screen)
 
+        window.draw_back(back_pos)
         pygame.display.update()
         clock.tick(FPS)
 

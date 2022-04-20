@@ -168,9 +168,12 @@ class Display:
     def blit(self, content, coords):
         self.screen.blit(content, coords)
 
-    def draw_back(self):
-        pos = (self.BACK_X, self.BACK_Y)
-        self.arrow_rect = pygame.Rect(*pos,*self.back_image.get_size())
+    def draw_back(self, pos=None):
+        if pos is None:
+            pos = (self.BACK_X, self.BACK_Y)
+        self.arrow_rect = pygame.Rect(*pos, *self.back_image.get_size())
+        # pos = (self.BACK_X, self.BACK_Y)
+        # self.arrow_rect = pygame.Rect(*pos,*self.back_image.get_size())
         self.screen.blit(self.back_image,pos)
         pygame.draw.rect(self.screen, (255,255,255), (*pos,*self.back_image.get_size()),1)
 
@@ -179,14 +182,8 @@ class Display:
             self.screen.fill(self.background)
         else: # if its an image
             self.screen.blit(self.background,(0,0))
-
-        if pos is None:
-            pos = (self.BACK_X, self.BACK_Y)
-        else:
-            self.BACK_X, self.BACK_Y = pos
-        self.arrow_rect = pygame.Rect(*pos, *self.back_image.get_size())
         if back:
-            self.draw_back()
+            self.draw_back(pos)
         if show_mouse_pos:
             mouse_pos = self.MEDIUM_FONT.render(str(pygame.mouse.get_pos()),1,self.WHITE)
             rect = mouse_pos.get_rect()

@@ -203,9 +203,8 @@ def get_questions(level, username):
 def play_level(username, user_id, level):
     LEVEL = 2 # random.randint(1,4) # choose a random map layout
     game_level = load_level(LEVEL)
-    TILE_TYPES = os.listdir(f'images/level_images/{LEVEL}/Tiles')
-
-    background = pygame.transform.scale(pygame.image.load(WINDOW.get_path('backgrounds/background_2.png')),window.SIZE).convert_alpha()
+    TILE_TYPES = os.listdir(f'images/level_images/{LEVEL}/Tiles') # get a list of all the tiles
+    background = pygame.transform.scale(pygame.image.load(WINDOW.get_path(f'images/level_images/{LEVEL}/background.png')),window.SIZE).convert_alpha()
 
     # load in game data
     img_dict = {}

@@ -155,7 +155,7 @@ class Entity(pygame.sprite.Sprite):
         self.difference = self.health - self.health2
         self.current_weapon_damage = {1: melee_dps, 2: bow_dps}  # sword deals 50 damage, bow deals 20
         self.increase_health = 0
-        self.health_rect = pygame.Rect((x, y, 70, 6))
+        self.health_rect = pygame.Rect((x, y, 70, 7))
         self.health_rect.center = self.rect.center
         self.health_rect.y -= self.rect.h // 2 + 10
         self.ground = 0
@@ -264,11 +264,17 @@ class Entity(pygame.sprite.Sprite):
         if self.direction == -1 and self.obj_type in ['knight', 'samurai']:  # adjusts the position of the health bar if need be
             self.health_rect.topright = temp.topright
 
-        pygame.draw.rect(surface, (255, 0, 0), self.health_rect)
+        health_color = (16, 130, 0)
+        lost_health_color = (173, 181, 172)
+        if self.obj_type != 'player':
+            health_color = (255, 38, 0)
+            lost_health_color = (219, 182, 175)
+
+        pygame.draw.rect(surface, lost_health_color, self.health_rect)
         current_health = self.health_rect.copy()
         current_health.w = (self.health / self.max_health) * self.health_rect.w  # the % of health * full width
-        pygame.draw.rect(surface, (0, 255, 0), current_health)
-        pygame.draw.rect(surface, (0, 0, 0), self.health_rect, 3)
+        pygame.draw.rect(surface, health_color, current_health)
+        pygame.draw.rect(surface, (0, 0, 0), self.health_rect, 2)
 
     def animation_handling(self):  # updates the animation frame
         self.check_alive()
