@@ -85,9 +85,9 @@ class Projectile(pygame.sprite.Sprite):
 
     def entity_collision(self, obj, target):
         collision = self.mask_collision(obj, target)
-        # change border color if collision with arrow has occurred
+        # change border colour if collision with arrow has occurred
         if collision:
-            obj.border_color = (0, 255, 0)
+            obj.border_colour = (0, 255, 0)
             self.remove = True
             self.kill()
             obj.health2 = obj.health
@@ -96,7 +96,7 @@ class Projectile(pygame.sprite.Sprite):
             obj.difference = max(0, obj.health2 - obj.health)
             # self.shooter.bow_attack = False
         else:
-            obj.border_color = (255, 0, 0)
+            obj.border_colour = (255, 0, 0)
         return collision
 
     def mask_collision(self, obj, target):
@@ -149,7 +149,7 @@ class Entity(pygame.sprite.Sprite):
         self.shoot_cooldown = 10
         self.shoot_cooldown_timer = 0
         self.mask = pygame.mask.from_surface(self.image)
-        self.border_color = (255, 0, 0)
+        self.border_colour = (255, 0, 0)
         self.collisions = 0
         self.health2 = self.health
         self.difference = self.health - self.health2
@@ -264,16 +264,16 @@ class Entity(pygame.sprite.Sprite):
         if self.direction == -1 and self.obj_type in ['knight', 'samurai']:  # adjusts the position of the health bar if need be
             self.health_rect.topright = temp.topright
 
-        health_color = (16, 130, 0)
-        lost_health_color = (173, 181, 172)
+        health_colour = (16, 130, 0)
+        lost_health_colour = (173, 181, 172)
         if self.obj_type != 'player':
-            health_color = (255, 38, 0)
-            lost_health_color = (219, 182, 175)
+            health_colour = (255, 38, 0)
+            lost_health_colour = (219, 182, 175)
 
-        pygame.draw.rect(surface, lost_health_color, self.health_rect)
+        pygame.draw.rect(surface, lost_health_colour, self.health_rect)
         current_health = self.health_rect.copy()
         current_health.w = (self.health / self.max_health) * self.health_rect.w  # the % of health * full width
-        pygame.draw.rect(surface, health_color, current_health)
+        pygame.draw.rect(surface, health_colour, current_health)
         pygame.draw.rect(surface, (0, 0, 0), self.health_rect, 2)
 
     def animation_handling(self):  # updates the animation frame
@@ -453,7 +453,7 @@ class Entity(pygame.sprite.Sprite):
         temp.x = temp.x - target.rect.x + Display.WIDTH / 2.0
         temp.y = temp.y - target.rect.y + Display.HEIGHT // 2
         surface.blit(pygame.transform.flip(self.image, self.flip_image or self.direction == -1, False), temp)
-        # pygame.draw.rect(surface, self.border_color, temp, 1)
+        # pygame.draw.rect(surface, self.border_colour, temp, 1)
 
         self.draw_health_bar(surface, target)
 

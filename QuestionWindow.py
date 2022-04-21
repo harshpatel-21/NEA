@@ -39,7 +39,7 @@ def StartQuestion(question, question_data, timer=0,x1=None):
 
     # feedback instance
     feedback_text = question_data[question]['feedback']
-    feedback = DynamicBox(0,40,(window.SIZE[0],window.SIZE[1]-40),text=feedback_text, obj_type='feedback',font_size=29,center_text=(False,False),color=Display.BACKGROUND)
+    feedback = DynamicBox(0,40,(window.SIZE[0],window.SIZE[1]-40),text=feedback_text, obj_type='feedback',font_size=29,center_text=(False,False),colour=Display.BACKGROUND)
 
     main_continue = Textbox(100, 0.9*window.height,text='Continue',text_size='medlarge')
     feedback_continue = Textbox(100, 0.9*window.height,text='Continue',text_size='medlarge')
@@ -92,11 +92,11 @@ def StartQuestion(question, question_data, timer=0,x1=None):
                     # change the options' properties based on the outcome
                     for option in main_group.objects:
                         if option.text != correct_answer and option.obj_type!='question':
-                            option.background_color = option.incorrect_color
-                            option.hover_color = option.incorrect_color
+                            option.background_colour = option.incorrect_colour
+                            option.hover_colour = option.incorrect_colour
                         else:
-                            option.background_color = option.correct_color
-                            option.hover_color = option.correct_color
+                            option.background_colour = option.correct_colour
+                            option.hover_colour = option.correct_colour
                             move_to_feedback //= 2 # if they're right, show the continue button faster
 
                         option.check_collision = False # don't check for collisions with the selected option/button anymore

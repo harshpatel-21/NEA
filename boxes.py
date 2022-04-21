@@ -11,12 +11,12 @@ class Textbox:
     BACKGROUND = (120, 126, 214)
     BORDER = (35, 127, 200)
     HOVER = (126, 175, 252)
-    TEXT_COLOR = (255, 255, 255)
+    TEXT_colour = (255, 255, 255)
     BORDER_HOVER = (255,255,255)
-    background_color = BACKGROUND
-    border_color = BORDER
-    hover_color = HOVER
-    text_color = TEXT_COLOR
+    background_colour = BACKGROUND
+    border_colour = BORDER
+    hover_colour = HOVER
+    text_colour = TEXT_colour
     border_hover = BORDER_HOVER
     GREEN = (0,200,0)
     LARGE_FONT = pygame.font.SysFont('Sans', 35)
@@ -26,13 +26,13 @@ class Textbox:
 
     max_width = 270
 
-    def __init__(self, x, y, text='', text_size='MEDIUM', text_color=text_color, padding=(10,10), size=(0,0),limit=True):
+    def __init__(self, x, y, text='', text_size='MEDIUM', text_colour=text_colour, padding=(10,10), size=(0,0),limit=True):
         self.padding = padding
         self.size = size
         self.text = text
         self.text_size = eval('self.' + text_size.upper()+'_FONT')
         self.x, self.y = x, y
-        self.text_color = text_color
+        self.text_colour = text_colour
         self.limit = limit
         self.create_rect()
 
@@ -42,7 +42,7 @@ class Textbox:
         w,h=self.size
 
         #updates the text to be displayed on the box
-        self.font = self.text_size.render(self.text, True, pygame.Color(*self.text_color))
+        self.font = self.text_size.render(self.text, True, pygame.colour(*self.text_colour))
 
         self.rect = self.font.get_rect() # this is the font rectangle
         tempRect = self.rect.copy()
@@ -58,13 +58,13 @@ class Textbox:
             self.main_rec.height = h
 
         self.surface = pygame.Surface((self.main_rec.width, self.main_rec.height))
-        self.background = self.background_color
+        self.background = self.background_colour
         # self.main_rec.topleft = (self.x,s/elf.y)
 
 
     def show(self, canvas, center=False):
         pygame.draw.rect(self.surface, self.background, self.main_rec)
-        pygame.draw.rect(self.surface, self.border_color, self.main_rec, 5)
+        pygame.draw.rect(self.surface, self.border_colour, self.main_rec, 5)
         text_x = (self.main_rec.width - self.rect.width) // 2
         text_y = (self.main_rec.height - self.rect.height) // 2
         self.surface.blit(self.font, (text_x, text_y))
@@ -74,10 +74,10 @@ class Textbox:
 
         canvas.blit(self.surface, (self.x, self.y)) # blitting the box at the initially specified x and y position
 
-    def set_properties(self, background=background_color, border=border_color, hover=hover_color):
+    def set_properties(self, background=background_colour, border=border_colour, hover=hover_colour):
         self.background = background
-        self.border_color = border
-        self.hover_color = hover
+        self.border_colour = border
+        self.hover_colour = hover
 
     def check_hover(self,mouse_pos=0):
         mouse_pos = pygame.mouse.get_pos()
@@ -85,9 +85,9 @@ class Textbox:
         x.x = self.x
         x.y = self.y
         if x.collidepoint(mouse_pos):
-            self.background = self.hover_color
+            self.background = self.hover_colour
         else:
-            self.background = self.background_color
+            self.background = self.background_colour
 
     def check_click(self,mouse_pos=None):
         x=self.main_rec.copy()
@@ -108,15 +108,15 @@ class DynamicBox(Textbox):
     MEDIUM_FONT = pygame.font.SysFont('Sans', 25)
     SMALL_FONT = pygame.font.SysFont('Sans', 15)
 
-    incorrect_color = (204, 51, 0)
-    correct_color = (51, 153, 51)
-    def __init__(self, x, y, size, obj_type, text='', font_size='MEDIUM',center_text=(True,True),color=(68, 71, 68),padding=None):
-        if color is not None:
-            self.background_color = color
+    incorrect_colour = (204, 51, 0)
+    correct_colour = (51, 153, 51)
+    def __init__(self, x, y, size, obj_type, text='', font_size='MEDIUM',center_text=(True,True),colour=(68, 71, 68),padding=None):
+        if colour is not None:
+            self.background_colour = colour
         else:
-            self.background_color = Textbox.BACKGROUND
+            self.background_colour = Textbox.BACKGROUND
 
-        self.border_color = None
+        self.border_colour = None
 
         if isinstance(font_size, int):
             self.font = pygame.font.SysFont('Sans', font_size)
@@ -137,15 +137,15 @@ class DynamicBox(Textbox):
         self.text=text
         self.center_text = center_text
         self.add_text(text)
-        self.background = self.background_color
+        self.background = self.background_colour
         self.check_collision = True
 
     def show(self, surface):
         # self.surface.fill(self.background)
         pygame.draw.rect(self.surface, self.background, (0, 0, self.rect.w, self.rect.h))
-        if self.border_color: # if there is a border color
-            pygame.draw.rect(self.surface, self.border_color, (0, 0, self.rect.w, self.rect.h), 3)
-        # pygame.draw.rect(self.surface, self.border_color, (self.text_rect.x-self.rect.x, self.text_rect.y-self.rect.y, self.text_rect.w,self.text_rect.h),1)
+        if self.border_colour: # if there is a border colour
+            pygame.draw.rect(self.surface, self.border_colour, (0, 0, self.rect.w, self.rect.h), 3)
+        # pygame.draw.rect(self.surface, self.border_colour, (self.text_rect.x-self.rect.x, self.text_rect.y-self.rect.y, self.text_rect.w,self.text_rect.h),1)
         surface.blit(self.surface, self.rect.topleft)
         if self.surf:
             # pygame.draw.rect(surface,(255,0,0),(self.rect.x + (self.rect.w-self.text_rect.w)//2, self.rect.y + (self.rect.h-self.text_rect.h)//2, self.text_rect.w, self.text_rect.h),1)
@@ -244,15 +244,15 @@ class DynamicBox(Textbox):
         self.add_text(text)
 
     def check_hover(self, mouse_pos=0):
-        # if the mouse position is over the rectangle, change color, otherwise change it back to normal
+        # if the mouse position is over the rectangle, change colour, otherwise change it back to normal
         if self.obj_type != 'question':
             mouse_pos = pygame.mouse.get_pos()
             if self.rect.collidepoint(mouse_pos) and self.check_collision:
                 self.background = (65, 114, 191)
-                self.border_color = (207, 234, 255)
+                self.border_colour = (207, 234, 255)
             else:
-                self.background = self.background_color
-                self.border_color = None
+                self.background = self.background_colour
+                self.border_colour = None
 
     def check_click(self, mouse_pos=0):
         if not self.check_collision:return
@@ -277,7 +277,7 @@ class BoxGroup:
                 if box.check_click():
                     obj = box
 
-    def set_background(self, color):
+    def set_background(self, colour):
         pass
 
     def check_clicks(self):

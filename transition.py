@@ -2,10 +2,10 @@ import pygame
 from WINDOW import Display as window
 
 class ScreenFade:
-    def __init__(self, direction, color, time=0.6):
+    def __init__(self, direction, colour, time=0.6):
         self.direction = direction # 1 == fade outwards, -1 == fade inwards
         time = time*60 # 60 is the FPS
-        self.color = color
+        self.colour = colour
         # adjust the speed such that the vertical and horizontal walls reach the sides at the same time
         self.speed_x = round((window.WIDTH//2)/time)
         self.speed_y = round((window.HEIGHT//2)/time)
@@ -22,17 +22,17 @@ class ScreenFade:
         counter_y = self.fade_counter_y
         if self.direction == 1: # outwards fade
             # horizontal movement
-            # pygame.draw.rect(surface, self.color, (0 - counter_x, 0, window.WIDTH//2, window.HEIGHT))
-            # pygame.draw.rect(surface, self.color, (window.WIDTH//2 + counter_x, 0, window.WIDTH//2, window.HEIGHT))
+            # pygame.draw.rect(surface, self.colour, (0 - counter_x, 0, window.WIDTH//2, window.HEIGHT))
+            # pygame.draw.rect(surface, self.colour, (window.WIDTH//2 + counter_x, 0, window.WIDTH//2, window.HEIGHT))
             # vertical movement
-            pygame.draw.rect(surface, self.color, (0, -window.HEIGHT//2 - counter_y, window.WIDTH, window.HEIGHT))
-            pygame.draw.rect(surface, self.color, (0, window.HEIGHT//2 + counter_y, window.WIDTH, window.HEIGHT))
+            pygame.draw.rect(surface, self.colour, (0, -window.HEIGHT//2 - counter_y, window.WIDTH, window.HEIGHT))
+            pygame.draw.rect(surface, self.colour, (0, window.HEIGHT//2 + counter_y, window.WIDTH, window.HEIGHT))
 
         else: # fade going inwards
-            # pygame.draw.rect(surface, self.color, (-window.WIDTH//2 + counter_x, 0, window.WIDTH//2, window.HEIGHT))
-            # pygame.draw.rect(surface, self.color, (window.WIDTH - counter_x, 0, window.WIDTH//2, window.HEIGHT))
-            pygame.draw.rect(surface, self.color, (0, -window.HEIGHT + counter_y, window.WIDTH, window.HEIGHT))
-            pygame.draw.rect(surface, self.color, (0,window.HEIGHT - counter_y, window.WIDTH, window.HEIGHT))
+            # pygame.draw.rect(surface, self.colour, (-window.WIDTH//2 + counter_x, 0, window.WIDTH//2, window.HEIGHT))
+            # pygame.draw.rect(surface, self.colour, (window.WIDTH - counter_x, 0, window.WIDTH//2, window.HEIGHT))
+            pygame.draw.rect(surface, self.colour, (0, -window.HEIGHT + counter_y, window.WIDTH, window.HEIGHT))
+            pygame.draw.rect(surface, self.colour, (0,window.HEIGHT - counter_y, window.WIDTH, window.HEIGHT))
 
         if counter_y - 100 > window.HEIGHT/2:
             fade_complete = True

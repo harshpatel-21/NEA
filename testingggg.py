@@ -326,7 +326,7 @@ while 1:
     time = WINDOW.convert_time_format(timer)
     window.draw_text(time,(window.HEIGHT//2,20),center=True,size='LARGE')
     if pause:
-        window.draw_text('Paused',(window.HEIGHT//2,2),center=True,size='SMALL',color=(255,51,51))
+        window.draw_text('Paused',(window.HEIGHT//2,2),center=True,size='SMALL',colour=(255,51,51))
 
     reset_button.check_hover()
     reset_button.show(window.screen)

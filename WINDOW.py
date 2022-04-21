@@ -178,7 +178,7 @@ class Display:
         pygame.draw.rect(self.screen, (83, 203, 230), (*pos,*self.back_image.get_size()),2)
 
     def refresh(self, back=False, pos=None, show_mouse_pos=False):
-        if isinstance(self.background, tuple): # if the background is a color
+        if isinstance(self.background, tuple): # if the background is a colour
             self.screen.fill(self.background)
         else: # if its an image
             self.screen.blit(self.background,(0,0))
@@ -195,9 +195,9 @@ class Display:
 
         if self.arrow_rect.collidepoint(mouse_pos) and pygame.mouse.get_pressed()[0]: return 1
 
-    def draw_text(self,text,pos,size='MEDIUM',color=WHITE, center=(False, False)):
+    def draw_text(self,text,pos,size='MEDIUM',colour=WHITE, center=(False, False)):
         center_x, center_y = center
-        text = eval(f'self.{size.upper()}_FONT.render(text, True, color)')
+        text = eval(f'self.{size.upper()}_FONT.render(text, True, colour)')
         rec=text.get_rect()
         x, y = pos
         if center_x:
@@ -206,12 +206,12 @@ class Display:
             y = (self.HEIGHT-rec.h)//2
         self.screen.blit(text,(x,y))
 
-    def draw_multi_lines(self,text,pos,size='MEDIUM',color=WHITE, center=(False, False), space=0):
+    def draw_multi_lines(self,text,pos,size='MEDIUM',colour=WHITE, center=(False, False), space=0):
         text = text.split('\\n')
         h=0
         for index, line in enumerate(text):
             center_x, center_y = center
-            text = eval(f'self.{size.upper()}_FONT.render(line, True, color)')
+            text = eval(f'self.{size.upper()}_FONT.render(line, True, colour)')
             rec=text.get_rect()
             x, y = pos
             if center_x:
