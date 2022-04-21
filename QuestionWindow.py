@@ -3,20 +3,12 @@ from boxes import Textbox, DynamicBox
 from boxes import BoxGroup
 from transition import ScreenFade
 
-def StartQuestion(question, question_data,timer=0,x1=None):
-    # ---------- key variables -------------#
-    pygame.init()
-    x, y = WINDOW.x, WINDOW.y
-    Display = WINDOW.Display
-    os.environ['SDL_VIDEO_WINDOW_POS'] = f"{x},{y}"
-    FPS = 60
-    clock = pygame.time.Clock()
-    window = WINDOW.Display(new_window=True, caption='Question Display')
+def get_boxes(question_data, question, window):
     w, h = window.width, 200
 
     text = question
     options = question_data[question]['options']
-    correct_answer = question_data[question]['options'][0] # correct answer will always be at first index of options
+
     question_box = DynamicBox(0, 0, (w, h*0.8), obj_type='question', text=text)
 
     left_shift = 0.1
@@ -31,6 +23,20 @@ def StartQuestion(question, question_data,timer=0,x1=None):
     option_3=DynamicBox(option_1.rect.left, option_1.rect.bottom + 13.3, (option_w, option_h), obj_type='option', text=options[2])
     option_4=DynamicBox(option_2.rect.left, option_2.rect.bottom + 13.3, (option_w, option_h), obj_type='option', text=options[3])
     main_group = BoxGroup(option_1, option_2, option_3, option_4, question_box)
+    return main_group
+
+def StartQuestion(question, question_data, timer=0,x1=None):
+    # ---------- key variables -------------#
+    pygame.init()
+    x, y = WINDOW.x, WINDOW.y
+    Display = WINDOW.Display
+    os.environ['SDL_VIDEO_WINDOW_POS'] = f"{x},{y}"
+    FPS = 60
+    clock = pygame.time.Clock()
+    window = WINDOW.Display(new_window=True, caption='Question Display')
+    correct_answer = question_data[question]['options'][0] # correct answer will always be at first index of options
+    main_group = get_boxes(question_data, question, window)
+
     # feedback instance
     feedback_text = question_data[question]['feedback']
     feedback = DynamicBox(0,40,(window.SIZE[0],window.SIZE[1]-40),text=feedback_text, obj_type='feedback',font_size=29,center_text=(False,False),color=Display.BACKGROUND)
@@ -94,7 +100,7 @@ def StartQuestion(question, question_data,timer=0,x1=None):
                             move_to_feedback //= 2 # if they're right, show the continue button faster
 
                         option.check_collision = False # don't check for collisions with the selected option/button anymore
-                        paused=True # don't continue the timer after the question has been answered to allow the user to absorb info without worrying about time
+                    paused=True # don't continue the timer after the question has been answered to allow the user to absorb info without worrying about time
 
         if options_screen: # if the user is still on the options screen
             main_group.update_boxes(window.screen) # update the boxes (draw them) onto the screen
