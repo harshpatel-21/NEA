@@ -131,8 +131,10 @@ def show_summary(right, wrong, accuracy, streak, points, timer):
     accuracy = str(round(accuracy*100,1))+'%'
     units = get_time_units(timer)
     timer = str(timer) + units
+    show_back = False
+    initial_time = pygame.time.get_ticks()
     while True:
-        window.refresh(back=True)
+        window.refresh(back=show_back, pos=(650, 480))
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if window.check_return():
@@ -140,6 +142,7 @@ def show_summary(right, wrong, accuracy, streak, points, timer):
 
             if event.type == pygame.QUIT:
                 sys.exit()
+
         spaces = lambda word: ' '*(100-len(word))
         initial_x = 430
         for i,line in enumerate(['Right','Wrong','Accuracy','Best Streak','Points Gained','Time Survived']):
@@ -147,7 +150,8 @@ def show_summary(right, wrong, accuracy, streak, points, timer):
         for j,value in enumerate([right, wrong, accuracy, streak, points, timer]):
             window.draw_text(str(value),(initial_x*2,150+(j*50)))
 
-        # window.draw_multi_lines(text, (300,50), center=(False,False))
+        if pygame.time.get_ticks() - initial_time >= 2000 and not show_back: # if back button is not being shown and 2 seconds have passed
+            show_back = True
         pygame.display.update()
     pass
 
@@ -198,7 +202,23 @@ def get_questions(level, username):
         sample = random.sample(category, current_quota)# select a random order of (n = quota) questions from the current category
         final_list +=[*sample] # add the question to the final list of questions
 
-    return final_list
+    return final_list, question_data
+
+def update_data(question_data, questions, max_questions, level, username, points, timer, portal_enter):
+    # update question data and user data when/ if run == False, if they just finished level/died
+    write_json(question_data, f'Questions/{level}.json')
+    user_info = read_json(f'user_info/users.json')
+    current_best = user_info[username][level]
+
+    # only update the completion time if the user answered all the questions/ defeated all enemies and they made it to the portal
+    if current_best != 0 and portal_enter:
+        current_best = min(current_best, timer)
+    elif current_best == 0 and portal_enter: # if they did complete the level and it was their first time:
+        current_best = timer
+
+    user_info[username][level] = current_best # update time if it was lower
+    if len(questions) != max_questions: user_info[username]['points'].append(points) # adding points onto the player's history for graph plotting; if they answered questions
+    write_json(user_info, f'user_info/users.json') # save all the changes
 
 def play_level(username, user_id, level):
     LEVEL = 2 # random.randint(1,4) # choose a random map layout
@@ -215,9 +235,8 @@ def play_level(username, user_id, level):
 
     world = World()
     # load in the questions
-    question_data = read_json(f'Questions/{level}.json')
     # NOTE: question_data[question][username] = list(correct: int, incorrect: int, percentage: float)
-    questions = get_questions(level, username)
+    questions, question_data = get_questions(level, username)
     questions = random.sample(questions, len(questions)) # shuffle the order of selected questions
     # questions will be treated as a stack. Last in is first out
     tile_info = WINDOW.read_json(f'images/level_images/{LEVEL}/tile_info.json')
@@ -340,23 +359,24 @@ def play_level(username, user_id, level):
         # if the user hasn't already entered the portal
         for portal in portal_group.sprites():
             portal_collision = portal.update(player,camera) and not portal_enter
-            if portal_collision and (not questions or not enemy_group.sprites()): # if all questions are answered or enemies are dead
-                start_fade = True
+            if portal_collision and (not questions or not enemy_group.sprites()): # if all questions are answered or enemies are dead, then allow the user to enter the portal
+                start_fade = True # start the transition
                 fade.direction = -1
-                show_question=False
-                portal_enter = True
+                show_question = False # don't show a question
+                portal_enter = True # mark the portal as entered
 
         # do fade animation
         if start_fade:
             if fade.fade(window.screen): # if the fade has completed
                 start_fade = False # don't show the intro fade anymore
-                if portal_enter and fade.direction == -1:
+                if portal_enter and fade.direction == -1: # Once the fade animation is finished and the user entered a portal:
                     run = False
                     show_question = False
+
                 # if fading out, check if there are still questions and enemies left to show a question, otherwise its just a normal fade
                 elif fade.direction == -1 and not player.remove:
                     show_question = True
-                # if the player has died, then don't update their timer
+                # if the player has died, then don't update their best time
                 elif fade.direction == -1 and player.remove:
                     run = False
                     start_fade = False
@@ -412,21 +432,7 @@ def play_level(username, user_id, level):
 
     # show the user their summary statistics:
     show_summary(total_right, total_wrong, total_accuracy, max_streak, points, timer)
-
-    # update question data and user data when/ if run == False, if they just finished level/died
-    write_json(question_data, f'Questions/{level}.json')
-    user_info = read_json(f'user_info/users.json')
-    current_best = user_info[username][level]
-
-    # only update the completion time if the user answered all the questions/ defeated all enemies and they made it to the portal
-    if current_best != 0 and (not questions or not enemy_group.sprites()) and portal_enter:
-        current_best = min(current_best, timer)
-    elif current_best == 0 and portal_enter: # if they did complete the level and it was their first time:
-        current_best = timer
-
-    user_info[username][level] = current_best # update time if it was lower
-    if len(questions) != max_questions: user_info[username]['points'].append(points) # adding points onto the player's history for graph plotting; if they answered questions
-    write_json(user_info, f'user_info/users.json') # save all the changes
+    update_data(question_data, questions, max_questions, level, username, points, timer, portal_enter)
 
 def main(username, user_id, level):
     play_level(username, user_id, level)

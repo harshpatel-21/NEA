@@ -19,7 +19,7 @@
         ],
         "feedback": " - The program counter holds the memory location address of the next instruction to be performed by the central processing unit.  \\n \\n - The Memory data register holds the data that has been retrieved from memory, or that is about to be stored in memory. \\n \\n - The Accumulator holds the result of calculations and operations performed by the arithmetic and logic unit. \\n \\n - The Memory Address Register holds the address of a location that is to be read from or written to. \\n \\n - The Current Instruction Register holds the current instruction being executed divided into opcode and operand.",
         "Harsh1": [0, 0, 0],
-        "Harsh21": [0, 0, 0]
+        "Harsh21": [1, 1, 0.5]
     },
     "Which of the following can be adjusted to improve the performance of a CPU?": {
         "options": [
@@ -30,7 +30,7 @@
         ],
         "feedback": " - Each core of a CPU can execute its own independent Fetch Decode Execute (FDE) cycle; increasing the number of cores can increase the amount of simultaneous FDE cycles executed to enhance processing power. \\n \\n - Another way to increase processing power is by increasing the clock speed. The clock speed is the time taken for one FDE cycle to complete, so by increasing this it results in more FDE cycles being completed per specified time frame. \\n \\n - Increasing the Cache memory is also another option to improve CPU performance. Cache memory is the CPU's onboard memory. Instructions fetched from main memory are copied to the cache so if required again, they can be accessed quicker. As cache fills up, unused instructions are replaced. ",
         "Harsh1": [0, 0, 0],
-        "Harsh21": [0, 0, 0]
+        "Harsh21": [0, 1, 0.0]
     },
     "Which two CPU registers will regularly store the same value?": {
         "options": [
@@ -85,7 +85,7 @@
         ],
         "feedback": " - CISCs (Complex Instruction Set Computers) contain a large, and complex instruction sets where one line of code can represent several lines of machine code. This can make development much easier as it saves time coding and reduces files size however this does come at the cost of higher energy consumption and costs. \\n \\n - RISC (Reduced instruction set computers) have a reduced instruction set where one instruction translates to one machine code instruction which makes development harder, but uses up less power and are cheaper whilst also with being able to utilise pipelining because each instruction takes a single clock cycle.",
         "Harsh1": [0, 0, 0],
-        "Harsh21": [0, 0, 0]
+        "Harsh21": [3, 1, 0.75]
     },
     "Which of the following is True?": {
         "options": [
@@ -107,7 +107,7 @@
         ],
         "feedback": "The order for speed goes: Flash -> magnetic -> Optical. In this case SSDs are the fastest, then HDDs, then Blu-Rays. Virtual Memory is regarded as a form of temporary RAM; this is because Virtual Memory is a small segment of secondary storage that is assigned to hold inactive running programs that are in RAM to free up space in the RAM. However constant use of virtual memory and switching back and forth from RAM to Hard Disk Drive can cause disk threshing.",
         "Harsh1": [0, 0, 0],
-        "Harsh21": [0, 0, 0]
+        "Harsh21": [1, 1, 0.5]
     },
     "What are the two parts of a computer instruction?": {
         "options": [
@@ -118,7 +118,7 @@
         ],
         "feedback": "opcode is the instruction and operand is the data on which the instruction is to be performed on. ",
         "Harsh1": [0, 0, 0],
-        "Harsh21": [0, 0, 0]
+        "Harsh21": [0, 1, 0.0]
     },
     "What is the most suitable storage device for: A Travel Agent backing up 800GB of data with medium costs": {
         "options": [
@@ -129,7 +129,7 @@
         ],
         "feedback": " - CDs/Blu-Rays: slow access times, not enough storage space and not durable/reliable enough for storing backup; not a suitable option. \\n \\n - Solid State Drives: fast access times, durable, can have high storage but can be very expensive; not a suitable option. \\n \\n - Hard Disk Drives: Medium access times, very high capacity, not too expensive, highly durable and reliable; most suitable option",
         "Harsh1": [0, 0, 0],
-        "Harsh21": [0, 0, 0]
+        "Harsh21": [0, 1, 0.0]
     },
     "What is the name given to the areas on a CD's surface which have burned into grooves by a laser?": {
         "options": [
@@ -140,7 +140,7 @@
         ],
         "feedback": "Burnt areas are referred to as pits and unburnt areas are referred to as lands. pits represent 1s and lands represent 0s. Logically, a brand new CD would have no pits because the nothing has been written to it, meaning that it is 100% lands, therefore lands must correspond to a 0 to represent an unburnt area, and pits 1 to represent burnt areas.",
         "Harsh1": [0, 0, 0],
-        "Harsh21": [0, 0, 0]
+        "Harsh21": [1, 0, 1.0]
     },
     "This form of memory is volatile": {
         "options": [
@@ -151,7 +151,7 @@
         ],
         "feedback": "Volatile means losing data/contents once access to power is cut off. Optical and Flash Memory are secondary storage so they cannot be volatile because they are used to withhold information reliably. ROM is also not volatile because this holds the operating system information and other programs such as the bootstrap, so it wouldn't make sense for ROM to be volatile either as it holds highly important information. RAM is the volatile form of memory because it holds currently running which doesn't have to be stored permanently, so once power is cut off all contents of RAM will be erased.",
         "Harsh1": [0, 0, 0],
-        "Harsh21": [0, 0, 0]
+        "Harsh21": [1, 1, 0.5]
     },
     "What is a disadvantage of Solid State Drives": {
         "options": [

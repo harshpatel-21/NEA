@@ -175,7 +175,7 @@ class Display:
         # pos = (self.BACK_X, self.BACK_Y)
         # self.arrow_rect = pygame.Rect(*pos,*self.back_image.get_size())
         self.screen.blit(self.back_image,pos)
-        pygame.draw.rect(self.screen, (255,255,255), (*pos,*self.back_image.get_size()),1)
+        pygame.draw.rect(self.screen, (83, 203, 230), (*pos,*self.back_image.get_size()),2)
 
     def refresh(self, back=False, pos=None, show_mouse_pos=False):
         if isinstance(self.background, tuple): # if the background is a color
