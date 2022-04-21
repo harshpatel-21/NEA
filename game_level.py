@@ -229,29 +229,9 @@ def update_data(question_data, questions, max_questions, level, username, points
     elif current_best == 0 and total_accuracy == 100:
         current_best = timer
 
-
     user_info[username][level] = current_best # update time if it was lower
     if len(questions) != max_questions: user_info[username]['points'].append(points) # adding points onto the player's history for graph plotting; if they answered questions
     write_json(user_info, f'user_info/users.json') # save all the changes
-
-def get_accuracy(question_data, username):
-    total_attempted = 0
-    accuracy = 0
-    for question in question_data:
-        stats = question_data[question][username]
-        attempts = stats[0] + stats[1]
-        if attempts > 0: # if attempts were made
-            total_attempted += 1
-            accuracy += stats[2] # the index that points to the accuracy
-
-    if total_attempted: # making sure denominator is not 0, and that they have attempted questions
-        accuracy = (accuracy/total_attempted)*100
-
-    if total_attempted: # if they've answered at least one question and got it right/wrong
-        accuracy = round(accuracy*100, 2)
-    else:
-        accuracy = -1
-    return accuracy
 
 def play_level(username, user_id, level):
     LEVEL = 2 # random.randint(1,4) # choose a random map layout
