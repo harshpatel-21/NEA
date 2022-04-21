@@ -384,7 +384,7 @@ def play_level(username, user_id, level):
         if show_question:
             if questions: # making sure there are still questions left to pop
                 current_question = questions.pop() # pop the question at the top of the stack
-                QuestionWindow_values = QuestionWindow.StartQuestion(question=current_question, question_data=question_data, timer=timer,x1=x1)
+                QuestionWindow_values = QuestionWindow.start_question(question=current_question, question_data=question_data, timer=timer,x1=x1)
 
                 # extract current stats for the question and adjust them based on result of the user's choice
                 if isinstance(QuestionWindow_values, tuple): # if the result and timer was returned

@@ -25,7 +25,7 @@ def get_boxes(question_data, question, window):
     main_group = BoxGroup(option_1, option_2, option_3, option_4, question_box)
     return main_group
 
-def StartQuestion(question, question_data, timer=0,x1=None):
+def start_question(question, question_data, timer=0,x1=None):
     # ---------- key variables -------------#
     pygame.init()
     x, y = WINDOW.x, WINDOW.y

@@ -12,7 +12,16 @@ FPS = 60
 clock = pygame.time.Clock()
 window = WINDOW.Display(new_window=True)
 
+topic_num = {
+        'Systems Architecture':"1.1",
+        'Software and Software development': "1.2",
+        'Exchanging Data': "1.3",
+        'Data types, Data structures, and Algorithms': "1.4",
+        'Elements of Computational thinking, Problem solving, and programming': "2"
+    }
 
+def get_topic_number(topic):
+    return topic_num[topic]
 
 def show_leaderboards(surface, user_data) -> None:
     sum_points = lambda user: sum(user_data[user]['points'])
@@ -82,13 +91,13 @@ def get_topic_boxes(username, user_data) -> list:
 
     accuracy_1 = []
     for topic in row_1:
-        topic_number = WINDOW.topics[topic]
+        topic_number = get_topic_number(topic)
         question_data = WINDOW.read_json(f'Questions/{topic_number}.json')
         accuracy_1.append(get_accuracy(question_data,username))
 
     accuracy_2 = []
     for topic in row_2:
-        topic_number = WINDOW.topics[topic]
+        topic_number = get_topic_number(topic)
         question_data = WINDOW.read_json(f'Questions/{topic_number}.json')
         accuracy_2.append(get_accuracy(question_data, username))
 
@@ -137,7 +146,7 @@ def update_topic_boxes(username,user_data,topic_boxes) -> list:
 
     topic_boxes = topic_boxes
     for i in range(3):
-        current_time = user_data[username][WINDOW.topics[row_1[i]]]
+        current_time = user_data[username][get_topic_number(row_1[i])]
         if not current_time:
             current_time = 'N/A'
         else:
@@ -145,7 +154,7 @@ def update_topic_boxes(username,user_data,topic_boxes) -> list:
         topic_boxes[i].update_text(row_1[i]+f' \\n \\n Accuracy: {accuracy_1[i]}  \\n Best Time: {current_time}')
 
     for j in range(2):
-        current_time = user_data[username][WINDOW.topics[row_2[j]]]
+        current_time = user_data[username][get_topic_number(row_2[j])]
         if not current_time:
             current_time = 'N/A'
         else:
