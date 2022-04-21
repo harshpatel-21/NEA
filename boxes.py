@@ -42,7 +42,7 @@ class Textbox:
         w,h=self.size
 
         #updates the text to be displayed on the box
-        self.font = self.text_size.render(self.text, True, pygame.colour(*self.text_colour))
+        self.font = self.text_size.render(self.text, True, self.text_colour)
 
         self.rect = self.font.get_rect() # this is the font rectangle
         tempRect = self.rect.copy()
@@ -110,13 +110,16 @@ class DynamicBox(Textbox):
 
     incorrect_colour = (204, 51, 0)
     correct_colour = (51, 153, 51)
-    def __init__(self, x, y, size, obj_type, text='', font_size='MEDIUM',center_text=(True,True),colour=(68, 71, 68),padding=None):
+    def __init__(self, x, y, size, obj_type, text='', font_size=None,center_text=(True,True),colour=(68, 71, 68),padding=None):
         if colour is not None:
             self.background_colour = colour
         else:
             self.background_colour = Textbox.BACKGROUND
 
         self.border_colour = None
+
+        if font_size is None:
+            font_size = 'MEDIUM'
 
         if isinstance(font_size, int):
             self.font = pygame.font.SysFont('Sans', font_size)
@@ -128,7 +131,7 @@ class DynamicBox(Textbox):
         self.x, self.y = x, y
         self.rect = pygame.Rect(x, y, *size)
         self.surface = pygame.Surface(self.rect.size)
-        text_rect_size = [*map(lambda i: i*0.9,self.rect.size)] # create a padding for where the text will be placed
+        text_rect_size = [0.9*self.rect.w,0.9*self.rect.h] # create a padding for where the text will be placed
         # calculate the offset to place the text rectangle in the center of the main box rectangle
         self.dx = (self.rect.w - text_rect_size[0])//2
         self.dy = (self.rect.h - text_rect_size[1])//2

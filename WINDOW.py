@@ -103,7 +103,7 @@ def delete_user(username):
 
     delete_json_key(f'user_info/users.json',key=username)
 
-def bubble_sort(array) -> list: # sort a 2D array
+def bubble_sort2D(array) -> list: # sort a 2D array
     # We want to stop passing through the list
     # as soon as we pass through without swapping any elements
     swapped = True

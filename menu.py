@@ -21,12 +21,12 @@ topic_num = {
     }
 
 def get_topic_number(topic):
-    return topic_num[topic]
+    return topic_num.get(topic)
 
 def show_leaderboards(surface, user_data) -> None:
     sum_points = lambda user: sum(user_data[user]['points'])
     user_points = [[username, sum(user_data[username]['points'])] for username in user_data] # create a 2D array with [[username,points] for each user]
-    top_ten = WINDOW.bubble_sort(user_points)[:10] # highest -> lowest of the top 10
+    top_ten = WINDOW.bubble_sort2D(user_points)[:10] # highest -> lowest of the top 10
     font = pygame.font.SysFont('Sans', 30)
     longest_name = font.render('W'*15, 1, (255, 255, 255)).get_rect()  # longest name's data
     padding_y = 20
@@ -77,7 +77,7 @@ def get_accuracy(question_data, username) -> str:
         accuracy = (accuracy/total_attempted)*100
 
     if total_attempted: # if they've answered at least one question and got it right/wrong
-        accuracy = str(round(accuracy,1))+'%'
+        accuracy = str(round(accuracy, 2))+'%'
     else:
         accuracy = 'N/A'
 
@@ -105,24 +105,25 @@ def get_topic_boxes(username, user_data) -> list:
     width1 = 430
     padding1 = (window.WIDTH - 3 * width1) // 4
     for i in range(3):
-        current_time = user_data[username][WINDOW.topics[row_1[i]]]
+        current_time = user_data[username][get_topic_number(row_1[i])]
         if not current_time:
-            current_time = 'level not fully completed'
+            current_time = 'Achieve 100% accuracy in a session to unlock'
         else:
             current_time = WINDOW.convert_time_format(current_time)
         topics.append(
-            DynamicBox(padding1 * i + (width1 * i) + padding1, 200, (width1, 0.4 * width1), row_1[i], text=row_1[i]+f' \\n \\n Accuracy: {accuracy_1[i]}  \\n Best Time: {current_time}',center_text=(False,True)))
+            DynamicBox(padding1 * i + (width1 * i) + padding1, 200, (width1, 0.4 * width1), row_1[i], text=row_1[i]+f' \\n \\n Accuracy: {accuracy_1[i]}  \\n Best Time: {current_time}',center_text=(False,True),font_size=24))
 
     width2 = 520
     padding2 = (window.WIDTH - 2 * width2) // 3
     padding_y = 200
+
     for j in range(2):
-        current_time = user_data[username][WINDOW.topics[row_2[j]]]
+        current_time = user_data[username][get_topic_number(row_2[j])]
         if not current_time:
-            current_time = 'level not fully completed'
+            current_time = 'Achieve 100% accuracy in a session to unlock'
         else:
             current_time = WINDOW.convert_time_format(current_time)
-        topics.append(DynamicBox(padding2 * j + (width2 * j) + padding2, topics[1].rect.h + padding_y + padding1,(width2, 0.35 * width2), row_2[j], text=row_2[j]+f' \\n \\n Accuracy: {accuracy_2[j]}  \\n Best Time: {current_time}',center_text=(False,True)))
+        topics.append(DynamicBox(padding2 * j + (width2 * j) + padding2, topics[1].rect.h + padding_y + padding1,(width2, 0.35 * width2), row_2[j], text=row_2[j]+f' \\n \\n Accuracy: {accuracy_2[j]}  \\n Best Time: {current_time}',center_text=(False,True),font_size=22))
     return topics
 
 def update_topic_boxes(username,user_data,topic_boxes) -> list:
@@ -131,7 +132,7 @@ def update_topic_boxes(username,user_data,topic_boxes) -> list:
              'Elements of Computational thinking, Problem solving, and programming']
     accuracy_1 = []
     for topic in row_1:
-        topic_number = WINDOW.topics[topic]
+        topic_number = get_topic_number(topic)
         question_data = WINDOW.read_json(f'Questions/{topic_number}.json')
         # p = sum([question_data[question][username] for question in question_data])
 
@@ -139,7 +140,7 @@ def update_topic_boxes(username,user_data,topic_boxes) -> list:
 
     accuracy_2 = []
     for topic in row_2:
-        topic_number = WINDOW.topics[topic]
+        topic_number = get_topic_number(topic)
         question_data = WINDOW.read_json(f'Questions/{topic_number}.json')
         # p = sum([question_data[question][username] for question in question_data])
         accuracy_2.append(get_accuracy(question_data, username))
@@ -148,7 +149,7 @@ def update_topic_boxes(username,user_data,topic_boxes) -> list:
     for i in range(3):
         current_time = user_data[username][get_topic_number(row_1[i])]
         if not current_time:
-            current_time = 'N/A'
+            current_time = 'Achieve 100% accuracy in a session to unlock'
         else:
             current_time = WINDOW.convert_time_format(current_time)
         topic_boxes[i].update_text(row_1[i]+f' \\n \\n Accuracy: {accuracy_1[i]}  \\n Best Time: {current_time}')
@@ -156,7 +157,7 @@ def update_topic_boxes(username,user_data,topic_boxes) -> list:
     for j in range(2):
         current_time = user_data[username][get_topic_number(row_2[j])]
         if not current_time:
-            current_time = 'N/A'
+            current_time = 'Achieve 100% accuracy in a session to unlock'
         else:
             current_time = WINDOW.convert_time_format(current_time)
         topic_boxes[3+j].update_text(row_2[j]+f' \\n \\n Accuracy: {accuracy_2[j]}  \\n Best Time: {current_time}')
@@ -221,7 +222,7 @@ def show_menu(username) -> None:
                         return
 
                 elif bool(clicked): # if something was returned
-                    corresponding_num = WINDOW.topics.get(clicked.obj_type)
+                    corresponding_num = get_topic_number(clicked.obj_type)
                     if corresponding_num: # if the clicked box is a topic
                         game_level.play_level(username, 0, corresponding_num)
                         # update user information after a change has been made by finishing a level don't do it constantly

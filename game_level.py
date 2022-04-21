@@ -126,9 +126,9 @@ def get_time_units(timer):
         units = ' hours'
     return units
 
-def show_summary(right, wrong, accuracy, streak, points, timer):
+def show_summary(right, wrong, accuracy, streak, points, timer, player_died, portal_enter):
     timer = WINDOW.convert_time_format(timer)
-    accuracy = str(round(accuracy*100,1))+'%'
+    accuracy = str(accuracy)+'%'
     units = get_time_units(timer)
     timer = str(timer) + units
     show_back = False
@@ -149,7 +149,12 @@ def show_summary(right, wrong, accuracy, streak, points, timer):
             window.draw_text(line+':', (initial_x,150+(50*i)), center=(False,False))
         for j,value in enumerate([right, wrong, accuracy, streak, points, timer]):
             window.draw_text(str(value),(initial_x*2,150+(j*50)))
-
+        if player_died:
+            window.draw_text('You Died',(0,50),center=(True, False), colour=(255, 0, 0), size='MEDLARGE')
+        elif portal_enter: # if the player was alive and entered the portal
+            window.draw_text('Level Completed!', (0, 50),center=(True, False),colour=(0, 255, 0), size='MEDLARGE')
+        else:
+            window.draw_text('Level Quit. No points will be added', (0, 50),center=(True, False),colour=(255, 0, 0), size='MEDLARGE')
         if pygame.time.get_ticks() - initial_time >= 2000 and not show_back: # if back button is not being shown and 2 seconds have passed
             show_back = True
         pygame.display.update()
@@ -175,15 +180,24 @@ def get_questions(level, username):
     question_data = read_json(f'Questions/{level}.json')
     # green = > 75, amber = 50 < x < 75, red = < 50
     # quota = 4, 4, 4
-    questions = WINDOW.bubble_sort([[question, question_data[question][username][2]] for question in question_data])
+    # sort the questions based on accuracy from largest -> smallest
+    questions = WINDOW.bubble_sort2D([[question, question_data[question][username][2]] for question in question_data])
 
     # separate the questions based on which category they fit in
-    green = list(filter(lambda question: question[1] >= 0.75 or question[1] == 0, questions)) # never attempted or strong knowledge
-    amber = list(filter(lambda question: 0.5 <= question[1] < 0.75, questions)) # moderate knowledge
-    red = list(filter(lambda question: 0 < question[1] < 0.5, questions)) # absolute shit-housery
+    green = []
+    amber = []
+    red = []
+    for question,accuracy in questions:
+        if accuracy >= 0.75 or (accuracy == 0 and type(accuracy)==int): # never attempted or strong knowledge
+            green.append(question)
+        elif 0.5 <= accuracy < 0.75: # moderate knowledge
+            amber.append(question)
+        else:
+            red.append(question) # if the accuracy is less than 50%; absolute shit-housery
 
     final_list = [] # a list of the final questions
-    lists = sorted([green,red,amber], key=lambda i: len(i)) # smallest -> largest lists
+    lists = sorted([green, red, amber], key=lambda i: len(i)) # smallest -> largest lists
+
     max_quota = 4 # means, that in total there should be 9 questions because 3 * 3 -> (red, amber, green) == 9
     quota = max_quota # set the current quota to the max quota
     quotas = [max_quota]*3 # initially ,3 reds, 3 ambers, 3 greens
@@ -198,27 +212,46 @@ def get_questions(level, username):
 
     for index, category in enumerate(lists):
         current_quota = quotas[index] # get the quota that points to the current question
-        category = [question[0] for question in category] # remove the accuracy used to sort the data initially
         sample = random.sample(category, current_quota)# select a random order of (n = quota) questions from the current category
         final_list +=[*sample] # add the question to the final list of questions
 
     return final_list, question_data
 
-def update_data(question_data, questions, max_questions, level, username, points, timer, portal_enter):
+def update_data(question_data, questions, max_questions, level, username, points, timer, portal_enter, total_accuracy):
     # update question data and user data when/ if run == False, if they just finished level/died
     write_json(question_data, f'Questions/{level}.json')
     user_info = read_json(f'user_info/users.json')
     current_best = user_info[username][level]
 
     # only update the completion time if the user answered all the questions/ defeated all enemies and they made it to the portal
-    if current_best != 0 and portal_enter:
+    if current_best != 0 and portal_enter and total_accuracy == 100:
         current_best = min(current_best, timer)
-    elif current_best == 0 and portal_enter: # if they did complete the level and it was their first time:
+    elif current_best == 0 and total_accuracy == 100:
         current_best = timer
+
 
     user_info[username][level] = current_best # update time if it was lower
     if len(questions) != max_questions: user_info[username]['points'].append(points) # adding points onto the player's history for graph plotting; if they answered questions
     write_json(user_info, f'user_info/users.json') # save all the changes
+
+def get_accuracy(question_data, username):
+    total_attempted = 0
+    accuracy = 0
+    for question in question_data:
+        stats = question_data[question][username]
+        attempts = stats[0] + stats[1]
+        if attempts > 0: # if attempts were made
+            total_attempted += 1
+            accuracy += stats[2] # the index that points to the accuracy
+
+    if total_attempted: # making sure denominator is not 0, and that they have attempted questions
+        accuracy = (accuracy/total_attempted)*100
+
+    if total_attempted: # if they've answered at least one question and got it right/wrong
+        accuracy = round(accuracy*100, 2)
+    else:
+        accuracy = -1
+    return accuracy
 
 def play_level(username, user_id, level):
     LEVEL = 2 # random.randint(1,4) # choose a random map layout
@@ -394,7 +427,7 @@ def play_level(username, user_id, level):
                     else: user_wrong += 1; total_wrong += 1; streak = 0
                     if user_wrong!=0 or user_right!=0:
                         user_accuracy = user_right/(user_right+user_wrong) # to ensure that the denominator is not 0
-                        total_accuracy = round(total_right/(total_right+total_wrong),1)
+                        total_accuracy = round(total_right/(total_right+total_wrong), 2)
                     question_data[current_question][username] = [user_right, user_wrong, user_accuracy] # update statistics of the user on the question displayed
                     timer = QuestionWindow_values[1]
                 else:
@@ -431,8 +464,9 @@ def play_level(username, user_id, level):
         clock.tick(FPS)
 
     # show the user their summary statistics:
-    show_summary(total_right, total_wrong, total_accuracy, max_streak, points, timer)
-    update_data(question_data, questions, max_questions, level, username, points, timer, portal_enter)
+    total_accuracy = round(total_accuracy*100, 2)
+    show_summary(total_right, total_wrong, total_accuracy, max_streak, points, timer, player.remove, portal_enter)
+    update_data(question_data, questions, max_questions, level, username, points, timer, portal_enter, total_accuracy)
 
 def main(username, user_id, level):
     play_level(username, user_id, level)
