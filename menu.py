@@ -62,7 +62,7 @@ def get_graph(username) -> None:
     color = 'black'
     fig, axis = plt.subplots(nrows=1,ncols=1) # just one graph
     plt.xticks(x_range, color=color)
-    axis.plot(list(x_range), points)
+    axis.plot(list(x_range), points, marker='x')
     plt.xlabel('Session', color=color)
     plt.ylabel('Points', color=color)
 

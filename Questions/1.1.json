@@ -8,7 +8,7 @@
         ],
         "feedback": " - The data bus retrieves data and instructions from main memory. \\n \\n - The address bus sends addresses to main memory. \\n \\n - The control bus sends read right signals to main memory.",
         "Harsh1": [0, 0, 0],
-        "Harsh21": [1, 1, 0.5]
+        "Harsh21": [3, 1, 0.75]
     },
     "What is the purpose of the Accumulator?": {
         "options": [
@@ -19,7 +19,7 @@
         ],
         "feedback": " - The program counter holds the memory location address of the next instruction to be performed by the central processing unit.  \\n \\n - The Memory data register holds the data that has been retrieved from memory, or that is about to be stored in memory. \\n \\n - The Accumulator holds the result of calculations and operations performed by the arithmetic and logic unit. \\n \\n - The Memory Address Register holds the address of a location that is to be read from or written to. \\n \\n - The Current Instruction Register holds the current instruction being executed divided into opcode and operand.",
         "Harsh1": [0, 0, 0],
-        "Harsh21": [3, 4, 0.42857142857142855]
+        "Harsh21": [3, 5, 0.375]
     },
     "Which of the following can be adjusted to improve the performance of a CPU?": {
         "options": [
@@ -30,7 +30,7 @@
         ],
         "feedback": " - Each core of a CPU can execute its own independent Fetch Decode Execute (FDE) cycle; increasing the number of cores can increase the amount of simultaneous FDE cycles executed to enhance processing power. \\n \\n - Another way to increase processing power is by increasing the clock speed. The clock speed is the time taken for one FDE cycle to complete, so by increasing this it results in more FDE cycles being completed per specified time frame. \\n \\n - Increasing the Cache memory is also another option to improve CPU performance. Cache memory is the CPU's onboard memory. Instructions fetched from main memory are copied to the cache so if required again, they can be accessed quicker. As cache fills up, unused instructions are replaced. ",
         "Harsh1": [0, 0, 0],
-        "Harsh21": [0, 3, 0.0]
+        "Harsh21": [1, 3, 0.25]
     },
     "Which two CPU registers will regularly store the same value?": {
         "options": [
@@ -52,7 +52,7 @@
         ],
         "feedback": "While the CPU uses input and output devices, these aren't a part of the CPU itself",
         "Harsh1": [0, 0, 0],
-        "Harsh21": [1, 1, 0.5]
+        "Harsh21": [1, 2, 0.3333333333333333]
     },
     "Which of the following devices is an example of an embedded system?": {
         "options": [
@@ -63,7 +63,7 @@
         ],
         "feedback": "A petrol pump is an example of an embedded system because it contains a special purpose computer as a part of a larger mechanical system. A smartphone contains many embedded systems, but is not an embedded system itself as it doesn't have a specific purpose.",
         "Harsh1": [0, 0, 0],
-        "Harsh21": [3, 1, 0.75]
+        "Harsh21": [3, 2, 0.6]
     },
     "How many blocks of memory are used in the Von Neumann architecture": {
         "options": [
@@ -74,7 +74,7 @@
         ],
         "feedback": " - The Von Neumann system architecture has one Control Unit, one shared block of memory for data and instructions, and one set of parallel wires called busses which connect two or more components inside the CPU and to external components such as Main Memory. \\n \\n - The Harvard Architecture contains one control unit and two separate chunks of memory with their own sets of busses allowing for simultaneous communication between data and instructions. \\n \\n - Contemporary processors  use a combination of Harvard and Von Neumann architecture. Von Neumann is used when working with data and instructions in main memory, but uses Harvard architecture to divide the cache into instruction cache and data cache",
         "Harsh1": [0, 0, 0],
-        "Harsh21": [2, 2, 0.5]
+        "Harsh21": [2, 3, 0.4]
     },
     "Which type of processor has a large instruction set built into it": {
         "options": [
