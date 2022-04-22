@@ -8,7 +8,7 @@
         ],
         "feedback": " - The data bus retrieves data and instructions from main memory. \\n \\n - The address bus sends addresses to main memory. \\n \\n - The control bus sends read right signals to main memory.",
         "Harsh1": [0, 0, 0],
-        "Harsh21": [3, 1, 0.75],
+        "Harsh21": [3, 2, 0.6],
         "Harsh212": [0, 0, 0]
     },
     "What is the purpose of the Accumulator?": {
@@ -56,7 +56,7 @@
         ],
         "feedback": "While the CPU uses input and output devices, these aren't a part of the CPU itself",
         "Harsh1": [0, 0, 0],
-        "Harsh21": [1, 2, 0.3333333333333333],
+        "Harsh21": [2, 2, 0.5],
         "Harsh212": [0, 0, 0]
     },
     "Which of the following devices is an example of an embedded system?": {
@@ -104,7 +104,7 @@
         ],
         "feedback": " - CISCs (Complex Instruction Set Computers) contain a large, and complex instruction sets where one line of code can represent several lines of machine code. This can make development much easier as it saves time coding and reduces files size however this does come at the cost of higher energy consumption and costs. \\n \\n - RISC (Reduced instruction set computers) have a reduced instruction set where one instruction translates to one machine code instruction which makes development harder, but uses up less power and are cheaper whilst also with being able to utilise pipelining because each instruction takes a single clock cycle.",
         "Harsh1": [0, 1, 0.0],
-        "Harsh21": [1, 1, 0.5],
+        "Harsh21": [1, 2, 0.3333333333333333],
         "Harsh212": [0, 0, 0]
     },
     "What is the fastest form of storage from these?": {
@@ -128,7 +128,7 @@
         ],
         "feedback": "opcode is the instruction and operand is the data on which the instruction is to be performed on. ",
         "Harsh1": [0, 0, 0],
-        "Harsh21": [1, 3, 0.25],
+        "Harsh21": [1, 4, 0.2],
         "Harsh212": [0, 0, 0]
     },
     "What is the most suitable storage device for: A Travel Agent backing up 800GB of data with medium costs": {

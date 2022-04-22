@@ -6,23 +6,20 @@ pygame.freetype.init()
 x,y = WINDOW.x,WINDOW.y
 os.environ['SDL_VIDEO_WINDOW_POS'] = f"{x},{y}"
 Display = WINDOW.Display
-class Textbox:
+
+class Textbox(WINDOW.Display):
     rect: object
-    BACKGROUND = (120, 126, 214)
-    BORDER = (35, 127, 200)
-    HOVER = (126, 175, 252)
-    TEXT_colour = (255, 255, 255)
-    BORDER_HOVER = (255,255,255)
-    background_colour = BACKGROUND
-    border_colour = BORDER
-    hover_colour = HOVER
-    text_colour = TEXT_colour
-    border_hover = BORDER_HOVER
+    default_background = (120, 126, 214)
+    default_border = (35, 127, 200)
+    default_hover = (126, 175, 252)
+    text_colour = (255, 255, 255)
+    default_border_hover = (255,255,255)
+    background_colour = default_background
+    border_colour = default_border
+    hover_colour = default_hover
+    text_colour = text_colour
+    border_hover = default_border_hover
     GREEN = (0,200,0)
-    LARGE_FONT = pygame.font.SysFont('Sans', 35)
-    MEDLARGE_FONT = pygame.font.SysFont('Sans', 30)
-    MEDIUM_FONT = pygame.font.SysFont('Sans', 25)
-    SMALL_FONT = pygame.font.SysFont('Sans', 15)
 
     max_width = 270
 
@@ -48,11 +45,11 @@ class Textbox:
         tempRect = self.rect.copy()
         tempRect.width = tempRect.width + padding_x
         if self.limit:
-            tempRect.width = min(270,tempRect.width +padding_x)
+            tempRect.width = min(270, tempRect.width +padding_x)
         tempRect.height = tempRect.height + padding_y
         self.main_rec = tempRect # font rectangle with padding, the outside rectangle
 
-        if w>0 and h>0:
+        if w>0 and h>0: # if a specified size was passed in
             if self.main_rec.width - 43 < w:
                 self.main_rec.width = w
             self.main_rec.height = h
@@ -95,26 +92,15 @@ class Textbox:
         x.y = self.y
         return x.collidepoint(pygame.mouse.get_pos()) and (pygame.mouse.get_pressed()[0])
 
-
-class Inputbox(Textbox):
-    def __init__(self, x, y, text='',text_size='medium',padding=(0,0),size=(0,0),limit=True):
-        super().__init__(x,y,text=text,text_size=text_size,padding=padding,size=size,limit=limit)
-
-
 # noinspection PyArgumentList
-class StaticBox(Textbox):
-    LARGE_FONT = pygame.font.SysFont('Sans', 35)
-    MEDLARGE_FONT = pygame.font.SysFont('Sans', 30)
-    MEDIUM_FONT = pygame.font.SysFont('Sans', 25)
-    SMALL_FONT = pygame.font.SysFont('Sans', 15)
-
+class AutoBox(Textbox):
     incorrect_colour = (204, 51, 0)
     correct_colour = (51, 153, 51)
     def __init__(self, x, y, size, obj_type, text='', font_size=None,center_text=(True,True),colour=(68, 71, 68),padding=None):
         if colour is not None:
             self.background_colour = colour
         else:
-            self.background_colour = Textbox.BACKGROUND
+            self.background_colour = Textbox.default_background
 
         self.border_colour = None
 
@@ -258,11 +244,10 @@ class StaticBox(Textbox):
                 self.border_colour = None
 
     def check_click(self, mouse_pos=0):
-        if not self.check_collision:return
-        if self.obj_type != 'question':
-            mouse_pos = pygame.mouse.get_pos()
-            if self.rect.collidepoint(mouse_pos) and (pygame.mouse.get_pressed()[0]):
-                return self
+        if (not self.check_collision) or (self.obj_type == 'question'): return
+        mouse_pos = pygame.mouse.get_pos()
+        if self.rect.collidepoint(mouse_pos) and (pygame.mouse.get_pressed()[0]):
+            return self
 
 
 class BoxGroup:

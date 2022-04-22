@@ -1,6 +1,6 @@
 import pygame, os, re, sys, WINDOW, game_level
 from boxes import Textbox
-from boxes import BoxGroup, StaticBox
+from boxes import BoxGroup, AutoBox
 from transition import ScreenFade
 import matplotlib.pyplot as plt
 pygame.init()
@@ -118,7 +118,7 @@ def get_topic_boxes(username, user_data) -> list:
         else:
             current_time = WINDOW.convert_time_format(current_time)
         topics.append(
-            StaticBox(padding1 * i + (width1 * i) + padding1, 200, (width1, 0.4 * width1), row_1[i], text=row_1[i]+f' \\n \\n Accuracy: {accuracy_1[i]}  \\n Best Time: {current_time}',center_text=(False,True),font_size=24))
+            AutoBox(padding1 * i + (width1 * i) + padding1, 200, (width1, 0.4 * width1), row_1[i], text=row_1[i]+f' \\n \\n Accuracy: {accuracy_1[i]}  \\n Best Time: {current_time}',center_text=(False,True),font_size=24))
 
     width2 = 520
     padding2 = (window.WIDTH - 2 * width2) // 3
@@ -130,7 +130,7 @@ def get_topic_boxes(username, user_data) -> list:
             current_time = 'Achieve 100% accuracy in a session to unlock'
         else:
             current_time = WINDOW.convert_time_format(current_time)
-        topics.append(StaticBox(padding2 * j + (width2 * j) + padding2, topics[1].rect.h + padding_y + padding1,(width2, 0.35 * width2), row_2[j], text=row_2[j]+f' \\n \\n Accuracy: {accuracy_2[j]}  \\n Best Time: {current_time}',center_text=(False,True),font_size=22))
+        topics.append(AutoBox(padding2 * j + (width2 * j) + padding2, topics[1].rect.h + padding_y + padding1,(width2, 0.35 * width2), row_2[j], text=row_2[j]+f' \\n \\n Accuracy: {accuracy_2[j]}  \\n Best Time: {current_time}',center_text=(False,True),font_size=22))
     return topics
 
 def update_topic_boxes(username,user_data,topic_boxes) -> list:
@@ -184,15 +184,15 @@ def show_menu(username) -> None:
     question_files = ['1.1', '1.2', '1.3', '1.4', '2']
     topics = get_topic_boxes(username, user_data)
     rec = topics[2].rect
-    username_width = StaticBox.MEDIUM_FONT.render(f'username: {"W"*15}', 1, (255, 255,255)).get_width() + 42  # finding out the maximum width for a username since 'W' is largest width character
+    username_width = AutoBox.MEDIUM_FONT.render(f'username: {"W"*15}', 1, (255, 255,255)).get_width() + 42  # finding out the maximum width for a username since 'W' is largest width character
 
-    username_box = StaticBox(rec.x + (rec.w - username_width)//2, 40, (username_width, topics[1].rect.h // 2), 'username',text=f'Username: {username} \\n Points: {sum(user_data[username]["points"])}', font_size=23, center_text=(False,True))
+    username_box = AutoBox(rec.x + (rec.w - username_width)//2, 40, (username_width, topics[1].rect.h // 2), 'username',text=f'Username: {username} \\n Points: {sum(user_data[username]["points"])}', font_size=23, center_text=(False,True))
 
-    width = StaticBox.MEDIUM_FONT.render(f'Leaderboards', 1, (255, 255, 255)).get_width() * 1.3
+    width = AutoBox.MEDIUM_FONT.render(f'Leaderboards', 1, (255, 255, 255)).get_width() * 1.3
     rec = topics[1].rect # the 2nd topic's rect
     # position the leaderboards box at the centered x position relative to the 2nd topic box
-    leaderboard_box = StaticBox(rec.x + (rec.w - width)//2, 40, (width, topics[1].rect.h // 2), 'leaderboard',text='Leaderboards', center_text=(True,True))
-    instructions_box = StaticBox(leaderboard_box.rect.x - width - 200, 40, (width, topics[1].rect.h // 2), 'instructions',text='How-To-Play', center_text=(True,True))
+    leaderboard_box = AutoBox(rec.x + (rec.w - width)//2, 40, (width, topics[1].rect.h // 2), 'leaderboard',text='Leaderboards', center_text=(True,True))
+    instructions_box = AutoBox(leaderboard_box.rect.x - width - 200, 40, (width, topics[1].rect.h // 2), 'instructions',text='How-To-Play', center_text=(True,True))
     all_boxes = BoxGroup(*topics, username_box, leaderboard_box, instructions_box)
     leaderboards = False
     fade = ScreenFade(1,(0,0,0))

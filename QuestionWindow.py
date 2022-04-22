@@ -1,5 +1,5 @@
 import os, sys, pygame, WINDOW, random
-from boxes import Textbox, StaticBox
+from boxes import Textbox, AutoBox
 from boxes import BoxGroup
 from transition import ScreenFade
 
@@ -9,7 +9,7 @@ def get_boxes(question_data, question, window):
     text = question
     options = question_data[question]['options']
 
-    question_box = StaticBox(0, 0, (w, h*0.8), obj_type='question', text=text)
+    question_box = AutoBox(0, 0, (w, h*0.8), obj_type='question', text=text)
 
     left_shift = 0.1
     x1 = int(window.width*left_shift//4)
@@ -18,10 +18,10 @@ def get_boxes(question_data, question, window):
     option_w, option_h = (w*width//2,(window.height-h)//2)
 
     # creating all the option instances, and positioning them respectively
-    option_1=StaticBox(question_box.rect.x + x1, question_box.rect.bottom + 13.3, (option_w, option_h), obj_type='option', text=options[0])
-    option_2=StaticBox(question_box.rect.center[0] + x1, question_box.rect.bottom + 13.3, (option_w, option_h), obj_type='option', text=options[1])
-    option_3=StaticBox(option_1.rect.left, option_1.rect.bottom + 13.3, (option_w, option_h), obj_type='option', text=options[2])
-    option_4=StaticBox(option_2.rect.left, option_2.rect.bottom + 13.3, (option_w, option_h), obj_type='option', text=options[3])
+    option_1=AutoBox(question_box.rect.x + x1, question_box.rect.bottom + 13.3, (option_w, option_h), obj_type='option', text=options[0])
+    option_2=AutoBox(question_box.rect.center[0] + x1, question_box.rect.bottom + 13.3, (option_w, option_h), obj_type='option', text=options[1])
+    option_3=AutoBox(option_1.rect.left, option_1.rect.bottom + 13.3, (option_w, option_h), obj_type='option', text=options[2])
+    option_4=AutoBox(option_2.rect.left, option_2.rect.bottom + 13.3, (option_w, option_h), obj_type='option', text=options[3])
     main_group = BoxGroup(option_1, option_2, option_3, option_4, question_box)
     return main_group
 
@@ -39,7 +39,7 @@ def start_question(question, question_data, timer=0,x1=None):
 
     # feedback instance
     feedback_text = question_data[question]['feedback']
-    feedback = StaticBox(0,40,(window.SIZE[0],window.SIZE[1]-40),text=feedback_text, obj_type='feedback',font_size=29,center_text=(False,False),colour=Display.BACKGROUND)
+    feedback = AutoBox(0,40,(window.SIZE[0],window.SIZE[1]-40),text=feedback_text, obj_type='feedback',font_size=29,center_text=(False,False),colour=Display.BACKGROUND)
 
     main_continue = Textbox(100, 0.9*window.height,text='Continue',text_size='medlarge')
     feedback_continue = Textbox(100, 0.9*window.height,text='Continue',text_size='medlarge')

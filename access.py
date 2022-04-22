@@ -199,13 +199,13 @@ def input_information(state):
             username_box.set_properties(border=username_box.GREEN)
             fill_text = username
         else:
-            username_box.set_properties(border=username_box.BORDER)
+            username_box.set_properties(border=username_box.border_colour)
 
         if password_click: # if the user has chosen to type in the password field hightlight the border
             password_box.set_properties(border=password_box.GREEN)
             fillpass_text = '*'*len(password) # cover the characters in the password
         else:
-            password_box.set_properties(border=password_box.BORDER)
+            password_box.set_properties(border=password_box.border_colour)
             
         if continue_click: # if the continue button has been pressed
             valid_username = validate_username(username)
