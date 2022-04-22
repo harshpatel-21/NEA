@@ -20,6 +20,9 @@ class Tile:
         self.image = image
         self.direction = 0
 
+    def show(self, surface):
+        surface.blit(self.image, self.rect.topleft)
+
 
 class Projectile(pygame.sprite.Sprite):
     def __init__(self, shooter, image='Arrow04'):
