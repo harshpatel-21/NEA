@@ -259,6 +259,5 @@ def input_information(state):
         # random_box.show(window.screen)
 
         counter += 1
-        window.blit(window.screen,(0,0))
         pygame.display.update()
         clock.tick(30)
