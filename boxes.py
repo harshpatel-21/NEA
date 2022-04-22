@@ -102,7 +102,7 @@ class Inputbox(Textbox):
 
 
 # noinspection PyArgumentList
-class DynamicBox(Textbox):
+class StaticBox(Textbox):
     LARGE_FONT = pygame.font.SysFont('Sans', 35)
     MEDLARGE_FONT = pygame.font.SysFont('Sans', 30)
     MEDIUM_FONT = pygame.font.SysFont('Sans', 25)

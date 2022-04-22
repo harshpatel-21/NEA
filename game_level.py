@@ -18,9 +18,9 @@ coin_path = os.path.join(image_path, 'coin')
 FPS = 60
 clock = pygame.time.Clock()
 window = WINDOW.Display(new_window=True)
-ENEMY = random.choice(['knight', 'samurai', 'stormy'])
-ENEMY = 'stormy'
+ENEMY = random.choice(['knight', 'samurai', 'stormy']) # pick a random enemy
 PLAYER = 'player'
+# LEVEL = random.randint(range(1,7))
 # ENEMY_IMG = 'samurai'
 # PLAYER_IMG = pygame.image.load(f'images/mobs/{PLAYER}/default.png')
 

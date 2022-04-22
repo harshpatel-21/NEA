@@ -303,8 +303,8 @@ window = WINDOW.Display(new_window=True,caption='Stopwatch',size=(500,250))
 time1 = pygame.time.get_ticks()
 timer=0
 pause = False
-pause_button = boxes.DynamicBox(190,70,(120,40),'pause','Pause',font_size=20)
-reset_button = boxes.DynamicBox(190,120,(120,40),'reset','Reset',font_size=20)
+pause_button = boxes.StaticBox(190,70,(120,40),'pause','Pause',font_size=20)
+reset_button = boxes.StaticBox(190,120,(120,40),'reset','Reset',font_size=20)
 clicked=False
 while 1:
     window.refresh()

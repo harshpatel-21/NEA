@@ -63,7 +63,7 @@
         ],
         "feedback": "A petrol pump is an example of an embedded system because it contains a special purpose computer as a part of a larger mechanical system. A smartphone contains many embedded systems, but is not an embedded system itself as it doesn't have a specific purpose.",
         "Harsh1": [0, 0, 0],
-        "Harsh21": [2, 0, 1.0]
+        "Harsh21": [3, 1, 0.75]
     },
     "How many blocks of memory are used in the Von Neumann architecture": {
         "options": [
@@ -74,7 +74,7 @@
         ],
         "feedback": " - The Von Neumann system architecture has one Control Unit, one shared block of memory for data and instructions, and one set of parallel wires called busses which connect two or more components inside the CPU and to external components such as Main Memory. \\n \\n - The Harvard Architecture contains one control unit and two separate chunks of memory with their own sets of busses allowing for simultaneous communication between data and instructions. \\n \\n - Contemporary processors  use a combination of Harvard and Von Neumann architecture. Von Neumann is used when working with data and instructions in main memory, but uses Harvard architecture to divide the cache into instruction cache and data cache",
         "Harsh1": [0, 0, 0],
-        "Harsh21": [1, 2, 0.3333333333333333]
+        "Harsh21": [2, 2, 0.5]
     },
     "Which type of processor has a large instruction set built into it": {
         "options": [
@@ -85,7 +85,7 @@
         ],
         "feedback": " - CISCs (Complex Instruction Set Computers) contain a large, and complex instruction sets where one line of code can represent several lines of machine code. This can make development much easier as it saves time coding and reduces files size however this does come at the cost of higher energy consumption and costs. \\n \\n - RISC (Reduced instruction set computers) have a reduced instruction set where one instruction translates to one machine code instruction which makes development harder, but uses up less power and are cheaper whilst also with being able to utilise pipelining because each instruction takes a single clock cycle.",
         "Harsh1": [0, 0, 0],
-        "Harsh21": [4, 4, 0.5]
+        "Harsh21": [4, 5, 0.4444444444444444]
     },
     "Which of the following is True?": {
         "options": [

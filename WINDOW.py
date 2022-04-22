@@ -157,17 +157,14 @@ class Display:
 
         self.background=background
         self.back_image = pygame.transform.scale(pygame.image.load(get_path('images/go_back.png')), (100, 38))
-        self.arrow_rect = pygame.Rect(self.BACK_X, self.BACK_Y, *self.back_image.get_size())
-
-    def blit(self, content, coords):
-        self.screen.blit(content, coords)
+        self.back_rect = pygame.Rect(self.BACK_X, self.BACK_Y, *self.back_image.get_size())
 
     def draw_back(self, pos=None):
         if pos is None:
             pos = (self.BACK_X, self.BACK_Y)
-        self.arrow_rect = pygame.Rect(*pos, *self.back_image.get_size())
+        self.back_rect = pygame.Rect(*pos, *self.back_image.get_size())
         # pos = (self.BACK_X, self.BACK_Y)
-        # self.arrow_rect = pygame.Rect(*pos,*self.back_image.get_size())
+        # self.back_rect = pygame.Rect(*pos,*self.back_image.get_size())
         self.screen.blit(self.back_image,pos)
         pygame.draw.rect(self.screen, (83, 203, 230), (*pos,*self.back_image.get_size()),2)
 
@@ -178,6 +175,7 @@ class Display:
             self.screen.blit(self.background,(0,0))
         if back:
             self.draw_back(pos)
+
         if show_mouse_pos:
             mouse_pos = self.MEDIUM_FONT.render(str(pygame.mouse.get_pos()),1,self.WHITE)
             rect = mouse_pos.get_rect()
@@ -187,7 +185,8 @@ class Display:
         if not mouse_pos:
             mouse_pos = pygame.mouse.get_pos()
 
-        if self.arrow_rect.collidepoint(mouse_pos) and pygame.mouse.get_pressed()[0]: return 1
+        if self.back_rect.collidepoint(mouse_pos) and pygame.mouse.get_pressed()[0]:
+            return 1
 
     def draw_text(self,text,pos,size='MEDIUM',colour=WHITE, center=(False, False)):
         center_x, center_y = center
