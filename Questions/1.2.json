@@ -9,6 +9,7 @@
         "feedback": "nothing",
         "Harsh1": [1, 1, 0.5],
         "Harsh21": [7, 3, 0.7],
-        "Harsh212": [0, 0, 0]
+        "Harsh212": [0, 0, 0],
+        "bastard": [1, 0, 1.0]
     }
 }

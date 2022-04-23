@@ -195,22 +195,29 @@ def input_information(state):
         if not password:# if nothing has been typed in the username box, it should display 'Password'
             fillpass_text = 'Password'
 
-        if username_click: # if the the user has chosen to type in the username field highlight the border 
-            username_box.set_properties(border=username_box.GREEN)
+        if username_click: # if the the user has chosen to type in the username field highlight the border
+            valid_username = all(i == 0 for i in validate_username(username))
+            username_box.set_properties(border=username_box.RED)
             fill_text = username
+            if valid_username or state == 'login':
+                username_box.set_properties(border=username_box.GREEN)
         else:
-            username_box.set_properties(border=username_box.border_colour)
+            username_box.set_properties(border=username_box.default_border)
 
-        if password_click: # if the user has chosen to type in the password field hightlight the border
-            password_box.set_properties(border=password_box.GREEN)
+        if password_click: # if the user has chosen to type in the password field highlight the border
+            valid_password = validate_password(password)
+            password_box.set_properties(border=password_box.RED)
             fillpass_text = '*'*len(password) # cover the characters in the password
+            if valid_password or state == 'login':
+                password_box.set_properties(border=password_box.GREEN)
         else:
-            password_box.set_properties(border=password_box.border_colour)
+            password_box.set_properties(border=password_box.default_border)
             
         if continue_click: # if the continue button has been pressed
             valid_username = validate_username(username)
             valid_password = validate_password(password)
-            
+
+
             if state=='sign up' and (sum(valid_username)==1 or not valid_password):
                 if valid_username[0]: # if there was an issue with string length
                     display_string_length = True

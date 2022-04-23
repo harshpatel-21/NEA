@@ -292,7 +292,6 @@ def play_level(username, user_id, level):
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
                 run = False
 
             # check for keyboard input
@@ -442,7 +441,7 @@ def play_level(username, user_id, level):
 
         pygame.display.update()  # make all the changes
         clock.tick(FPS)
-
+    pygame.quit() # finished the main loop
     # show the user their summary statistics:
     total_accuracy = round(total_accuracy*100, 2)
     show_summary(total_right, total_wrong, total_accuracy, max_streak, points, timer, player.remove, portal_enter)

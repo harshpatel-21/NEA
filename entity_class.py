@@ -356,11 +356,14 @@ class Entity(pygame.sprite.Sprite):
         # first frame of the animation would be shown. By adding this check, it makes it so that the animation pointer and animation is changed/reset
         # only if there is a change in the player action. """
         melee_index = self.get_index('Melee')
-        if new_action == melee_index and world:
-            images = self.animations[melee_index]
+        bow_index = self.get_index('Bow')
+        if new_action in [melee_index, bow_index] and world:
+            if melee_index: images = self.animations[melee_index]
+            else: images = self.animations[bow_index]
             if any(self.check_image_collision(image, world) for image in
                    images):  # if wall collisions have occured in any of the frames
                 self.sword_attack = False
+                self.bow_attack = False
                 return
 
         if new_action != self.current_action:
@@ -592,24 +595,24 @@ class Enemy(Entity):
         self.idling_counter = 50
         self.update_action(self.get_index('Idle'), world)
 
-    def draw(self, surface, target):  # custom draw method for enemy class
-        debug = 0
-        obj_blit = self.rect.copy()
-        obj_blit.x = obj_blit.x - target.rect.x + Display.WIDTH // 2
-        obj_blit.y = obj_blit.y - target.rect.y + Display.HEIGHT // 2
-
-        obj_rect = self.collision_rect.copy()
-        obj_rect.x = obj_rect.x - target.rect.x + Display.WIDTH // 2
-        obj_rect.y = obj_rect.y - target.rect.y + Display.HEIGHT // 2
-        surface.blit(pygame.transform.flip(self.image, self.flip_image or self.direction == -1, False), obj_blit)
-
-        obj_attack = self.attack_vision.copy()
-        obj_attack.x = obj_attack.x - target.rect.x + Display.WIDTH // 2
-        obj_attack.y = obj_attack.y - target.rect.y + Display.HEIGHT // 2
-        if debug:
-            # pygame.draw.rect(surface, (255, 0, 0), obj_attack, 2)
-            pygame.draw.rect(surface, (255, 255, 0), obj_rect, 2)
-        self.draw_health_bar(surface, target)
+    # def draw(self, surface, target):  # custom draw method for enemy class
+    #     debug = 0
+    #     obj_blit = self.rect.copy()
+    #     obj_blit.x = obj_blit.x - target.rect.x + Display.WIDTH // 2
+    #     obj_blit.y = obj_blit.y - target.rect.y + Display.HEIGHT // 2
+    #
+    #     obj_rect = self.collision_rect.copy()
+    #     obj_rect.x = obj_rect.x - target.rect.x + Display.WIDTH // 2
+    #     obj_rect.y = obj_rect.y - target.rect.y + Display.HEIGHT // 2
+    #     surface.blit(pygame.transform.flip(self.image, self.flip_image or self.direction == -1, False), obj_blit)
+    #
+    #     obj_attack = self.attack_vision.copy()
+    #     obj_attack.x = obj_attack.x - target.rect.x + Display.WIDTH // 2
+    #     obj_attack.y = obj_attack.y - target.rect.y + Display.HEIGHT // 2
+    #     if debug:
+    #         # pygame.draw.rect(surface, (255, 0, 0), obj_attack, 2)
+    #         pygame.draw.rect(surface, (255, 255, 0), obj_rect, 2)
+    #     self.draw_health_bar(surface, target)
 
     def update(self, player, surface, world):
         self.animation_handling()

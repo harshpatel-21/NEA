@@ -181,7 +181,6 @@ def show_instructions(surface):
 
 def show_menu(username) -> None:
     user_data = WINDOW.read_json('user_info/users.json')
-    question_files = ['1.1', '1.2', '1.3', '1.4', '2']
     topics = get_topic_boxes(username, user_data)
     rec = topics[2].rect
     username_width = AutoBox.MEDIUM_FONT.render(f'username: {"W"*15}', 1, (255, 255,255)).get_width() + 42  # finding out the maximum width for a username since 'W' is largest width character
