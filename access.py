@@ -87,7 +87,7 @@ def input_information(state):
     username_box = Textbox(100,460,text=fill_text.center(15),text_size='medlarge',padding=(0,0),size=(300,60))
     password_box = Textbox(100,530,text=fillpass_text.center(15),text_size='medlarge',size=(300,60))
 
-    continue_button = Textbox(100,635,text='Continue',size=(150,50),text_size='medlarge')
+    continue_button = Textbox(100,630,text='Continue',size=(200, 50),text_size='medlarge')
     continue_button.create_rect()
     continue_click = False
 
@@ -158,6 +158,8 @@ def input_information(state):
                 if username_click or password_click: # don't show any error messages if they've clicked on a box again to type
                     incorrect_details = display_string_length = successful_signUp = False
 
+
+
         if incorrect_details and state=='login':
             window.draw_text(text='Incorrect username or password',pos=(window.screen.get_width()//2 - 100,590),colour=(255,0,0),size='MEDLARGE',center=(True,False))
         
@@ -173,7 +175,7 @@ def input_information(state):
             window.draw_text(text='New user has been signed up', pos=(window.screen.get_width()//2 - 160,590),colour=(0,255,0),size='MEDLARGE',center=(True,False))
 
         if successful_login: # if username and password were correct
-            return username, list(data).index(username)
+            return username
 
         if continue_state: # if the username and password fields are filled make the continue button brighter
             continue_button.surface.set_alpha(300)
@@ -214,9 +216,10 @@ def input_information(state):
             password_box.set_properties(border=password_box.default_border)
             
         if continue_click: # if the continue button has been pressed
+            if successful_signUp:
+                return username
             valid_username = validate_username(username)
             valid_password = validate_password(password)
-
 
             if state=='sign up' and (sum(valid_username)==1 or not valid_password):
                 if valid_username[0]: # if there was an issue with string length
@@ -242,6 +245,8 @@ def input_information(state):
 
                 if not(incorrect_details) and state == 'sign up':
                     successful_signUp = True
+                    continue_button.text = 'Proceed to Level Selection'
+                    continue_button.text_size = continue_button.SMALL_FONT
 
                 elif not(incorrect_details) and state == 'login':
                     successful_login = True

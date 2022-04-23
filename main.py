@@ -81,11 +81,13 @@ def main():
             signUp_result = input_information(state='sign up')
             sign_up = False
 
-        if signUp_result: # return them back to main menu
-            pass
+        if signUp_result:
+            username = signUp_result
+            menu.show_menu(username)
+            signUp_result = False # if come back to main menu, they should no longer be logged in
 
         if login_result:
-            username, id = login_result
+            username = login_result
             menu.show_menu(username)
             login_result = False # if come back to main menu, they should no longer be logged in
 

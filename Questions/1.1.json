@@ -10,7 +10,20 @@
         "Harsh1": [0, 0, 0],
         "Harsh21": [3, 2, 0.6],
         "Harsh212": [0, 0, 0],
-        "bastard": [1, 0, 1.0]
+        "bastard": [1, 0, 1.0],
+        "Harsh2": [0, 0, 0],
+        "Harsh3": [0, 0, 0],
+        "Harsh4": [0, 0, 0],
+        "Harsh5": [0, 0, 0],
+        "Harsh6": [0, 0, 0],
+        "Harsh9": [0, 0, 0],
+        "Harsh10": [0, 0, 0],
+        "Harsh!2": [0, 0, 0],
+        "harsh1": [0, 0, 0],
+        "harsh12": [0, 0, 0],
+        "aaaaa": [0, 0, 0],
+        "bbbbb": [0, 0, 0],
+        "aaaaaa": [0, 0, 0]
     },
     "What is the purpose of the Accumulator?": {
         "options": [
@@ -22,8 +35,21 @@
         "feedback": " - The program counter holds the memory location address of the next instruction to be performed by the central processing unit.  \\n \\n - The Memory data register holds the data that has been retrieved from memory, or that is about to be stored in memory. \\n \\n - The Accumulator holds the result of calculations and operations performed by the arithmetic and logic unit. \\n \\n - The Memory Address Register holds the address of a location that is to be read from or written to. \\n \\n - The Current Instruction Register holds the current instruction being executed divided into opcode and operand.",
         "Harsh1": [0, 0, 0],
         "Harsh21": [3, 5, 0.375],
-        "Harsh212": [1, 0, 1.0],
-        "bastard": [1, 0, 1.0]
+        "Harsh212": [0, 0, 0],
+        "bastard": [1, 0, 1.0],
+        "Harsh2": [0, 0, 0],
+        "Harsh3": [0, 0, 0],
+        "Harsh4": [0, 0, 0],
+        "Harsh5": [0, 0, 0],
+        "Harsh6": [0, 0, 0],
+        "Harsh9": [0, 0, 0],
+        "Harsh10": [0, 0, 0],
+        "Harsh!2": [0, 0, 0],
+        "harsh1": [0, 0, 0],
+        "harsh12": [0, 0, 0],
+        "aaaaa": [0, 0, 0],
+        "bbbbb": [0, 0, 0],
+        "aaaaaa": [0, 0, 0]
     },
     "Which of the following can be adjusted to improve the performance of a CPU?": {
         "options": [
@@ -36,7 +62,20 @@
         "Harsh1": [0, 0, 0],
         "Harsh21": [1, 3, 0.25],
         "Harsh212": [0, 0, 0],
-        "bastard": [0, 0, 0]
+        "bastard": [0, 0, 0],
+        "Harsh2": [0, 0, 0],
+        "Harsh3": [0, 0, 0],
+        "Harsh4": [0, 0, 0],
+        "Harsh5": [0, 0, 0],
+        "Harsh6": [0, 0, 0],
+        "Harsh9": [0, 0, 0],
+        "Harsh10": [0, 0, 0],
+        "Harsh!2": [0, 0, 0],
+        "harsh1": [0, 0, 0],
+        "harsh12": [0, 0, 0],
+        "aaaaa": [0, 0, 0],
+        "bbbbb": [0, 0, 0],
+        "aaaaaa": [0, 0, 0]
     },
     "Which two CPU registers will regularly store the same value?": {
         "options": [
@@ -49,7 +88,20 @@
         "Harsh1": [0, 0, 0],
         "Harsh21": [1, 2, 0.3333333333333333],
         "Harsh212": [0, 0, 0],
-        "bastard": [0, 0, 0]
+        "bastard": [0, 0, 0],
+        "Harsh2": [0, 0, 0],
+        "Harsh3": [0, 0, 0],
+        "Harsh4": [0, 0, 0],
+        "Harsh5": [0, 0, 0],
+        "Harsh6": [0, 0, 0],
+        "Harsh9": [0, 0, 0],
+        "Harsh10": [0, 0, 0],
+        "Harsh!2": [0, 0, 0],
+        "harsh1": [0, 0, 0],
+        "harsh12": [0, 0, 0],
+        "aaaaa": [0, 0, 0],
+        "bbbbb": [0, 0, 0],
+        "aaaaaa": [0, 0, 0]
     },
     "Which of these components exists outside of the CPU?": {
         "options": [
@@ -62,7 +114,20 @@
         "Harsh1": [0, 0, 0],
         "Harsh21": [2, 2, 0.5],
         "Harsh212": [0, 0, 0],
-        "bastard": [0, 0, 0]
+        "bastard": [0, 0, 0],
+        "Harsh2": [0, 0, 0],
+        "Harsh3": [0, 0, 0],
+        "Harsh4": [0, 0, 0],
+        "Harsh5": [0, 0, 0],
+        "Harsh6": [0, 0, 0],
+        "Harsh9": [0, 0, 0],
+        "Harsh10": [0, 0, 0],
+        "Harsh!2": [0, 0, 0],
+        "harsh1": [0, 0, 0],
+        "harsh12": [0, 0, 0],
+        "aaaaa": [0, 0, 0],
+        "bbbbb": [0, 0, 0],
+        "aaaaaa": [0, 0, 0]
     },
     "Which of the following devices is an example of an embedded system?": {
         "options": [
@@ -75,7 +140,20 @@
         "Harsh1": [0, 0, 0],
         "Harsh21": [3, 2, 0.6],
         "Harsh212": [0, 0, 0],
-        "bastard": [0, 0, 0]
+        "bastard": [0, 0, 0],
+        "Harsh2": [0, 0, 0],
+        "Harsh3": [0, 0, 0],
+        "Harsh4": [0, 0, 0],
+        "Harsh5": [0, 0, 0],
+        "Harsh6": [0, 0, 0],
+        "Harsh9": [0, 0, 0],
+        "Harsh10": [0, 0, 0],
+        "Harsh!2": [0, 0, 0],
+        "harsh1": [0, 0, 0],
+        "harsh12": [0, 0, 0],
+        "aaaaa": [0, 0, 0],
+        "bbbbb": [0, 0, 0],
+        "aaaaaa": [0, 0, 0]
     },
     "How many blocks of memory are used in the Von Neumann architecture": {
         "options": [
@@ -88,7 +166,20 @@
         "Harsh1": [0, 0, 0],
         "Harsh21": [2, 3, 0.4],
         "Harsh212": [0, 0, 0],
-        "bastard": [1, 0, 1.0]
+        "bastard": [1, 0, 1.0],
+        "Harsh2": [0, 0, 0],
+        "Harsh3": [0, 0, 0],
+        "Harsh4": [0, 0, 0],
+        "Harsh5": [0, 0, 0],
+        "Harsh6": [0, 0, 0],
+        "Harsh9": [0, 0, 0],
+        "Harsh10": [0, 0, 0],
+        "Harsh!2": [0, 0, 0],
+        "harsh1": [0, 0, 0],
+        "harsh12": [0, 0, 0],
+        "aaaaa": [0, 0, 0],
+        "bbbbb": [0, 0, 0],
+        "aaaaaa": [0, 0, 0]
     },
     "Which type of processor has a large instruction set built into it": {
         "options": [
@@ -101,7 +192,20 @@
         "Harsh1": [0, 0, 0],
         "Harsh21": [4, 5, 0.4444444444444444],
         "Harsh212": [0, 0, 0],
-        "bastard": [0, 0, 0]
+        "bastard": [0, 0, 0],
+        "Harsh2": [0, 0, 0],
+        "Harsh3": [0, 0, 0],
+        "Harsh4": [0, 0, 0],
+        "Harsh5": [0, 0, 0],
+        "Harsh6": [0, 0, 0],
+        "Harsh9": [0, 0, 0],
+        "Harsh10": [0, 0, 0],
+        "Harsh!2": [0, 0, 0],
+        "harsh1": [0, 0, 0],
+        "harsh12": [0, 0, 0],
+        "aaaaa": [0, 0, 0],
+        "bbbbb": [0, 0, 0],
+        "aaaaaa": [0, 0, 0]
     },
     "Which of the following is True?": {
         "options": [
@@ -114,7 +218,20 @@
         "Harsh1": [0, 1, 0.0],
         "Harsh21": [1, 2, 0.3333333333333333],
         "Harsh212": [0, 0, 0],
-        "bastard": [0, 0, 0]
+        "bastard": [0, 0, 0],
+        "Harsh2": [0, 0, 0],
+        "Harsh3": [0, 0, 0],
+        "Harsh4": [0, 0, 0],
+        "Harsh5": [0, 0, 0],
+        "Harsh6": [0, 0, 0],
+        "Harsh9": [0, 0, 0],
+        "Harsh10": [0, 0, 0],
+        "Harsh!2": [0, 0, 0],
+        "harsh1": [0, 0, 0],
+        "harsh12": [0, 0, 0],
+        "aaaaa": [0, 0, 0],
+        "bbbbb": [0, 0, 0],
+        "aaaaaa": [0, 0, 0]
     },
     "What is the fastest form of storage from these?": {
         "options": [
@@ -126,8 +243,21 @@
         "feedback": "The order for speed goes: Flash -> magnetic -> Optical. In this case SSDs are the fastest, then HDDs, then Blu-Rays. Virtual Memory is regarded as a form of temporary RAM; this is because Virtual Memory is a small segment of secondary storage that is assigned to hold inactive running programs that are in RAM to free up space in the RAM. However constant use of virtual memory and switching back and forth from RAM to Hard Disk Drive can cause disk threshing.",
         "Harsh1": [0, 0, 0],
         "Harsh21": [2, 3, 0.4],
-        "Harsh212": [1, 0, 1.0],
-        "bastard": [1, 0, 1.0]
+        "Harsh212": [0, 0, 0],
+        "bastard": [1, 0, 1.0],
+        "Harsh2": [0, 0, 0],
+        "Harsh3": [0, 0, 0],
+        "Harsh4": [0, 0, 0],
+        "Harsh5": [0, 0, 0],
+        "Harsh6": [0, 0, 0],
+        "Harsh9": [0, 0, 0],
+        "Harsh10": [0, 0, 0],
+        "Harsh!2": [0, 0, 0],
+        "harsh1": [0, 0, 0],
+        "harsh12": [0, 0, 0],
+        "aaaaa": [0, 0, 0],
+        "bbbbb": [0, 0, 0],
+        "aaaaaa": [0, 0, 0]
     },
     "What are the two parts of a computer instruction?": {
         "options": [
@@ -140,7 +270,20 @@
         "Harsh1": [0, 0, 0],
         "Harsh21": [1, 4, 0.2],
         "Harsh212": [0, 0, 0],
-        "bastard": [0, 0, 0]
+        "bastard": [0, 0, 0],
+        "Harsh2": [0, 0, 0],
+        "Harsh3": [0, 0, 0],
+        "Harsh4": [0, 0, 0],
+        "Harsh5": [0, 0, 0],
+        "Harsh6": [0, 0, 0],
+        "Harsh9": [0, 0, 0],
+        "Harsh10": [0, 0, 0],
+        "Harsh!2": [0, 0, 0],
+        "harsh1": [0, 0, 0],
+        "harsh12": [0, 0, 0],
+        "aaaaa": [0, 0, 0],
+        "bbbbb": [0, 0, 0],
+        "aaaaaa": [0, 0, 0]
     },
     "What is the most suitable storage device for: A Travel Agent backing up 800GB of data with medium costs": {
         "options": [
@@ -153,7 +296,20 @@
         "Harsh1": [0, 0, 0],
         "Harsh21": [2, 2, 0.5],
         "Harsh212": [0, 0, 0],
-        "bastard": [1, 0, 1.0]
+        "bastard": [1, 0, 1.0],
+        "Harsh2": [0, 0, 0],
+        "Harsh3": [0, 0, 0],
+        "Harsh4": [0, 0, 0],
+        "Harsh5": [0, 0, 0],
+        "Harsh6": [0, 0, 0],
+        "Harsh9": [0, 0, 0],
+        "Harsh10": [0, 0, 0],
+        "Harsh!2": [0, 0, 0],
+        "harsh1": [0, 0, 0],
+        "harsh12": [0, 0, 0],
+        "aaaaa": [0, 0, 0],
+        "bbbbb": [0, 0, 0],
+        "aaaaaa": [0, 0, 0]
     },
     "What is the name given to the areas on a CD's surface which have burned into grooves by a laser?": {
         "options": [
@@ -166,7 +322,20 @@
         "Harsh1": [0, 0, 0],
         "Harsh21": [3, 0, 1.0],
         "Harsh212": [0, 0, 0],
-        "bastard": [0, 0, 0]
+        "bastard": [0, 0, 0],
+        "Harsh2": [0, 0, 0],
+        "Harsh3": [0, 0, 0],
+        "Harsh4": [0, 0, 0],
+        "Harsh5": [0, 0, 0],
+        "Harsh6": [0, 0, 0],
+        "Harsh9": [0, 0, 0],
+        "Harsh10": [0, 0, 0],
+        "Harsh!2": [0, 0, 0],
+        "harsh1": [0, 0, 0],
+        "harsh12": [0, 0, 0],
+        "aaaaa": [0, 0, 0],
+        "bbbbb": [0, 0, 0],
+        "aaaaaa": [0, 0, 0]
     },
     "This form of memory is volatile": {
         "options": [
@@ -179,7 +348,20 @@
         "Harsh1": [0, 0, 0],
         "Harsh21": [3, 5, 0.375],
         "Harsh212": [0, 0, 0],
-        "bastard": [0, 0, 0]
+        "bastard": [0, 0, 0],
+        "Harsh2": [0, 0, 0],
+        "Harsh3": [0, 0, 0],
+        "Harsh4": [0, 0, 0],
+        "Harsh5": [0, 0, 0],
+        "Harsh6": [0, 0, 0],
+        "Harsh9": [0, 0, 0],
+        "Harsh10": [0, 0, 0],
+        "Harsh!2": [0, 0, 0],
+        "harsh1": [0, 0, 0],
+        "harsh12": [0, 0, 0],
+        "aaaaa": [0, 0, 0],
+        "bbbbb": [0, 0, 0],
+        "aaaaaa": [0, 0, 0]
     },
     "What is a disadvantage of Solid State Drives": {
         "options": [
@@ -192,6 +374,19 @@
         "Harsh1": [0, 0, 0],
         "Harsh21": [1, 1, 0.5],
         "Harsh212": [0, 0, 0],
-        "bastard": [0, 0, 0]
+        "bastard": [0, 0, 0],
+        "Harsh2": [0, 0, 0],
+        "Harsh3": [0, 0, 0],
+        "Harsh4": [0, 0, 0],
+        "Harsh5": [0, 0, 0],
+        "Harsh6": [0, 0, 0],
+        "Harsh9": [0, 0, 0],
+        "Harsh10": [0, 0, 0],
+        "Harsh!2": [0, 0, 0],
+        "harsh1": [0, 0, 0],
+        "harsh12": [0, 0, 0],
+        "aaaaa": [0, 0, 0],
+        "bbbbb": [0, 0, 0],
+        "aaaaaa": [0, 0, 0]
     }
 }
