@@ -18,8 +18,6 @@ coin_path = os.path.join(image_path, 'coin')
 FPS = 60
 clock = pygame.time.Clock()
 window = WINDOW.Display(new_window=True)
-ENEMY = random.choice(['knight', 'samurai', 'stormy']) # pick a random enemy
-PLAYER = 'player'
 # LEVEL = random.randint(range(1,7))
 # ENEMY_IMG = 'samurai'
 # PLAYER_IMG = pygame.image.load(f'images/mobs/{PLAYER}/default.png')
@@ -33,7 +31,7 @@ class World:
         self.height = 0
         self.all_tiles = []
 
-    def process_data(self, data, tile_info, img_list):
+    def process_data(self, data, tile_info, img_list, player_img, enemy_img):
 
         enemy_counter = 0
         player = Player(500, 500, 'player', tile_info['player_scale'], melee_dps=50)
@@ -73,9 +71,9 @@ class World:
                         coins += [obj]
                     elif tile in tile_info['player'].split():  # create player if there's one on the map
                         # print('player')
-                        player = Player(img_rect.x, img_rect.y, PLAYER, tile_info['player_scale'], melee_dps=1000)
+                        player = Player(img_rect.x, img_rect.y, player_img, tile_info['player_scale'], melee_dps=1000)
                     elif tile in tile_info['enemy'].split():
-                        enemies += [Enemy(img_rect.x, img_rect.y, ENEMY, tile_info['enemy_scale'],
+                        enemies += [Enemy(img_rect.x, img_rect.y, enemy_img, tile_info['enemy_scale'],
                                           all_animations=['Idle', 'Die', 'Running', 'Attack'],
                                           max_health=100, x_vel=2, move_radius=tile_info['move_radii'][enemy_counter])]
                         enemy_counter += 1
@@ -234,6 +232,9 @@ def update_data(question_data, questions, max_questions, level, username, points
     write_json(user_info, f'user_info/users.json') # save all the changes
 
 def play_level(username, user_id, level):
+    ENEMY = random.choice(['knight', 'samurai', 'stormy']) # pick a random enemy
+    PLAYER = 'player'
+
     LEVEL = 2 # random.randint(1,4) # choose a random map layout
     game_level = load_level(LEVEL)
     TILE_TYPES = os.listdir(f'images/level_images/{LEVEL}/Tiles') # get a list of all the tiles
@@ -254,7 +255,7 @@ def play_level(username, user_id, level):
     # questions will be treated as a stack. Last in is first out
     tile_info = WINDOW.read_json(f'images/level_images/{LEVEL}/tile_info.json')
     # sprite groups
-    player, decorations, death_blocks, enemies, coins, portals = world.process_data(game_level, tile_info, img_dict)
+    player, decorations, death_blocks, enemies, coins, portals = world.process_data(game_level, tile_info, img_dict, PLAYER, ENEMY)
 
     death_blocks_group = Group(*death_blocks)
     enemy_group = Group(*enemies)

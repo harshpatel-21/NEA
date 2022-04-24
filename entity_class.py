@@ -161,7 +161,6 @@ class Entity(pygame.sprite.Sprite):
         self.health_rect = pygame.Rect((x, y, 70, 7))
         self.health_rect.center = self.rect.center
         self.health_rect.y -= self.rect.h // 2 + 10
-        self.ground = 0
         self.remove = False
         self.collision_rect = self.rect
 
@@ -172,10 +171,9 @@ class Entity(pygame.sprite.Sprite):
         # reset movement variables
         dx = dy = 0
         check = True
-        # if not self.check_alive():  # if the player is dead, then don't do any movements
-        #     self.remove = True
         if self.health <= 0:
             return
+
         # horizontal movement
         if self.bow_attack:  # don't allow movement during an attack animation
             check = False
@@ -218,14 +216,13 @@ class Entity(pygame.sprite.Sprite):
 
             if tile.rect.colliderect(self.rect.x, self.rect.y + dy, self.rect.w, self.rect.h):
                 dy = 0
-                # check if jumping and below ground
+                # check if jumping and collision occurs below ground
                 if self.y_vel < 0:
                     self.y_vel = 0
                     self.rect.top = tile.rect.bottom
 
                 # if they are falling
                 elif self.y_vel > 0:
-                    self.ground = min(5, self.ground + 1)
                     self.y_vel = 0
                     self.in_air = False
                     self.rect.bottom = tile.rect.top
@@ -244,7 +241,6 @@ class Entity(pygame.sprite.Sprite):
         self.health_rect.y += dy
         self.collision_rect.bottom = self.rect.bottom
 
-        return screen_scroll
 
     def draw_health_bar(self, surface, target):
 
@@ -307,7 +303,7 @@ class Entity(pygame.sprite.Sprite):
             image_rect.midbottom = self.rect.midbottom
 
         self.rect = image_rect
-        self.collision_rect.midbottom = image_rect.midbottom # move the collision rectanglehhh
+        self.collision_rect.midbottom = image_rect.midbottom # move the collision rectangle
 
 
         if self.obj_type =='player': # only the player's hit box should be dynamic, for the rest it should just be normal
@@ -343,12 +339,7 @@ class Entity(pygame.sprite.Sprite):
             self.time1 = pygame.time.get_ticks()
 
         if shoot_projectile:
-            arrow = self.shoot()
-            if arrow:
-                return arrow
-
-    def shoot(self):
-        return Projectile(self)  # return an Projectile object
+            return Projectile(self)
 
     def update_action(self, new_action, world=None):
         """ check if the new action is different to the new action
@@ -443,16 +434,18 @@ class Entity(pygame.sprite.Sprite):
         }
         temp = []
         img_path = f"images/mobs/{obj_type}/{animation}"
-        get_img = 'os.path.join(img_path,image)'  # get a list of the image names for the animation
-        images = os.listdir(img_path)
+        images = os.listdir(img_path) # get a list of images
+
+        scale2 = scale
+        scale_info = animation_scale.get(obj_type)
+        if scale_info:
+            scale_data = scale_info.get(animation)
+            if scale_data: scale2 = [*map(int, scale_data)]
+        scale2 = [*map(int, (scale2[0] * 0.8, scale2[1] * 0.8))]
+
         for image in images:  # iterate through the images in this directory
-            scale2 = scale
-            scale_info = animation_scale.get(obj_type)
-            if scale_info:
-                scale_data = scale_info.get(animation)
-                if scale_data: scale2 = [*map(int, scale_data)]
-            scale2 = [*map(int, (scale2[0] * 0.8, scale2[1] * 0.8))]
-            temp += [pygame.transform.scale(pygame.image.load(eval(get_img)),scale2).convert_alpha()]
+            image = pygame.image.load(os.path.join(img_path,image))
+            temp += [pygame.transform.scale(image,scale2).convert_alpha()]
         self.animations += [temp]
 
     def draw(self, surface, target):
@@ -479,9 +472,8 @@ class Entity(pygame.sprite.Sprite):
 
     def sword_collision(self, obj):  # check for sword attack collision
         if self.check_collision(obj) and obj.sword_attack:
-            self.collisions += 1 and obj.sword_attack and self.direction != obj.direction
-            self.health -= obj.current_weapon_damage.get(
-                obj.current_weapon) / 25
+            # self.collisions += 1 and obj.sword_attack and self.direction != obj.direction
+            self.health -= obj.current_weapon_damage.get(obj.current_weapon) / 25
             return 1
         return 0
 
@@ -514,19 +506,18 @@ class Enemy(Entity):
         attack_animations = self.animations[self.get_index('Attack')]
         idle_image = self.animations[self.get_index('Idle')][0]
 
-        attack_radius = max(attack_animations,key=lambda image: image.get_width()).get_width()
+        attack_radius = max(attack_animations, key=lambda image: image.get_width()).get_width() + 5
         if self.obj_type == 'stormy':
             attack_radius *= 0.3
         else:
             attack_radius -= idle_image.get_width() - 10
-        self.attack_vision = pygame.Rect(0, 0, attack_radius, 20)
+        self.attack_vision = pygame.Rect(0, 0, attack_radius, 3)
         self.combat_animations = [self.get_index('Attack')]
         self.attacked = False
         self.wait = 0
         self.change_direction = False
         self.wall_collision = False
         self.move_radius = move_radius
-        self.trigger_removal = False
 
     def rec_collision(self, obj):
         return self.attack_vision.colliderect(obj.rect)
@@ -619,13 +610,10 @@ class Enemy(Entity):
         self.animation_handling()
         # pygame.draw.rect(Display.screen, (255, 0, 0), enemy.attack_vision,2)
         if self.health > 0:
-            self.trigger_removal = False
             if self.start_attack(player, world):  # check if player collision has occurred
                 pass
-            player.sword_collision(self)
-            self.sword_collision(player)  # check for collision with the player
-        elif self.remove:
-            self.trigger_removal = True
+            player.sword_collision(self) # check if self has dealt damage to player
+            self.sword_collision(player)  # check if player has dealt damage to self
 
         self.AI(world, player)  # do enemy AI
 
@@ -659,7 +647,5 @@ class Group(pygame.sprite.Group):
         for obj in self.sprites():
             if obj.remove:
                 ask_question = True
-            if obj.trigger_removal:
-                obj.trigger_removal = False
                 obj.kill()
         return ask_question
