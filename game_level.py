@@ -223,10 +223,11 @@ def update_data(question_data, questions, max_questions, level, username, points
     current_best = user_info[username][level]
 
     # only update the completion time if the user answered all the questions/ defeated all enemies and they made it to the portal
-    if current_best != 0 and portal_enter and total_accuracy == 100:
-        current_best = min(current_best, timer)
-    elif current_best == 0 and total_accuracy == 100:
-        current_best = timer
+    if portal_enter and total_accuracy == 100:
+        if current_best == 0:
+            current_best = timer
+        else:
+            current_best = min(current_best, timer)
 
     user_info[username][level] = current_best # update time if it was lower
     if len(questions) != max_questions and not user_quit: user_info[username]['points'].append(points) # adding points onto the player's history for graph plotting; if they answered questions

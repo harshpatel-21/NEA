@@ -78,7 +78,7 @@
         "aaaaa": [0, 0, 0],
         "bbbbb": [0, 0, 0],
         "aaaaaa": [0, 0, 0],
-        "Harsh": [0, 0, 0]
+        "Harsh": [1, 0, 1.0]
     },
     "Which two CPU registers will regularly store the same value?": {
         "options": [
