@@ -16,7 +16,7 @@ def get_boxes(question_data, question, window):
     x2 = (w//2) + x_padding
     width = (w//2) - (2*x_padding)
     options = random.sample(options, 4) # select a random order from the options, shuffling the order of options
-    option_w, option_h = (width,(window.height-h)*0.47)
+    option_w, option_h = (width,(window.HEIGHT-h)*0.47)
     y_padding = (window.HEIGHT - question_box.rect.height - (2*option_h))//3
 
     # creating all the option instances, and positioning them respectively

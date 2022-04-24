@@ -55,7 +55,7 @@ def get_path(path):
     if os.path.exists(absolute_path):
         return absolute_path
     else:
-        return 0
+        raise FileNotFoundError
 
 def read_json(path):
     details = get_path(path)
@@ -92,8 +92,8 @@ def delete_json_key(path, cls=MyEncoder, key=None, depth=1):
     write_json(data, path)
 
 def convert_time_format(time):
-    h,r = divmod(time, 3600) # calculate how many hours, and the remainder is the number of minutes (in seconds)
-    m,s = divmod(r, 60) # convert the remaining seconds into minutes, and the remainder is the amount of seconds
+    h, r = divmod(time, 3600) # calculate how many hours, and the remainder is the number of minutes (in seconds)
+    m, s = divmod(r, 60) # convert the remaining seconds into minutes, and the remainder is the amount of seconds
     return f'{h:02}:{m:02}:{s:02}' # format each value by filling in missing number(s) of maximum 2 numbers with leading 0s.
 
 def delete_user(username):

@@ -39,9 +39,9 @@ class Textbox(WINDOW.Display):
         w,h=self.size
 
         #updates the text to be displayed on the box
-        self.font = self.text_size.render(self.text, True, self.text_colour)
+        self.rendered_text = self.text_size.render(self.text, True, self.text_colour)
 
-        self.rect = self.font.get_rect() # this is the font rectangle
+        self.rect = self.rendered_text.get_rect() # this is the font rectangle
         tempRect = self.rect.copy()
         tempRect.width = tempRect.width + padding_x
         if self.limit:
@@ -64,7 +64,7 @@ class Textbox(WINDOW.Display):
         pygame.draw.rect(self.surface, self.border_colour, self.main_rec, 5)
         text_x = (self.main_rec.width - self.rect.width) // 2
         text_y = (self.main_rec.height - self.rect.height) // 2
-        self.surface.blit(self.font, (text_x, text_y))
+        self.surface.blit(self.rendered_text, (text_x, text_y))
 
         if center:
             self.x = (canvas.get_width() - self.main_rec.width)//2 # center it
@@ -96,6 +96,8 @@ class Textbox(WINDOW.Display):
 class AutoBox(Textbox):
     incorrect_colour = (204, 51, 0)
     correct_colour = (51, 153, 51)
+    hover_colour = (65, 114, 191)
+    hover_border = (207, 234, 255)
     def __init__(self, x, y, size, obj_type, text='', font_size=None,center_text=(True,True),colour=(68, 71, 68),padding=None):
         if colour is not None:
             self.background_colour = colour
@@ -175,11 +177,11 @@ class AutoBox(Textbox):
 
         # to evaluate: this can go on forever if the box is too small for all of the text to fit in
         break_while = False
-        y_increment = 0
+        last_word_attempt = 0
         max_x = 0
         while pointer <= len(text) - 1:
             current_word = text[pointer]
-            if y_increment > 2: # if 2 new line attempts have been made then it means the word still cannot fit
+            if last_word_attempt > 2: # if 2 new line attempts have been made then it means the word still cannot fit
                 # break out of the while loop and stop attempting to infinitely trying to add the word
                 break
             temp = self.surf.copy() # create a temporary surface where letters will be blitted
@@ -209,7 +211,7 @@ class AutoBox(Textbox):
                     widths = 1 # resetting the widths to 1
                     letter_count = 0 # reset the letter count on the row
                     if pointer == len(text)-1: # if its the last word and still not fitting
-                        y_increment += 1
+                        last_word_attempt += 1
                     if current_word == '\\n':
                         pointer += 1
                     break # repeat the process again for this word but on a new line
@@ -237,8 +239,8 @@ class AutoBox(Textbox):
         if self.obj_type != 'question':
             mouse_pos = pygame.mouse.get_pos()
             if self.rect.collidepoint(mouse_pos) and self.check_collision:
-                self.background = (65, 114, 191)
-                self.border_colour = (207, 234, 255)
+                self.background = self.hover_colour
+                self.border_colour = self.hover_border
             else:
                 self.background = self.background_colour
                 self.border_colour = None

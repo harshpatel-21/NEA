@@ -143,9 +143,8 @@ def show_summary(right, wrong, accuracy, streak, points, timer, player_died, por
             if event.type == pygame.QUIT:
                 sys.exit()
 
-        spaces = lambda word: ' '*(100-len(word))
         initial_x = 430
-        for i,line in enumerate(['Right','Wrong','Accuracy','Best Streak','Points Gained','Time Survived']):
+        for i,line in enumerate(['Right','Wrong','Accuracy','Best Streak','Points Collected','Time Survived']):
             window.draw_text(line+':', (initial_x,150+(50*i)), center=(False,False))
         for j,value in enumerate([right, wrong, accuracy, streak, points, timer]):
             window.draw_text(str(value),(initial_x*2,150+(j*50)))
@@ -217,7 +216,7 @@ def get_questions(level, username):
 
     return final_list, question_data
 
-def update_data(question_data, questions, max_questions, level, username, points, timer, portal_enter, total_accuracy):
+def update_data(question_data, questions, max_questions, level, username, points, timer, portal_enter, total_accuracy, user_quit):
     # update question data and user data when/ if run == False, if they just finished level/died
     write_json(question_data, f'Questions/{level}.json')
     user_info = read_json(f'user_info/users.json')
@@ -230,7 +229,7 @@ def update_data(question_data, questions, max_questions, level, username, points
         current_best = timer
 
     user_info[username][level] = current_best # update time if it was lower
-    if len(questions) != max_questions: user_info[username]['points'].append(points) # adding points onto the player's history for graph plotting; if they answered questions
+    if len(questions) != max_questions and not user_quit: user_info[username]['points'].append(points) # adding points onto the player's history for graph plotting; if they answered questions
     write_json(user_info, f'user_info/users.json') # save all the changes
 
 def play_level(username, user_id, level):
@@ -276,6 +275,7 @@ def play_level(username, user_id, level):
     portal_enter = False
     questions = questions[:len(enemy_group.sprites())]
     max_questions = len(questions)
+    user_quit = False
     while run:
         player.check_alive()
         camera.update(player, world)
@@ -293,6 +293,7 @@ def play_level(username, user_id, level):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
+                user_quit = True
 
             # check for keyboard input
             if event.type == pygame.KEYDOWN:
@@ -336,7 +337,7 @@ def play_level(username, user_id, level):
                     if len(questions) == max_questions: # if they haven't answered any questions
                         return
                     run = False # otherwise, save the user's attempts and don't add any points
-
+                    user_quit = True
         keys = pygame.key.get_pressed()
 
         # group handling
@@ -348,7 +349,6 @@ def play_level(username, user_id, level):
         if add_arrow: arrow_group.add(add_arrow)
 
         player.draw(window.screen, camera)
-        player.move(moving_left, moving_right, world, death_blocks)
         player.update(moving_left, moving_right, world)
 
         # enemy handling
@@ -402,8 +402,10 @@ def play_level(username, user_id, level):
                 if isinstance(QuestionWindow_values, tuple): # if the result and timer was returned
                     result = QuestionWindow_values[0] # the outcome of the question displayed
                     user_right, user_wrong, user_accuracy = (question_data[current_question])[username]
-                    if result: user_right += 1; points += 10; total_right+=1; streak += 1 # if they got the question right, add 10 points
-                    else: user_wrong += 1; total_wrong += 1; streak = 0
+                    if result:
+                        user_right += 1; points += 10; total_right+=1; streak += 1 # if they got the question right, add 10 points
+                    else:
+                        user_wrong += 1; total_wrong += 1; streak = 0
                     if user_wrong!=0 or user_right!=0:
                         user_accuracy = user_right/(user_right+user_wrong) # to ensure that the denominator is not 0
                         total_accuracy = round(total_right/(total_right+total_wrong), 2)
@@ -411,7 +413,7 @@ def play_level(username, user_id, level):
                     timer = QuestionWindow_values[1]
                 else:
                     timer = QuestionWindow_values
-                max_streak = max(streak,max_streak)
+                max_streak = max(streak, max_streak)
 
                 # inwards fade
                 start_fade = True
@@ -429,7 +431,7 @@ def play_level(username, user_id, level):
             start_fade = True
             fade.direction = -1
 
-        if (pygame.time.get_ticks() - x1) > 1000 and not player.remove: # 1 ticks == 1 millisecond, 1000 millisecond = 1 second
+        if (pygame.time.get_ticks() - x1) > 1000 and not player.remove and not portal_enter: # 1 ticks == 1 millisecond, 1000 millisecond = 1 second
             timer += 1  # account for the time in the question screen
             x1 = pygame.time.get_ticks()
 
@@ -441,11 +443,11 @@ def play_level(username, user_id, level):
 
         pygame.display.update()  # make all the changes
         clock.tick(FPS)
-    pygame.quit() # finished the main loop
+
     # show the user their summary statistics:
     total_accuracy = round(total_accuracy*100, 2)
     show_summary(total_right, total_wrong, total_accuracy, max_streak, points, timer, player.remove, portal_enter)
-    update_data(question_data, questions, max_questions, level, username, points, timer, portal_enter, total_accuracy)
+    update_data(question_data, questions, max_questions, level, username, points, timer, portal_enter, total_accuracy, user_quit)
 
 def main(username, user_id, level):
     play_level(username, user_id, level)

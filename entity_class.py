@@ -165,7 +165,7 @@ class Entity(pygame.sprite.Sprite):
         self.remove = False
         self.collision_rect = self.rect
 
-    def move(self, moving_left, moving_right, world, death_blocks=0):  # handle player movement
+    def move(self, moving_left, moving_right, world):  # handle player movement
         self.health_rect.y = self.rect.y - 10
         scroll_threshold = 400
         screen_scroll = 0
@@ -373,6 +373,7 @@ class Entity(pygame.sprite.Sprite):
             self.time1 = pygame.time.get_ticks()
 
     def update(self, moving_right, moving_left, world):
+        self.move(moving_right, moving_left, world)
         # update player animations
         if self.obj_type == 'player' and self.health:
             if self.in_air or self.y_vel > self.GRAVITY:  # if jumping or falling the 0.75 is due to gravity
