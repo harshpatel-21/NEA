@@ -11,17 +11,19 @@ def get_boxes(question_data, question, window):
 
     question_box = AutoBox(0, 0, (w, h*0.8), obj_type='question', text=text)
 
-    left_shift = 0.1
-    x1 = int(window.width*left_shift//4)
-    width = 1-left_shift
+    x_padding = 35
+    x1 = x_padding
+    x2 = (w//2) + x_padding
+    width = (w//2) - (2*x_padding)
     options = random.sample(options, 4) # select a random order from the options, shuffling the order of options
-    option_w, option_h = (w*width//2,(window.height-h)//2)
+    option_w, option_h = (width,(window.height-h)*0.47)
+    y_padding = (window.HEIGHT - question_box.rect.height - (2*option_h))//3
 
     # creating all the option instances, and positioning them respectively
-    option_1=AutoBox(question_box.rect.x + x1, question_box.rect.bottom + 13.3, (option_w, option_h), obj_type='option', text=options[0])
-    option_2=AutoBox(question_box.rect.center[0] + x1, question_box.rect.bottom + 13.3, (option_w, option_h), obj_type='option', text=options[1])
-    option_3=AutoBox(option_1.rect.left, option_1.rect.bottom + 13.3, (option_w, option_h), obj_type='option', text=options[2])
-    option_4=AutoBox(option_2.rect.left, option_2.rect.bottom + 13.3, (option_w, option_h), obj_type='option', text=options[3])
+    option_1=AutoBox(question_box.rect.x + x1, question_box.rect.bottom + y_padding, (option_w, option_h), obj_type='option', text=options[0])
+    option_2=AutoBox(x2, question_box.rect.bottom + y_padding, (option_w, option_h), obj_type='option', text=options[1])
+    option_3=AutoBox(option_1.rect.left, option_1.rect.bottom + y_padding, (option_w, option_h), obj_type='option', text=options[2])
+    option_4=AutoBox(option_2.rect.left, option_2.rect.bottom + y_padding, (option_w, option_h), obj_type='option', text=options[3])
     main_group = BoxGroup(option_1, option_2, option_3, option_4, question_box)
     return main_group
 
@@ -44,7 +46,7 @@ def start_question(question, question_data, timer=0,x1=None):
     main_continue = Textbox(100, 0.9*window.height,text='Continue',text_size='medlarge')
     feedback_continue = Textbox(100, 0.9*window.height,text='Continue',text_size='medlarge')
     options_screen = True
-    result = False
+    result = None
     check_click = True
     move_to_feedback = 6000 # the time to wait until moving onto feedback screen == 6 seconds
     time1 = 0
@@ -60,8 +62,7 @@ def start_question(question, question_data, timer=0,x1=None):
     while True:
         window.refresh()
         for event in pygame.event.get():
-            if event.type == pygame.QUIT and 1==2:
-                pygame.quit()
+            if event.type == pygame.QUIT and result is None:
                 return timer
                 # sys.exit()
             if event.type == pygame.KEYDOWN:
@@ -110,7 +111,6 @@ def start_question(question, question_data, timer=0,x1=None):
                 going_back = True # go back
             if not going_back:
                 feedback.show(window.screen) # show the feedback
-                feedback_continue.show(window.screen)
                 feedback_continue.check_hover(pygame.mouse.get_pos())
                 feedback_continue.show(window.screen, center=True)
 
@@ -121,7 +121,7 @@ def start_question(question, question_data, timer=0,x1=None):
             for box in main_group.get_list():
                 if box.obj_type =='question':
                     continue
-                box.surface.set_alpha(150)
+                box.surface.set_alpha(60)
 
         if start_fade: # do the fade animation
             if going_back:
