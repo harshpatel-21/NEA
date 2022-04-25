@@ -247,9 +247,6 @@ def show_menu(username) -> None:
 
                     elif clicked.obj_type == 'instructions':
                         instructions = True
-                        back_pos = (180, 420)
-
-
 
         if leaderboards:
             show_leaderboards(window.screen, user_data)
