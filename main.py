@@ -20,8 +20,8 @@ def get_path(path):
     assert os.path.exists(absolute_path), f"{path} doesn't exist"
     return absolute_path
 
-background = get_path('images/logo.png')
-window = Display(caption='Main Menu',size=(1426, 690))
+background = get_path('images/logo2.png')
+window = Display(caption='Portal Access',size=(1426, 690))
 image = pygame.image.load(background)
 background = pygame.transform.scale(image,window.SIZE)
 window.background = background
