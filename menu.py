@@ -67,7 +67,7 @@ def get_graph(username) -> None:
     plt.ylabel('Points', color=color)
 
     plt.title('Points Gained At Each Attempt')
-    plt.savefig('points.png') # save the image of the graph in a png file, which will then be loaded and blitted
+    plt.savefig('images/points.png') # save the image of the graph in a png file, which will then be loaded and blitted
     # plt.show()
 
 def get_accuracy(question_data, username) -> str:
@@ -176,7 +176,7 @@ def show_graph(surface, graph_img):
     surface.screen.blit(graph_img, ((surface.WIDTH - img_rect.w)//2, (surface.HEIGHT - img_rect.h)//2))
 
 def show_instructions(surface):
-    instructions = pygame.image.load('instructions.png')
+    instructions = pygame.image.load('images/instructions.png')
     surface.screen.blit(instructions, (0, 0))
 
 def show_menu(username) -> None:
@@ -252,7 +252,7 @@ def show_menu(username) -> None:
             show_leaderboards(window.screen, user_data)
 
         elif graph:
-            graph_img = pygame.image.load('points.png')
+            graph_img = pygame.image.load('images/points.png')
             show_graph(window, graph_img)
         elif instructions:
             show_instructions(window)
