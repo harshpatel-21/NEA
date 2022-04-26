@@ -91,6 +91,7 @@ def get_accuracy(question_data, username) -> str:
     return accuracy
 
 def get_topic_boxes(username, user_data) -> list:
+    default_message = 'Achieve 100% accuracy and attempt all questions in a session to unlock'
     topics = []
     row_1 = ['Systems Architecture', 'Software and Software development', 'Exchanging Data']
     row_2 = ['Data types, Data structures, and Algorithms',
@@ -114,11 +115,11 @@ def get_topic_boxes(username, user_data) -> list:
     for i in range(3):
         current_time = user_data[username][get_topic_number(row_1[i])]
         if not current_time:
-            current_time = 'Achieve 100% accuracy in a session to unlock'
+            current_time = default_message
         else:
             current_time = WINDOW.convert_time_format(current_time)
         topics.append(
-            AutoBox(padding1 * i + (width1 * i) + padding1, 200, (width1, 0.4 * width1), row_1[i], text=row_1[i]+f' \\n \\n Accuracy: {accuracy_1[i]}  \\n Best Time: {current_time}',center_text=(False,True),font_size=24))
+            AutoBox(padding1 * i + (width1 * i) + padding1, 200, (width1, 0.4 * width1), row_1[i], text=row_1[i]+f' \\n \\n Accuracy: {accuracy_1[i]}  \\n Best Time: {current_time}',center_text=(False,True),font_size=22))
 
     width2 = 520
     padding2 = (window.WIDTH - 2 * width2) // 3
@@ -127,13 +128,14 @@ def get_topic_boxes(username, user_data) -> list:
     for j in range(2):
         current_time = user_data[username][get_topic_number(row_2[j])]
         if not current_time:
-            current_time = 'Achieve 100% accuracy in a session to unlock'
+            current_time = default_message
         else:
             current_time = WINDOW.convert_time_format(current_time)
         topics.append(AutoBox(padding2 * j + (width2 * j) + padding2, topics[1].rect.h + padding_y + padding1,(width2, 0.35 * width2), row_2[j], text=row_2[j]+f' \\n \\n Accuracy: {accuracy_2[j]}  \\n Best Time: {current_time}',center_text=(False,True),font_size=22))
     return topics
 
 def update_topic_boxes(username,user_data,topic_boxes) -> list:
+    default_message = 'Achieve 100% accuracy and attempt all questions in a session to unlock'
     row_1 = ['Systems Architecture', 'Software and Software development', 'Exchanging Data']
     row_2 = ['Data types, Data structures, and Algorithms',
              'Elements of Computational thinking, Problem solving, and programming']
@@ -156,7 +158,7 @@ def update_topic_boxes(username,user_data,topic_boxes) -> list:
     for i in range(3):
         current_time = user_data[username][get_topic_number(row_1[i])]
         if not current_time:
-            current_time = 'Achieve 100% accuracy in a session to unlock'
+            current_time = default_message
         else:
             current_time = WINDOW.convert_time_format(current_time)
         topic_boxes[i].update_text(row_1[i]+f' \\n \\n Accuracy: {accuracy_1[i]}  \\n Best Time: {current_time}')
@@ -164,7 +166,7 @@ def update_topic_boxes(username,user_data,topic_boxes) -> list:
     for j in range(2):
         current_time = user_data[username][get_topic_number(row_2[j])]
         if not current_time:
-            current_time = 'Achieve 100% accuracy in a session to unlock'
+            current_time = default_message
         else:
             current_time = WINDOW.convert_time_format(current_time)
         topic_boxes[3+j].update_text(row_2[j]+f' \\n \\n Accuracy: {accuracy_2[j]}  \\n Best Time: {current_time}')

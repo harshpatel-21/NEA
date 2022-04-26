@@ -157,8 +157,7 @@ def input_information(state):
 
                 if username_click or password_click: # don't show any error messages if they've clicked on a box again to type
                     incorrect_details = display_string_length = successful_signUp = False
-
-
+                    continue_button.text = 'Continue'
 
         if incorrect_details and state=='login':
             window.draw_text(text='Incorrect username or password',pos=(window.screen.get_width()//2 - 100,590),colour=(255,0,0),size='MEDLARGE',center=(True,False))
