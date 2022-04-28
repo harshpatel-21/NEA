@@ -52,16 +52,19 @@ def get_graph(username) -> None:
     user_data = WINDOW.read_json('user_info/users.json')
     points = user_data[username]['points']
     start_x, end_x = 1, len(points)
+    plt.rcParams["figure.figsize"] = (9.4,6)
     if len(points) > 20:
 
-        start_x = len(points) - 20
+        start_x = len(points) - 19
         end_x = len(points)
-        points = points[-21:]
+        points = points[-20:]
     x_range = range(start_x, end_x + 1)
     # points = [sum(points[:i]) for i in range(1,len(points))] # cumulative points
     color = 'black'
     fig, axis = plt.subplots(nrows=1,ncols=1) # just one graph
+
     plt.xticks(x_range, color=color)
+    plt.yticks(range(min(points),max(points) + 10,10),color=color)
     axis.plot(list(x_range), points, marker='.')
     plt.xlabel('Session', color=color)
     plt.ylabel('Points', color=color)
