@@ -149,11 +149,9 @@ class Display:
         if back_pos is not None:
             self.BACK_X, self.BACK_Y = back_pos
 
+        self.screen = pygame.display.set_mode(self.SIZE)
         if new_window:
-            self.screen = pygame.display.set_mode(self.SIZE)
             pygame.display.set_caption(caption)
-        else:
-            self.screen = pygame.Surface(self.SIZE)
 
         self.background=background
         self.back_image = pygame.transform.scale(pygame.image.load(get_path('images/go_back.png')), (100, 38))
@@ -199,18 +197,4 @@ class Display:
             y = (self.HEIGHT-rec.h)//2
         self.screen.blit(text,(x,y))
 
-    def draw_multi_lines(self,text,pos,size='MEDIUM',colour=WHITE, center=(False, False), space=0):
-        text = text.split('\\n')
-        h=0
-        for index, line in enumerate(text):
-            center_x, center_y = center
-            text = eval(f'self.{size.upper()}_FONT.render(line, True, colour)')
-            rec=text.get_rect()
-            x, y = pos
-            if center_x:
-                x = (self.WIDTH-rec.w)//2
-            if center_y:
-                y = (self.HEIGHT-rec.h)//2
-            self.screen.blit(text, (x, y+((h+3)*index)))
-            h = rec.h
 
