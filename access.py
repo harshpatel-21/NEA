@@ -84,10 +84,10 @@ def input_information(state):
     
     random_box = Textbox(100,200,text='j',text_size='medlarge',padding=(0,0),limit=False)
     
-    username_box = Textbox(100,460,text=fill_text.center(15),text_size='medlarge',padding=(0,0),size=(300,60))
+    username_box = Textbox(100,460,text=fill_text.center(15),text_size='medlarge',size=(300,60))
     password_box = Textbox(100,530,text=fillpass_text.center(15),text_size='medlarge',size=(300,60))
 
-    continue_button = Textbox(100,630,text='Continue',size=(200, 50),text_size='medlarge')
+    continue_button = Textbox(100,630,text='Continue',size=(200, 50),text_size='medlarge', padding =(10,0))
     continue_button.create_rect()
     continue_click = False
 

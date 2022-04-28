@@ -23,7 +23,7 @@ class Textbox(WINDOW.Display):
 
     max_width = 270
 
-    def __init__(self, x, y, text='', text_size='MEDIUM', text_colour=text_colour, padding=(10,10), size=(0,0),limit=True):
+    def __init__(self, x, y, text='', text_size='MEDIUM', text_colour=text_colour, padding=(0,0), size=(0,0),limit=True):
         self.padding = padding
         self.size = size
         self.text = text
@@ -51,8 +51,8 @@ class Textbox(WINDOW.Display):
 
         if w>0 and h>0: # if a specified size was passed in
             if self.main_rec.width - 43 < w:
-                self.main_rec.width = w
-            self.main_rec.height = h
+                self.main_rec.width = w + padding_x
+            self.main_rec.height = h + padding_y
 
         self.surface = pygame.Surface((self.main_rec.width, self.main_rec.height))
         self.background = self.background_colour

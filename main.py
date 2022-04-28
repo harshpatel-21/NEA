@@ -21,7 +21,7 @@ def get_path(path):
     return absolute_path
 
 background = get_path('images/logo2.png')
-window = Display(caption='Portal Access',size=(1426, 690))
+window = Display(caption='Platform Access',size=(1426, 690))
 image = pygame.image.load(background)
 background = pygame.transform.scale(image,window.SIZE)
 window.background = background
@@ -43,8 +43,8 @@ def main():
     update_details() # if there's any user info missing from question data, fill it in before proceeding, ie when I decide
     # to add in a new question, I don't wanna manually type in user info
 
-    login_box = Textbox(100,460,'Login',text_size='medlarge',padding=(200,35),size=(300,60))
-    signUp_box = Textbox(100,530,'Sign Up',text_size='medlarge',padding=(175,35),size=(300,60))
+    login_box = Textbox(100,460,'Login',text_size='medlarge',padding=(0,0),size=(300,60))
+    signUp_box = Textbox(100,530,'Sign Up',text_size='medlarge',padding=(0,0),size=(300,60))
 
     login=sign_up=False
 

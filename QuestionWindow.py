@@ -43,8 +43,8 @@ def start_question(question, question_data, timer=0,x1=None):
     feedback_text = question_data[question]['feedback']
     feedback = AutoBox(0,40,(window.SIZE[0],window.SIZE[1]-40),text=feedback_text, obj_type='feedback',font_size=29,center_text=(False,False),colour=Display.BACKGROUND)
 
-    main_continue = Textbox(100, 0.9*window.height,text='Continue',text_size='medlarge')
-    feedback_continue = Textbox(100, 0.9*window.height,text='Continue',text_size='medlarge')
+    main_continue = Textbox(100, 0.9*window.height,text='Continue',text_size='medlarge',padding=(10,10))
+    feedback_continue = Textbox(100, 0.9*window.height,text='Continue',text_size='medlarge',padding=(10,10))
     options_screen = True
     result = None
     check_click = True
