@@ -115,10 +115,17 @@ def input_information(state):
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
                 return
             
             if event.type == pygame.KEYDOWN: # handle key presses
+                if event.key == pygame.K_TAB:
+                    username_click = not username_click
+                    password_click = not password_click
+                    continue
+
+                if event.key == pygame.K_RETURN and continue_state:
+                    continue_click = True
+
                 if username_click or password_click: # if the user is typing in username or password fields
                     incorrect_details = False # removes the error message if user has clicked/ is typing in an inputbox
                     display_password_text = False
@@ -133,8 +140,8 @@ def input_information(state):
                     continue # a backspace isn't a valid 'character' that can be added to username and password, therefore
 
                 # only add to username and/or password if the character is valid
-                if username_click: username += character
-                if password_click: password += character
+                if validate_character(username, username_click, character): username += character
+                if validate_character(password, password_click, character): password += character
 
             if event.type == pygame.KEYUP:
                 if event.key==pygame.K_BACKSPACE:
@@ -267,6 +274,7 @@ def input_information(state):
         username_box.show(window.screen, center=True)
         password_box.show(window.screen, center=True)
         continue_button.show(window.screen, center=True)
+        window.draw_text(f'{state.title()} Page',(0,370),center=(True,False),size='MEDLARGE',underline=True)
         # random_box.show(window.screen)
 
         counter += 1
