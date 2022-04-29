@@ -9,9 +9,9 @@ Display = WINDOW.Display
 
 class Textbox(WINDOW.Display):
     rect: object
-    default_background = (120, 126, 214)
-    default_border = (35, 127, 200)
-    default_hover = (126, 175, 252)
+    default_background = (68, 71, 68)
+    default_border = (207, 234, 255)
+    default_hover = (85, 155, 251)
     text_colour = (255, 255, 255)
     default_border_hover = (255,255,255)
     background_colour = default_background
@@ -61,7 +61,7 @@ class Textbox(WINDOW.Display):
 
     def show(self, canvas, center=False):
         pygame.draw.rect(self.surface, self.background, self.main_rec)
-        pygame.draw.rect(self.surface, self.border_colour, self.main_rec, 5)
+        pygame.draw.rect(self.surface, self.border_colour, self.main_rec, 3)
         text_x = (self.main_rec.width - self.rect.width) // 2
         text_y = (self.main_rec.height - self.rect.height) // 2
         self.surface.blit(self.rendered_text, (text_x, text_y))
@@ -83,8 +83,10 @@ class Textbox(WINDOW.Display):
         x.y = self.y
         if x.collidepoint(mouse_pos):
             self.background = self.hover_colour
+            self.border_colour = self.BACKGROUND
         else:
             self.background = self.background_colour
+            self.border_colour = self.default_border
 
     def check_click(self,mouse_pos=None):
         x=self.main_rec.copy()
@@ -94,11 +96,12 @@ class Textbox(WINDOW.Display):
 
 # noinspection PyArgumentList
 class AutoBox(Textbox):
+    default_background = (68, 71, 68)
     incorrect_colour = (204, 51, 0)
     correct_colour = (51, 153, 51)
     hover_colour = (65, 114, 191)
     hover_border = (207, 234, 255)
-    def __init__(self, x, y, size, obj_type, text='', font_size=None,center_text=(True,True),colour=(68, 71, 68),padding=None):
+    def __init__(self, x, y, size, obj_type, text='', font_size=None,center_text=(True,True),colour=default_background,padding=None):
         if colour is not None:
             self.background_colour = colour
         else:

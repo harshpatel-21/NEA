@@ -122,7 +122,7 @@ def bubble_sort2D(array) -> list: # sort a 2D array
 class Display:
     pygame.init()
     RED = (255,0,0)
-    BLUE = (0,0,255)
+    BLUE = (168, 193, 255)
     WHITE = (255,255,255)
     GREY = (80,80,80)
     BLACK = (0,0,0)
@@ -168,7 +168,7 @@ class Display:
         # pos = (self.BACK_X, self.BACK_Y)
         # self.back_rect = pygame.Rect(*pos,*self.back_image.get_size())
         self.screen.blit(self.back_image,pos)
-        pygame.draw.rect(self.screen, (83, 203, 230), (*pos,*self.back_image.get_size()),2)
+        pygame.draw.rect(self.screen, self.BLUE, (*pos,*self.back_image.get_size()),2)
 
     def refresh(self, back=False, pos=None, show_mouse_pos=False):
         if isinstance(self.background, tuple): # if the background is a colour
