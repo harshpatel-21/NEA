@@ -94,7 +94,7 @@ def get_accuracy(question_data, username) -> str:
     return accuracy
 
 def get_topic_boxes(username, user_data) -> list:
-    default_message = 'Achieve 100% accuracy and attempt all questions in a session to unlock'
+    default_message = 'Achieve 100% accuracy and enter the portal in the level to unlock'
     topics = []
     row_1 = ['Systems Architecture', 'Software and Software development', 'Exchanging Data']
     row_2 = ['Data types, Data structures, and Algorithms',
@@ -117,7 +117,7 @@ def get_topic_boxes(username, user_data) -> list:
     padding1 = (window.WIDTH - 3 * width1) // 4
     for i in range(3):
         current_time = user_data[username][get_topic_number(row_1[i])]
-        if not current_time:
+        if current_time == -1:
             current_time = default_message
         else:
             current_time = WINDOW.convert_time_format(current_time)
@@ -130,51 +130,12 @@ def get_topic_boxes(username, user_data) -> list:
 
     for j in range(2):
         current_time = user_data[username][get_topic_number(row_2[j])]
-        if not current_time:
+        if current_time == -1:
             current_time = default_message
         else:
             current_time = WINDOW.convert_time_format(current_time)
         topics.append(AutoBox(padding2 * j + (width2 * j) + padding2, topics[1].rect.h + padding_y + padding1,(width2, 0.35 * width2), row_2[j], text=row_2[j]+f' \\n \\n Accuracy: {accuracy_2[j]}  \\n Best Time: {current_time}',center_text=(False,True),font_size=22))
     return topics
-
-def update_topic_boxes(username,user_data,topic_boxes) -> list:
-    default_message = 'Achieve 100% accuracy and attempt all questions in a session to unlock'
-    row_1 = ['Systems Architecture', 'Software and Software development', 'Exchanging Data']
-    row_2 = ['Data types, Data structures, and Algorithms',
-             'Elements of Computational thinking, Problem solving, and programming']
-    accuracy_1 = []
-    for topic in row_1:
-        topic_number = get_topic_number(topic)
-        question_data = WINDOW.read_json(f'Questions/{topic_number}.json')
-        # p = sum([question_data[question][username] for question in question_data])
-
-        accuracy_1.append(get_accuracy(question_data, username))
-
-    accuracy_2 = []
-    for topic in row_2:
-        topic_number = get_topic_number(topic)
-        question_data = WINDOW.read_json(f'Questions/{topic_number}.json')
-        # p = sum([question_data[question][username] for question in question_data])
-        accuracy_2.append(get_accuracy(question_data, username))
-
-    topic_boxes = topic_boxes
-    for i in range(3):
-        current_time = user_data[username][get_topic_number(row_1[i])]
-        if not current_time:
-            current_time = default_message
-        else:
-            current_time = WINDOW.convert_time_format(current_time)
-        topic_boxes[i].update_text(row_1[i]+f' \\n \\n Accuracy: {accuracy_1[i]}  \\n Best Time: {current_time}')
-
-    for j in range(2):
-        current_time = user_data[username][get_topic_number(row_2[j])]
-        if not current_time:
-            current_time = default_message
-        else:
-            current_time = WINDOW.convert_time_format(current_time)
-        topic_boxes[3+j].update_text(row_2[j]+f' \\n \\n Accuracy: {accuracy_2[j]}  \\n Best Time: {current_time}')
-
-    return topic_boxes
 
 def show_graph(surface, graph_img):
     img_rect = graph_img.get_rect()
@@ -240,7 +201,6 @@ def show_menu(username) -> None:
                         user_data = WINDOW.read_json('user_info/users.json')
                         username_box.update_text(f'Username: {username} \\n Points: {sum(user_data[username]["points"])}')
                         topics = get_topic_boxes(username,user_data) # updates the text_box size and text after user completes a level
-                        # topics = update_topic_boxes(username,user_data,topics) # this only alters the text, not the size which leads to inconsistent formatting
                         all_boxes = BoxGroup(*topics, username_box, leaderboard_box, instructions_box)
 
                     elif clicked.obj_type == 'leaderboard':

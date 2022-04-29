@@ -125,13 +125,14 @@ def get_time_units(timer):
         units = ' hours'
     return units
 
-def show_summary(right, wrong, accuracy, streak, points, timer, player_died, portal_enter):
+def show_summary(right, wrong, total_questions, accuracy, streak, points, timer, player_died, portal_enter):
     timer = WINDOW.convert_time_format(timer)
     accuracy = str(accuracy)+'%'
     units = get_time_units(timer)
     timer = str(timer) + units
     show_back = False
     initial_time = pygame.time.get_ticks()
+    attempted = f'{right+wrong}/{total_questions}'
     while True:
         window.refresh(back=show_back, pos=(650, 480))
         for event in pygame.event.get():
@@ -143,9 +144,9 @@ def show_summary(right, wrong, accuracy, streak, points, timer, player_died, por
                 sys.exit()
 
         initial_x = 430
-        for i,line in enumerate(['Right','Wrong','Accuracy','Best Streak','Points Collected','Time Survived']):
+        for i,line in enumerate(['Attempted', 'Right', 'Accuracy', 'Best Streak', 'Points Collected', 'Time Survived']):
             window.draw_text(line+':', (initial_x,150+(50*i)), center=(False,False))
-        for j,value in enumerate([right, wrong, accuracy, streak, points, timer]):
+        for j,value in enumerate([attempted, right, accuracy, streak, points, timer]):
             window.draw_text(str(value),(initial_x*2,150+(j*50)))
         if player_died:
             window.draw_text('You Died',(0,50),center=(True, False), colour=(255, 0, 0), size='MEDLARGE')
@@ -223,7 +224,7 @@ def update_data(question_data, questions, max_questions, level, username, points
 
     # only update the completion time if the user answered all the questions/ defeated all enemies and they made it to the portal
     if portal_enter and total_accuracy == 100:
-        if current_best == 0:
+        if current_best == -1:
             current_best = timer
         else:
             current_best = min(current_best, timer)
@@ -449,7 +450,7 @@ def play_level(username, user_id, level):
 
     # show the user their summary statistics:
     total_accuracy = round(total_accuracy*100, 2)
-    show_summary(total_right, total_wrong, total_accuracy, max_streak, points, timer, player.remove, portal_enter)
+    show_summary(total_right, total_wrong, max_questions, total_accuracy, max_streak, points, timer, player.remove, portal_enter)
     update_data(question_data, questions, max_questions, level, username, points, timer, portal_enter, total_accuracy, user_quit)
 
 def main(username, user_id, level):
