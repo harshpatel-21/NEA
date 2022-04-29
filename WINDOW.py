@@ -190,7 +190,7 @@ class Display:
         if self.back_rect.collidepoint(mouse_pos) and pygame.mouse.get_pressed()[0]:
             return 1
 
-    def draw_text(self,text,pos,size='MEDIUM',colour=WHITE, center=(False, False)):
+    def draw_text(self,text,pos,size='MEDIUM',colour=WHITE, center=(False, False),underline=False):
         center_x, center_y = center
         text = eval(f'self.{size.upper()}_FONT.render(text, True, colour)')
         rec=text.get_rect()
@@ -200,5 +200,7 @@ class Display:
         if center_y:
             y = (self.HEIGHT-rec.h)//2
         self.screen.blit(text,(x,y))
+        if underline:
+            pygame.draw.line(self.screen, (colour), (x, y + rec.h,), (x + rec.w, y + rec.h),2)
 
 
