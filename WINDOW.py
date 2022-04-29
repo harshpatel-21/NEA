@@ -100,8 +100,12 @@ def delete_user(username):
      # To remove a user and maintain referential integrity by deleting all records of the user everywhere.
     for file in os.listdir('Questions'):
         delete_json_key(f'Questions/{file}', key=username, depth=2)
-
     delete_json_key(f'user_info/users.json',key=username)
+
+def delete_users():
+    users = read_json('user_info/users.json')
+    for user in users:
+        delete_user(user)
 
 def bubble_sort2D(array) -> list: # sort a 2D array
     # We want to stop passing through the list

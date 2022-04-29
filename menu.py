@@ -64,7 +64,11 @@ def get_graph(username) -> None:
     fig, axis = plt.subplots(nrows=1,ncols=1) # just one graph
 
     plt.xticks(x_range, color=color)
-    plt.yticks(range(min(points),max(points) + 10,10),color=color)
+    if points:
+        y_ticks = range(min(points),max(points) + 10,5)
+    else:
+        y_ticks = range(0,10,10)
+    plt.yticks(y_ticks,color=color)
     axis.plot(list(x_range), points, marker='.')
     plt.xlabel('Session', color=color)
     plt.ylabel('Points', color=color)

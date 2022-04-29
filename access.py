@@ -133,8 +133,8 @@ def input_information(state):
                     continue # a backspace isn't a valid 'character' that can be added to username and password, therefore
 
                 # only add to username and/or password if the character is valid
-                if validate_character(username, username_click, character): username += character
-                if validate_character(password, password_click, character): password += character
+                if username_click: username += character
+                if password_click: password += character
 
             if event.type == pygame.KEYUP:
                 if event.key==pygame.K_BACKSPACE:
