@@ -57,7 +57,7 @@ def validate_character(string, click, character):
     valid_chars = re.match('''[A-Za-z\d$@$!%*?&"£%^*(){}~#:;]+''', character)
     # return True if the username as long as the length is 
     # length is < 15 and typing in the username box and the character is valid
-    return len(string) < 15 and click and bool(valid_chars)
+    return len(string+character) < 16 and click and bool(valid_chars)
 
 def validate_username(username):
     # length error, not unique error
@@ -83,8 +83,6 @@ def input_information(state):
     counter = 0
     username_click = False
     password_click = False
-    
-    random_box = Textbox(100,200,text='j',text_size='medlarge',padding=(0,0),limit=False)
     
     username_box = Textbox(100,460,text=fill_text.center(15),text_size='medlarge',size=(300,60))
     password_box = Textbox(100,530,text=fillpass_text.center(15),text_size='medlarge',size=(300,60))
@@ -115,7 +113,7 @@ def input_information(state):
 
         continue_state = username and password # checks if both fields have an input in them
         message_text = None
-        message_pos = (100, 600)
+        message_pos = (100, 595)
         message_colour = window.RED
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -153,7 +151,6 @@ def input_information(state):
                     delete_counter = 0
                     if username_click:username=username[:-1]
                     if password_click:password=password[:-1]
-                    random_box.text = random_box.text[:-1]
 
             if event.type == pygame.MOUSEBUTTONDOWN: # check which button has been clicked
                 mouse_pos = pygame.mouse.get_pos()
@@ -161,13 +158,12 @@ def input_information(state):
                 go_back = window.check_return(mouse_pos)
                 if go_back:
                     return
-
                 username_click = username_box.check_click(mouse_pos)
                 password_click = password_box.check_click(mouse_pos)
                 continue_click = continue_button.check_click(mouse_pos) and continue_state # checking if continue button is available and also clicked
 
                 if username_click or password_click: # don't show any error messages if they've clicked on a box again to type
-                    incorrect_details = display_string_length = successful_signUp = False
+                    incorrect_details = display_string_length = display_password_text = False
 
         # login page error messages
         if incorrect_details and state=='login':
@@ -198,7 +194,6 @@ def input_information(state):
         if delete_counter > 8 and (delete_counter%2)==0: # allows for singular + held down deletion
             if username_click: username=username[:-1]
             if password_click: password=password[:-1]
-            random_box.text = random_box.text[:-1]
         
         if not username: # if nothing has been typed in the username box, it should display 'Username'
             fill_text='Username'
@@ -249,22 +244,11 @@ def input_information(state):
                 correct = check_details(username, password, state)
                 incorrect_details = correct < 1
 
-                if not(incorrect_details) and state == 'sign up':
-                    successful_signUp = True
-
-                elif not(incorrect_details) and state == 'login':
-                    successful_login = True
-
-            if successful_signUp or successful_login:
-                return username
+                if not incorrect_details:
+                    return username
 
             continue_click = False # once the button has been pressed, it should be counted as 'not pressed' after this section is ran
             # if not incorrect_details: return 1
-
-        if username_box.rect.width > 290:
-            username=username[:-1]
-        if password_box.rect.width > 290:
-            password=password[:-1]
 
         mouse_pos = pygame.mouse.get_pos()
         username_box.check_hover(mouse_pos)
@@ -277,7 +261,6 @@ def input_information(state):
         password_box.show(window.screen, center=True)
         continue_button.show(window.screen, center=True)
         window.draw_text(f'{state.title()} Page',(0,370),center=(True,False),size='MEDLARGE',underline=True)
-        # random_box.show(window.screen)
 
         pygame.display.update()
         clock.tick(30)

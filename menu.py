@@ -43,7 +43,7 @@ def show_leaderboards(surface, user_data) -> None:
 
     # draw the actual values for each user
     for i in range(len(top_ten)):
-        rendered_name = font.render(top_ten[i][0], 1, (255, 255, 255))
+        rendered_name = font.render(f'{i+1}) {top_ten[i][0]}', 1, (255, 255, 255))
         rendered_points = font.render(str(top_ten[i][1]), 1, (255, 255, 255))
         surface.blit(rendered_name, (start_x, (padding_y * i) + (longest_name.height * i) + start_y))
         surface.blit(rendered_points, (start_x + padding_x, (padding_y * i) + (longest_name.height * i) + start_y))
