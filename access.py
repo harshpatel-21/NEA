@@ -54,7 +54,7 @@ def add_info(data, username, password):
 
 def validate_character(string, click, character):
     # Only allow characters, numbers and certain symbols
-    valid_chars = (re.match("[A-Za-z\d$@$!%*?&]", character))
+    valid_chars = re.match('''[A-Za-z\d$@$!%*?&"£%^*(){}~#:;]+''', character)
     # return True if the username as long as the length is 
     # length is < 15 and typing in the username box and the character is valid
     return len(string) < 15 and click and bool(valid_chars)
@@ -65,11 +65,13 @@ def validate_username(username):
         return 1, 0
     if presence_in_file(username, WINDOW.read_json('user_info/users.json')):
         return 0, 1
+    if not(re.findall('([A-Za-z]+)', username)):
+        return 0, 0
 
     return 0, 0 # no errors
 
-def validate_password(string):
-    return re.match("^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d$@$!%*?&]{4,15}",string)
+def validate_password(password):
+    return re.match("^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d$@$!%*?&]{4,15}",password)
 
 def input_information(state):
     max_length=15
@@ -112,7 +114,9 @@ def input_information(state):
         continue_button.create_rect()
 
         continue_state = username and password # checks if both fields have an input in them
-
+        message_text = None
+        message_pos = (100, 600)
+        message_colour = window.RED
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return
@@ -164,34 +168,32 @@ def input_information(state):
 
                 if username_click or password_click: # don't show any error messages if they've clicked on a box again to type
                     incorrect_details = display_string_length = successful_signUp = False
-                    continue_button.text = 'Continue'
 
+        # login page error messages
         if incorrect_details and state=='login':
-            window.draw_text(text='Incorrect username or password',pos=(window.screen.get_width()//2 - 100,590),colour=(255,0,0),size='MEDLARGE',center=(True,False))
-        
-        elif incorrect_details and state=='sign up':
-            window.draw_text(text='Username already taken',pos=(window.screen.get_width()//2 - 130,590),colour=(255,0,0),size='MEDLARGE',center=(True,False))
+            message_text = 'Incorrect username and password combination'
+            message_colour = window.RED
 
-        elif display_string_length and state == 'sign up':
-            window.draw_text(text='Username must be between 4 and 15 characters long',pos=(window.screen.get_width()//2 - 380,590),colour=(255,0,0),size='MEDLARGE',center=(True,False))
+        # sign up page error messages
+        elif incorrect_details:
+            message_text = 'Username is already taken'
+            message_colour = window.RED
+        elif display_string_length:
+            message_text = 'Username must be between 4 and 15 characters long'
+            message_colour = window.RED
+        elif display_password_text:
+            message_text='Password must contain 4-15 characters, minimum [one uppercase and lowercase letters, one number] and optional special character'
+            message_colour = window.RED
 
-        elif display_password_text and state=='sign up':
-            window.draw_text(text='Password must contain 4-15 characters, minimum [one uppercase and lowercase letters, one number] and optional special character',size='MEDIUM',colour=(255,0,0),pos=(window.screen.get_width()//2 - 400,600),center=(True,False))
-        elif successful_signUp:
-            window.draw_text(text='New user has been signed up', pos=(window.screen.get_width()//2 - 160,590),colour=(0,255,0),size='MEDLARGE',center=(True,False))
-
-        if successful_login: # if username and password were correct
-            return username
+        if message_text:
+            window.draw_text(text=message_text, pos=message_pos,colour=message_colour,size='MEDIUM',center=(True,False))
 
         if continue_state: # if the username and password fields are filled make the continue button brighter
             continue_button.surface.set_alpha(300)
         else:
             continue_button.surface.set_alpha(100)
 
-        if delete:
-            delete_counter += 1
-        else:
-            delete_counter = 0
+        delete_counter = [0, delete_counter + 1][delete]
 
         if delete_counter > 8 and (delete_counter%2)==0: # allows for singular + held down deletion
             if username_click: username=username[:-1]
@@ -205,25 +207,23 @@ def input_information(state):
 
         if username_click: # if the the user has chosen to type in the username field highlight the border
             valid_username = all(i == 0 for i in validate_username(username))
-            username_box.set_properties(border=username_box.RED)
+            username_box.border_colour = username_box.RED
             fill_text = username
             if valid_username or state == 'login':
-                username_box.set_properties(border=username_box.GREEN)
+                username_box.border_colour = username_box.GREEN
         else:
-            username_box.set_properties(border=username_box.default_border)
+            username_box.border_colour = username_box.default_border
 
         if password_click: # if the user has chosen to type in the password field highlight the border
             valid_password = validate_password(password)
-            password_box.set_properties(border=password_box.RED)
+            password_box.border_colour = password_box.RED
             fillpass_text = '*'*len(password) # cover the characters in the password
             if valid_password or state == 'login':
-                password_box.set_properties(border=password_box.GREEN)
+                password_box.border_colour = password_box.GREEN
         else:
-            password_box.set_properties(border=password_box.default_border)
+            password_box.border_colour = password_box.default_border
             
         if continue_click: # if the continue button has been pressed
-            if successful_signUp:
-                return username
             valid_username = validate_username(username)
             valid_password = validate_password(password)
 
@@ -251,11 +251,12 @@ def input_information(state):
 
                 if not(incorrect_details) and state == 'sign up':
                     successful_signUp = True
-                    continue_button.text = 'Proceed to Level Selection'
-                    continue_button.text_size = continue_button.SMALL_FONT
 
                 elif not(incorrect_details) and state == 'login':
                     successful_login = True
+
+            if successful_signUp or successful_login:
+                return username
 
             continue_click = False # once the button has been pressed, it should be counted as 'not pressed' after this section is ran
             # if not incorrect_details: return 1
@@ -268,7 +269,8 @@ def input_information(state):
         mouse_pos = pygame.mouse.get_pos()
         username_box.check_hover(mouse_pos)
         password_box.check_hover(mouse_pos)
-        if continue_state: continue_button.check_hover(mouse_pos)
+        if continue_state:
+            continue_button.check_hover(mouse_pos)
         
         # Display username and password boxes    
         username_box.show(window.screen, center=True)
@@ -277,6 +279,5 @@ def input_information(state):
         window.draw_text(f'{state.title()} Page',(0,370),center=(True,False),size='MEDLARGE',underline=True)
         # random_box.show(window.screen)
 
-        counter += 1
         pygame.display.update()
         clock.tick(30)

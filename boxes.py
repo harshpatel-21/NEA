@@ -83,10 +83,10 @@ class Textbox(WINDOW.Display):
         x.y = self.y
         if x.collidepoint(mouse_pos):
             self.background = self.hover_colour
-            self.border_colour = self.BACKGROUND
+            # self.border_colour = self.BACKGROUND
         else:
             self.background = self.background_colour
-            self.border_colour = self.default_border
+            # self.border_colour = self.default_border
 
     def check_click(self,mouse_pos=None):
         x=self.main_rec.copy()
