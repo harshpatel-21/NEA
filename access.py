@@ -50,7 +50,7 @@ def add_info(data, username, password):
         for question in file_info:
             file_info[question][username] = NoIndent([0, 0, 0])
         write_json(file_info, f'Questions/{file}') # write to all question files
-        write_json(data, 'user_info/users.json') # if username was added to all question files, officially add em
+    write_json(data, 'user_info/users.json') # if username was added to all question files, officially add em
 
 def validate_character(string, click, character):
     # Only allow characters, numbers and certain symbols
@@ -115,6 +115,7 @@ def input_information(state):
         message_text = None
         message_pos = (100, 595)
         message_colour = window.RED
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return

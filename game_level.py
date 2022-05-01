@@ -61,7 +61,7 @@ class World:
                     obj = None
                     if tile in tile_info['obstacle'].split():
                         obj = Obstacle(img, img_rect)
-                        if ind != 0: self.obstacle_list.append(obj) # if it isn't the 0th layer (for no collisions)
+                        if ind != 0: self.obstacle_list.append(obj) # if it isn't the 1st layer (for no collisions)
                     elif tile in tile_info['decoration'].split():  # grass / no collision decoration
                         obj = Decoration(img, img_rect)
                     elif tile in tile_info['kill_block'].split():  # water
@@ -163,8 +163,11 @@ class Camera:
     def __init__(self, target):
         self.rect = target.rect.copy()
         self.x, self.y = target.rect.topleft
+        self.rect.x = window.WIDTH//2
+        self.rect.y = window.HEIGHT // 2
 
     def update(self, target, world):
+        return
         if target.current_action not in target.combat_animations:
             # make sure the camera doesn't jitter after switching animations. Keeps the camera in place
             if target.direction == 1:
@@ -237,15 +240,15 @@ def play_level(username, user_id, level):
     ENEMY = random.choice(['knight', 'samurai', 'stormy']) # pick a random enemy
     PLAYER = 'player'
 
-    LEVEL = 2 # random.randint(1,4) # choose a random map layout
+    LEVEL = 5 # random.randint(1,4) # choose a random map layout
     game_level = load_level(LEVEL)
-    TILE_TYPES = os.listdir(f'images/level_images/{LEVEL}/Tiles') # get a list of all the tiles
-    background = pygame.transform.scale(pygame.image.load(WINDOW.get_path(f'images/level_images/{LEVEL}/background.png')),window.SIZE).convert_alpha()
+    TILE_TYPES = os.listdir(f'level_config/{LEVEL}/Tiles') # get a list of all the tiles
+    background = pygame.transform.scale(pygame.image.load(WINDOW.get_path(f'level_config/{LEVEL}/background.png')),window.SIZE).convert_alpha()
 
     # load in game data
     img_dict = {}
     for i in TILE_TYPES:
-        img = pygame.image.load(WINDOW.get_path(f'images/level_images/{LEVEL}/Tiles/{i}')).convert_alpha()
+        img = pygame.image.load(WINDOW.get_path(f'level_config/{LEVEL}/Tiles/{i}')).convert_alpha()
         name = i[:i.index('.')]
         img_dict[name] = img
 
@@ -255,7 +258,7 @@ def play_level(username, user_id, level):
     questions, question_data = get_questions(level, username)
     questions = random.sample(questions, len(questions)) # shuffle the order of selected questions
     # questions will be treated as a stack. Last in is first out
-    tile_info = WINDOW.read_json(f'images/level_images/{LEVEL}/tile_info.json')
+    tile_info = WINDOW.read_json(f'level_config/{LEVEL}/Tiles/tile_info.json')
     # sprite groups
     player, decorations, death_blocks, enemies, coins, portals = world.process_data(game_level, tile_info, img_dict, PLAYER, ENEMY)
 
@@ -352,12 +355,12 @@ def play_level(username, user_id, level):
         add_arrow = player.animation_handling()
         if add_arrow: arrow_group.add(add_arrow)
 
-        player.draw(window.screen, camera)
+        # player.draw(window.screen, camera)
         player.update(moving_left, moving_right, world)
 
         # enemy handling
         enemy_group.update(player, window.screen, world)
-        enemy_group.draw(window.screen, target=camera)
+        # enemy_group.draw(window.screen, target=camera)
 
         # arrow handling
         arrow_group.update(window.screen, world, enemy_group, player, camera)
@@ -440,10 +443,10 @@ def play_level(username, user_id, level):
             x1 = pygame.time.get_ticks()
 
         # draw text and back button
-        window.draw_text(text=f'Time: {WINDOW.convert_time_format(timer)}', pos=(670,3), size='MEDIUM', center=(True,False))
-        window.draw_back()
-        window.draw_text(f'Current Weapon: {["Sword", "Bow"][player.current_weapon - 1]}', (200, 5))
-        window.draw_text(f'Points: {points}',(490,5))
+        # window.draw_text(text=f'Time: {WINDOW.convert_time_format(timer)}', pos=(670,3), size='MEDIUM', center=(True,False))
+        # window.draw_back()
+        # window.draw_text(f'Current Weapon: {["Sword", "Bow"][player.current_weapon - 1]}', (200, 5))
+        # window.draw_text(f'Points: {points}',(490,5))
 
         pygame.display.update()  # make all the changes
         clock.tick(FPS)
