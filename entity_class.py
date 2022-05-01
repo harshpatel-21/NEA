@@ -573,10 +573,10 @@ class Enemy(Entity):
             AI_moving_left = not AI_moving_right
             self.move(AI_moving_left, AI_moving_right, world)
             self.update_action(self.get_index('Running'), world)
-            self.move_counter += 1
+            self.move_counter += self.x_vel
 
             self.change_direction = False
-            if (self.move_counter > (self.move_radius * Display.TILE_DIMENSION_X) / self.x_vel or self.wall_collision) and self.y_vel <= self.GRAVITY:
+            if (self.move_counter > (self.move_radius * Display.TILE_DIMENSION_X) or self.wall_collision) and self.y_vel <= self.GRAVITY:
                 self.change_direction = True
                 self.set_idling(world)
                 self.wall_collision = False

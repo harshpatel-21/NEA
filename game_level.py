@@ -167,7 +167,6 @@ class Camera:
         self.rect.y = window.HEIGHT // 2
 
     def update(self, target, world):
-        return
         if target.current_action not in target.combat_animations:
             # make sure the camera doesn't jitter after switching animations. Keeps the camera in place
             if target.direction == 1:
@@ -258,7 +257,7 @@ def play_level(username, user_id, level):
     questions, question_data = get_questions(level, username)
     questions = random.sample(questions, len(questions)) # shuffle the order of selected questions
     # questions will be treated as a stack. Last in is first out
-    tile_info = WINDOW.read_json(f'level_config/{LEVEL}/Tiles/tile_info.json')
+    tile_info = WINDOW.read_json(f'level_config/{LEVEL}/tile_info.json')
     # sprite groups
     player, decorations, death_blocks, enemies, coins, portals = world.process_data(game_level, tile_info, img_dict, PLAYER, ENEMY)
 
@@ -355,12 +354,12 @@ def play_level(username, user_id, level):
         add_arrow = player.animation_handling()
         if add_arrow: arrow_group.add(add_arrow)
 
-        # player.draw(window.screen, camera)
+        player.draw(window.screen, camera)
         player.update(moving_left, moving_right, world)
 
         # enemy handling
         enemy_group.update(player, window.screen, world)
-        # enemy_group.draw(window.screen, target=camera)
+        enemy_group.draw(window.screen, target=camera)
 
         # arrow handling
         arrow_group.update(window.screen, world, enemy_group, player, camera)
