@@ -13,7 +13,6 @@ pygame.init()
 class Tile(pygame.sprite.Sprite):
     def __init__(self, img, x, y, item_type):
         pygame.sprite.Sprite.__init__(self)
-        self.item_type = item_type
         self.x, self.y = x, y
         self.image = img
         self.mask = pygame.mask.from_surface(self.image)
@@ -21,6 +20,7 @@ class Tile(pygame.sprite.Sprite):
         self.rect.midtop = (x + Display.TILE_DIMENSION_X // 2, y)  # make it so that its at the center of a tile, even if the size isn't the same
         self.initial_time = pygame.time.get_ticks()
         self.obj_type = item_type
+        self.direction = 1
 
     def draw(self, surface, target):
         temp = self.rect.copy()
@@ -34,7 +34,8 @@ class Tile(pygame.sprite.Sprite):
         if hasattr(self, 'animation_handling'):
             self.animation_handling()
         # check for collision
-        collision = self.check_collision(obj)
+        self.collision = self.check_collision(obj)
+        collision = self.collision
         return collision
 
     def check_collision(self, objs):
@@ -61,23 +62,21 @@ class AnimatedTile(Tile):
     def __init__(self, img, x, y, item_type):
         pygame.sprite.Sprite.__init__(self)
         Tile.__init__(self, img, x, y, item_type)
-        self.animation = []
+        self.animations = []
         self.get_animations()
         self.animation_pointer = 0
-        self.image = self.animation[self.animation_pointer]
+        self.image = self.animations[self.animation_pointer]
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.rect.midtop = (x + Display.TILE_DIMENSION_X // 2, y)  # make it so that its at the center of a tile, even if the size isn't the same
-        self.initial_time = pygame.time.get_ticks()
-        self.obj_type = item_type
 
     def get_animations(self):
-        item_path = os.path.join(image_path, self.item_type) # the image path of the item
+        item_path = os.path.join(image_path, self.obj_type) # the image path of the item
 
         images = os.listdir(item_path)  # get a list of the image names for the animation
         for image in images:
             image = pygame.image.load(os.path.join(item_path, image))
-            self.animation += [image]
+            self.animations += [image]
 
     def animation_handling(self):
         cooldown_time = 90 # cooldown time
@@ -86,9 +85,11 @@ class AnimatedTile(Tile):
         current_time = pygame.time.get_ticks()
 
         if current_time - self.initial_time >= cooldown_time: # if the cooldown time has finished
-            self.animation_pointer = (self.animation_pointer + 1) % len(self.animation) # increase the animation pointer
+            self.animation_pointer = (self.animation_pointer + 1) % len(self.animations) # increase the animation pointer
             self.initial_time = current_time # change the time
 
-        self.image = self.animation[self.animation_pointer] # update the image
+        self.image = self.animations[self.animation_pointer] # update the image
 
         self.mask = pygame.mask.from_surface(self.image) # update the mask
+        self.rect = self.image.get_rect()
+        self.rect.midtop = (self.x + Display.TILE_DIMENSION_X // 2, self.y)  # make it so that its at the center of a tile, even if the size isn't the same

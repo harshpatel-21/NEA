@@ -12,38 +12,30 @@ write_json = WINDOW.write_json
 x, y = WINDOW.x, WINDOW.y
 os.environ['SDL_VIDEO_WINDOW_POS'] = f"{x},{y}"
 
-current_path = os.path.dirname(__file__)  # Where your .py file is located
-image_path = os.path.join(current_path, 'images')  # The image folder path
-coin_path = os.path.join(image_path, 'coin')
-
 FPS = 60
 clock = pygame.time.Clock()
 window = WINDOW.Display(new_window=True)
-# LEVEL = random.randint(range(1,7))
-# ENEMY_IMG = 'samurai'
-# PLAYER_IMG = pygame.image.load(f'images/mobs/{PLAYER}/default.png')
-
 
 class World:
-    def __init__(self):
+    def __init__(self, level):
         self.obstacle_list = []
         self.bg_scroll = 0
         self.no_collide = []  # blocks that shouldn't be checked for collision
-        self.height = 0
+        self.height = WINDOW.Display.MAX_BLOCKS_Y
         self.all_tiles = []
+        self.game_level = self.load_level(level)
 
-    def process_data(self, data, tile_info, img_list, player_img, enemy_img):
-
+    def process_data(self, tile_info, img_dict, player_img, enemy_img):
+        data = self.game_level
         enemy_counter = 0
         player = Player(500, 500, 'player', tile_info['player_scale'], melee_dps=50)
         # iterate through each value in level data file
         decorations = []  # add in all the tiles that don't need to be checked for collision
         death_blocks = []
         enemies = []
-        coins = []
         portals = []
 
-        for ind, layer in enumerate(data.values()):
+        for ind, layer in enumerate(data):
             for y, row in enumerate(layer):
                 self.height = len(layer)
                 for x, tile in enumerate(row):
@@ -52,7 +44,7 @@ class World:
 
                     # if 24 <= int(tile) <= 25:
                     #     tile = str(int(tile) - 2)
-                    img = img_list[tile]  # get the image from the list of images
+                    img = img_dict[tile]  # get the image from the list of images
                     img_rect = img.get_rect()
                     # img_rect.topleft = (x * window.TILE_DIMENSION_X, y * window.TILE_DIMENSION_Y)
                     img_rect.bottomleft = (x * window.TILE_DIMENSION_X, y * window.TILE_DIMENSION_Y + 46)
@@ -61,7 +53,8 @@ class World:
                     obj = None
                     if tile in tile_info['obstacle'].split():
                         obj = Tile(img, *img_rect.topleft, 'Obstacle')
-                        if ind != 0: self.obstacle_list.append(obj) # if it isn't the 1st layer (for no collisions)
+                        if ind != 0:
+                            self.obstacle_list.append(obj) # if it isn't the 1st layer (for no collisions)
                     elif tile in tile_info['decoration'].split():  # grass / no collision decoration
                         obj = Tile(img, *img_rect.topleft, 'Decoration')
                     elif tile in tile_info['kill_block'].split():  # water
@@ -77,7 +70,7 @@ class World:
                     elif tile == tile_info['portal']:
                         portals += [AnimatedTile(img, img_rect.x, img_rect.y, 'Portal')]
                     if obj: self.all_tiles.append(obj)
-        return player, decorations, death_blocks, enemies, coins, portals
+        return player, decorations, death_blocks, enemies, portals
 
     def draw(self, background, target):
         background_width = background.get_width()
@@ -88,23 +81,26 @@ class World:
             tile.draw(window.screen, target)
             # pygame.draw.rect(window.screen, (255,0,0),temp,2)
 
+    @staticmethod
+    def load_level(level):
+        layers = []
+        path = f'levels/{level}'
+        files = os.listdir(path)
+
+        ordered = sorted(files,key=lambda i: int(i.split('_')[1][:i.split('_')[1].index('.')]))  # sort layers based on numbers
+        # highest number == highest layer -> prioritised/placed above everything else
+        # so by sorting from lowest -> highest, lowest layer is blitted first, and highest layer is blitted last/ on top of everything else
+
+        files = ordered  # sort the tiles such that highest layer is prioritised/ blitted over the other layers
+        for index, file in enumerate(files):
+            with open(os.path.join(path, file)) as file:
+                level = csv.reader(file, delimiter=',')
+                layers.append([*level])
+            # sys.exit()
+        return layers
+
 # noinspection PyAssignmentToLoopOrWithParameter
-def load_level(level):
-    layers = {}
-    path = f'levels/{level}'
-    files = os.listdir(path)
 
-    ordered = sorted(files,key=lambda i: int(i.split('_')[1][:i.split('_')[1].index('.')]))  # sort layers based on numbers
-    # highest number == highest layer -> prioritised/placed above everything else
-    # so by sorting from lowest -> highest, lowest layer is blitted first, and highest layer is blitted last/ on top of everything else
-
-    files = ordered  # sort the tiles such that highest layer is prioritised/ blitted over the other layers
-    for index, file in enumerate(files):
-        with open(os.path.join(path, file)) as file:
-            level = csv.reader(file, delimiter=',')
-            layers[index] = [*level]
-        # sys.exit()
-    return layers
 
 def get_time_units(timer):
     time_split = timer.split(':')
@@ -232,7 +228,7 @@ def play_level(username, user_id, level):
     PLAYER = 'player'
 
     LEVEL = 2 # random.randint(1,4) # choose a random map layout
-    game_level = load_level(LEVEL)
+    world = World(LEVEL)
     TILE_TYPES = os.listdir(f'level_config/{LEVEL}/Tiles') # get a list of all the tiles
     background = pygame.transform.scale(pygame.image.load(WINDOW.get_path(f'level_config/{LEVEL}/background.png')),window.SIZE).convert_alpha()
 
@@ -243,7 +239,6 @@ def play_level(username, user_id, level):
         name = i[:i.index('.')]
         img_dict[name] = img
 
-    world = World()
     # load in the questions
     # NOTE: question_data[question][username] = list(correct: int, incorrect: int, percentage: float)
     questions, question_data = get_questions(level, username)
@@ -251,12 +246,11 @@ def play_level(username, user_id, level):
     # questions will be treated as a stack. Last in is first out
     tile_info = WINDOW.read_json(f'level_config/{LEVEL}/tile_info.json')
     # sprite groups
-    player, decorations, death_blocks, enemies, coins, portals = world.process_data(game_level, tile_info, img_dict, PLAYER, ENEMY)
+    player, decorations, death_blocks, enemies, portals = world.process_data(tile_info, img_dict, PLAYER, ENEMY)
 
     death_blocks_group = Group(*death_blocks)
     enemy_group = Group(*enemies)
     arrow_group = Group()
-    coin_group = Group(*coins)
     portal_group = Group(*portals)
 
     camera = Camera(player)
@@ -345,7 +339,7 @@ def play_level(username, user_id, level):
 
         # player handling
         add_arrow = player.animation_handling()
-        if add_arrow: arrow_group.add(add_arrow)
+        if add_arrow: arrow_group.sprites.append(add_arrow)
 
         player.draw(window.screen, camera)
         player.update(moving_left, moving_right, world)

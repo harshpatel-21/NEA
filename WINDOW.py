@@ -136,6 +136,7 @@ class Display:
     SIZE = (WIDTH, HEIGHT)
 
     MAX_BLOCKS_X = 112
+    MAX_BLOCKS_Y = 25
 
     LARGE_FONT = pygame.font.SysFont('Sans', 35)
     MEDLARGE_FONT = pygame.font.SysFont('Sans', 30)

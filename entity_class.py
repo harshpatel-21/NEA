@@ -41,7 +41,7 @@ class Projectile(pygame.sprite.Sprite):
 
         self.rect.y = shooter.rect.center[1] - 5
         self.x_vel = 2
-        self.acceleration = 20
+        self.acceleration = 12
         self.mask = pygame.mask.from_surface(self.image)
         self.remove = False
 
@@ -57,7 +57,7 @@ class Projectile(pygame.sprite.Sprite):
 
         if not self.remove: self.rect.x += (self.x_vel * self.acceleration) * self.direction
         # self.acceleration -= 0.035*self.acceleration
-        if self.acceleration > 2: self.acceleration *= 0.8
+        if self.acceleration > 2: self.acceleration *= 0.9
         else: self.acceleration *= 0.94
 
         # check if the arrow has gone off the screen or low acceleration
@@ -78,7 +78,7 @@ class Projectile(pygame.sprite.Sprite):
     def check_collision(self, objs, target):  # checking for arrow collision from bow_attack
         # flip the mask of the image during collision detection
         if isinstance(objs, Group):
-            for obj in objs:
+            for obj in objs.sprites:
                 if self.entity_collision(obj, target):
                     self.remove = True
 
@@ -286,6 +286,8 @@ class Entity(pygame.sprite.Sprite):
         #     cooldown_time = 60
         if self.current_action == 2 and self.obj_type == 'samurai':
             cooldown_time = 90
+        if self.current_action == self.get_index('Idle'):
+            cooldown_time = 120
         # if self.current_action == 1 and self.obj_type == 'knight':
         #     cooldown_time = 90
         shoot_projectile = False
@@ -626,10 +628,12 @@ class Group:
     def __init__(self, *args):
         self.sprites = [*args]
 
-    def update(self, *args,**kwargs):
+    def update(self, *args, **kwargs):
         for sprite in self.sprites:
-            if hasattr(sprite,'update'):
-                sprite.update(*args,**kwargs)
+            if hasattr(sprite, 'update'):
+                sprite.update(*args, **kwargs)
+                if sprite.remove and isinstance(sprite, Projectile):
+                    self.sprites.remove(sprite)
 
     # this is for images
     def draw(self, surface, target=None):
