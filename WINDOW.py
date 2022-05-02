@@ -50,6 +50,9 @@ class MyEncoder(json.JSONEncoder):
 
             yield encoded
 
+class StopRunning(Exception):
+    """raised to display an error message about something and stop execution. Avoiding print statements"""
+    pass
 def get_path(path):
     absolute_path = os.path.abspath(path)
     if os.path.exists(absolute_path):

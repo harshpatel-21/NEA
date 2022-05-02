@@ -123,7 +123,7 @@ def input_information(state):
             if event.type == pygame.KEYDOWN: # handle key presses
                 if event.key == pygame.K_TAB:
                     username_click = not username_click
-                    password_click = not password_click
+                    password_click = not username_click
                     continue
 
                 if event.key == pygame.K_RETURN and continue_state:
@@ -261,7 +261,9 @@ def input_information(state):
         username_box.show(window.screen, center=True)
         password_box.show(window.screen, center=True)
         continue_button.show(window.screen, center=True)
-        window.draw_text(f'{state.title()} Page',(0,370),center=(True,False),size='MEDLARGE',underline=True)
+        window.draw_text(f'{state.title()} Page',(0,315),center=(True,False),size='MEDLARGE',underline=True)
+        window.draw_text(f'Press [tab] or [select using mouse] to switch input boxes',(0, 365),center=(True,False))
+        window.draw_text(f'Press Return key/ Enter as an alternative to clicking continue',(0,400),center=(True,False))
 
         pygame.display.update()
         clock.tick(30)

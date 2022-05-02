@@ -3,14 +3,14 @@ import pygame, sys, os, random, inspect
 x = '\\'.join(os.path.abspath(__file__).split('\\')[:-2])  # allow imports from main folder
 sys.path.insert(1, x)
 
-from WINDOW import Display
+from WINDOW import Display, StopRunning
 
 # websites:
 # https://www.piskelapp.com/
 # https://pixlr.com/x/#home
 
 pygame.init()
-JUMP_Y = 15
+
 
 
 class Tile:
@@ -23,108 +23,18 @@ class Tile:
     def show(self, surface):
         surface.blit(self.image, self.rect.topleft)
 
-
-class Projectile(pygame.sprite.Sprite):
-    def __init__(self, shooter, image='Arrow04'):
-        pygame.sprite.Sprite.__init__(self)
-        self.shooter = shooter
-        self.image = pygame.image.load(f'images/{image}.png').convert_alpha()
-        self.image = pygame.transform.flip(self.image, shooter.direction == -1, False)
-        self.rect = self.image.get_rect()
-        self.rect.topleft = (shooter.rect.x, shooter.rect.y)
-        self.direction = shooter.direction
-
-        if self.direction == 1:  # adjusting starting position of arrow
-            self.rect.x += shooter.rect.w
-        else:
-            self.rect.x -= self.rect.w
-
-        self.rect.y = shooter.rect.center[1] - 5
-        self.x_vel = 2
-        self.acceleration = 12
-        self.mask = pygame.mask.from_surface(self.image)
-        self.remove = False
-
-    def draw(self, surface, target):
-        temp = self.rect.copy()
-        temp.x = temp.x - target.rect.x + Display.WIDTH // 2
-        temp.y = temp.y - target.rect.y + Display.HEIGHT // 2
-        surface.blit(self.image, temp)
-
-    def update(self, surface, world, enemy_group, player, target, arr=None):
-        self.check_collision(enemy_group, target)  # check for collision with enemies
-        self.check_collision(player, target)  # check for collision with player
-
-        if not self.remove: self.rect.x += (self.x_vel * self.acceleration) * self.direction
-        # self.acceleration -= 0.035*self.acceleration
-        if self.acceleration > 2: self.acceleration *= 0.9
-        else: self.acceleration *= 0.94
-
-        # check if the arrow has gone off the screen or low acceleration
-        if self.acceleration < 0.5:
-            self.remove = True  # set the flag to remove the arrow to true
-            # self.direction *= -1
-
-        # check for tile collision
-        for tile in filter(lambda i: i not in world.no_collide, world.obstacle_list):
-            if self.mask_collision(tile,target):
-                self.remove = True
-                pass
-
-        if self.remove:
-            # arr.remove(self) # used when arrows were stored in an array
-            self.kill()  # frees up memory and removes all instances of this specific arrow from associated groups
-
-    def check_collision(self, objs, target):  # checking for arrow collision from bow_attack
-        # flip the mask of the image during collision detection
-        if isinstance(objs, Group):
-            for obj in objs.sprites:
-                if self.entity_collision(obj, target):
-                    self.remove = True
-
-        elif isinstance(objs, Player):
-            if self.entity_collision(objs, target):
-                self.remove = True
-
-    def entity_collision(self, obj, target):
-        collision = self.mask_collision(obj, target)
-        # change border colour if collision with arrow has occurred
-        if collision:
-            obj.border_colour = (0, 255, 0)
-            self.remove = True
-            self.kill()
-            obj.health2 = obj.health
-            obj.health -= self.shooter.current_weapon_damage.get(
-                self.shooter.current_weapon)  # do damage based on current weapon
-            obj.difference = max(0, obj.health2 - obj.health)
-            # self.shooter.bow_attack = False
-        else:
-            obj.border_colour = (255, 0, 0)
-        return collision
-
-    def mask_collision(self, obj, target):
-        temp = self.rect.copy()
-        temp.x = temp.x - target.rect.x + Display.WIDTH // 2
-        temp.y = temp.y - target.rect.y + Display.HEIGHT // 2
-        obj_mask = pygame.mask.from_surface(pygame.transform.flip(obj.image, obj.direction == -1, False))
-        obj_temp = obj.rect.copy()
-        obj_temp.x = obj_temp.x - target.rect.x + Display.WIDTH // 2
-        obj_temp.y = obj_temp.y - target.rect.y + Display.HEIGHT // 2
-        offset_x = obj_temp.x - temp.x
-        offset_y = obj_temp.y - temp.y
-        collision = self.mask.overlap(obj_mask, (offset_x, offset_y))
-        return collision
-
-
 class Entity(pygame.sprite.Sprite):
     def __init__(self, x, y, obj_type, scale, max_health=100, x_vel=6, all_animations=None, combat_animations=None,
-                 bow_dps=20,
                  melee_dps=33):
-        self.GRAVITY = JUMP_Y / 20
+        self.JUMP_Y = 14.7
+        self.GRAVITY = self.JUMP_Y / 20
         self.all_animations = all_animations
         self.combat_animations = combat_animations
         if all_animations is None and obj_type == 'player':
             self.all_animations = ['Idle', 'Running', 'Jumping', 'Falling', 'Melee', 'Bow', 'Die']
+        elif not self.all_animations:
+            raise StopRunning('Animations for a non-player entity not passed in')
+
         if combat_animations is None and obj_type == 'player':
             self.combat_animations = [self.get_index('Melee'), self.get_index('Bow')]
         pygame.sprite.Sprite.__init__(self)
@@ -147,17 +57,9 @@ class Entity(pygame.sprite.Sprite):
         self.jumping = False
         self.in_air = True
         self.sword_attack = False
-        self.bow_attack = False
         self.current_weapon = 1  # 1 == sword, 2 == Bow
-        self.shoot_cooldown = 10
-        self.shoot_cooldown_timer = 0
         self.mask = pygame.mask.from_surface(self.image)
-        self.border_colour = (255, 0, 0)
-        self.collisions = 0
-        self.health2 = self.health
-        self.difference = self.health - self.health2
-        self.current_weapon_damage = {1: melee_dps, 2: bow_dps}  # sword deals 50 damage, bow deals 20
-        self.increase_health = 0
+        self.current_weapon_damage = {1: melee_dps}  # sword deals 50 damage
         self.health_rect = pygame.Rect((x, y, 70, 7))
         self.health_rect.center = self.rect.center
         self.health_rect.y -= self.rect.h // 2 + 10
@@ -166,8 +68,6 @@ class Entity(pygame.sprite.Sprite):
 
     def move(self, moving_left, moving_right, world):  # handle player movement
         self.health_rect.y = self.rect.y - 10
-        scroll_threshold = 400
-        screen_scroll = 0
         # reset movement variables
         dx = dy = 0
         check = True
@@ -175,8 +75,6 @@ class Entity(pygame.sprite.Sprite):
             return
 
         # horizontal movement
-        if self.bow_attack:  # don't allow movement during an attack animation
-            check = False
 
         if moving_left and check:
             dx = -self.x_vel
@@ -190,7 +88,7 @@ class Entity(pygame.sprite.Sprite):
 
         # jumping/vertical movement
         if self.jumping and (not self.in_air) and check:
-            self.y_vel = -JUMP_Y
+            self.y_vel = -self.JUMP_Y
             self.jumping = False
             self.in_air = True
 
@@ -200,8 +98,6 @@ class Entity(pygame.sprite.Sprite):
         dy += self.y_vel
 
         # check collision with floor
-        # self.rect.w = 48
-        # self.rect.h = 80
         for tile in world.obstacle_list:
             # check collision in x direction
             if tile.rect.colliderect(self.rect.x + dx, self.rect.y, self.rect.w, self.rect.h):
@@ -251,11 +147,6 @@ class Entity(pygame.sprite.Sprite):
         temp.x = temp.x - target.rect.x + Display.WIDTH / 2.0
         temp.y = temp.y - target.rect.y + Display.HEIGHT // 2 - 10
 
-        health_bar_dx = 4 * [-1, 1][self.increase_health > 0]
-        x_padding = {
-            'player': 10,
-            'samurai': 13
-        }
         if not self.check_alive():  # if the entity is dead, don't draw a health bar
             return
 
@@ -277,38 +168,25 @@ class Entity(pygame.sprite.Sprite):
 
     def animation_handling(self):  # updates the animation frame
         self.check_alive()
-        self.shoot_cooldown_timer = max(0, self.shoot_cooldown_timer - 1)  # makes sure the cooldown doesn't go below 0
         # update animation based on a timer since last time recorded
         cooldown_time = 90  # every 120 main game loops change animation frame
-        if self.current_action in self.combat_animations:
-            cooldown_time = 90
-        # if self.current_action == 4 and self.obj_type == 'player':
-        #     cooldown_time = 60
-        if self.current_action == 2 and self.obj_type == 'samurai':
-            cooldown_time = 90
         if self.current_action == self.get_index('Idle'):
             cooldown_time = 120
-        # if self.current_action == 1 and self.obj_type == 'knight':
-        #     cooldown_time = 90
-        shoot_projectile = False
-        # update entity image
 
+        # update entity image
         self.image = self.animations[self.current_action][self.animation_pointer]
         image_rect = self.image.get_rect()
-
+        image_rect.midbottom = self.rect.midbottom
         if self.obj_type != 'stormy':
             if self.direction == 1:
                 image_rect.bottomleft = self.rect.bottomleft  # keep the entity on the ground
             else:
                 image_rect.bottomright = self.rect.bottomright
-        else:
-            image_rect.midbottom = self.rect.midbottom
 
         self.rect = image_rect
         self.collision_rect.midbottom = image_rect.midbottom # move the collision rectangle
 
-
-        if self.obj_type =='player': # only the player's hit box should be dynamic, for the rest it should just be normal
+        if self.obj_type =='player': # only the player's hit box should be dynamic, for the rest it should be normal
             self.collision_rect = image_rect
             # this fixes the issue of after enemies attack near a tile, if there was some particle that collided with a tile,
             # it would check for collision and move them up even tho it shouldn't have
@@ -316,17 +194,14 @@ class Entity(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
         current_time = pygame.time.get_ticks()
         death_index = self.get_index('Die')
-        if (current_time - self.time1) > cooldown_time:
 
+        # change animation frame
+        if (current_time - self.time1) > cooldown_time:
             self.animation_pointer += 1  # add one to animation pointer
             if self.current_action in self.combat_animations:  # if its a combat animation
                 if self.animation_pointer >= len(
                         self.animations[self.current_action]):  # if at the last frame of animation
                     self.sword_attack = False  # no longer attacking with a weapon
-                    if self.bow_attack:  # if currently in bow animation, set finished bow_animation to True
-                        self.shoot_cooldown_timer = self.shoot_cooldown
-                        shoot_projectile = True
-                    self.bow_attack = False  # no longer attacking with a weapon
                     self.animation_pointer = 0  # reset animation pointer
                     self.current_action = 0  # go back to idle position
 
@@ -340,23 +215,17 @@ class Entity(pygame.sprite.Sprite):
 
             self.time1 = pygame.time.get_ticks()
 
-        if shoot_projectile:
-            return Projectile(self)
-
     def update_action(self, new_action, world=None):
         """ check if the new action is different to the new action
         # if the new action is the same as the old action, it would set animation pointer to 0 every time so only the
         # first frame of the animation would be shown. By adding this check, it makes it so that the animation pointer and animation is changed/reset
         # only if there is a change in the player action. """
         melee_index = self.get_index('Melee')
-        bow_index = self.get_index('Bow')
-        if new_action in [melee_index, bow_index] and world:
-            if melee_index: images = self.animations[melee_index]
-            else: images = self.animations[bow_index]
+        if new_action == melee_index and world:
+            images = self.animations[melee_index]
             if any(self.check_image_collision(image, world) for image in
                    images):  # if wall collisions have occured in any of the frames
                 self.sword_attack = False
-                self.bow_attack = False
                 return
 
         if new_action != self.current_action:
@@ -379,8 +248,6 @@ class Entity(pygame.sprite.Sprite):
             elif self.sword_attack:
                 self.update_action(self.get_index('Melee'),
                                    world)  # if switching to sword animation, make sure new image doesn't collide with walls
-            elif self.bow_attack:
-                self.update_action(self.get_index('Bow'), world)  # if switching
             elif moving_right or moving_left:
                 self.update_action(self.get_index('Running'))
             else:
@@ -454,7 +321,7 @@ class Entity(pygame.sprite.Sprite):
         temp = self.rect.copy()
         temp.x = temp.x - target.rect.x + Display.WIDTH / 2.0
         temp.y = temp.y - target.rect.y + Display.HEIGHT // 2
-        surface.blit(pygame.transform.flip(self.image, self.flip_image or self.direction == -1, False), temp)
+        surface.blit(pygame.transform.flip(self.image, self.flip_image or self.direction == -1, False), temp.topleft)
         # pygame.draw.rect(surface, self.border_colour, temp, 1)
 
         self.draw_health_bar(surface, target)
@@ -589,25 +456,6 @@ class Enemy(Entity):
         self.idling_counter = 50
         self.update_action(self.get_index('Idle'), world)
 
-    # def draw(self, surface, target):  # custom draw method for enemy class
-    #     debug = 0
-    #     obj_blit = self.rect.copy()
-    #     obj_blit.x = obj_blit.x - target.rect.x + Display.WIDTH // 2
-    #     obj_blit.y = obj_blit.y - target.rect.y + Display.HEIGHT // 2
-    #
-    #     obj_rect = self.collision_rect.copy()
-    #     obj_rect.x = obj_rect.x - target.rect.x + Display.WIDTH // 2
-    #     obj_rect.y = obj_rect.y - target.rect.y + Display.HEIGHT // 2
-    #     surface.blit(pygame.transform.flip(self.image, self.flip_image or self.direction == -1, False), obj_blit)
-    #
-    #     obj_attack = self.attack_vision.copy()
-    #     obj_attack.x = obj_attack.x - target.rect.x + Display.WIDTH // 2
-    #     obj_attack.y = obj_attack.y - target.rect.y + Display.HEIGHT // 2
-    #     if debug:
-    #         # pygame.draw.rect(surface, (255, 0, 0), obj_attack, 2)
-    #         pygame.draw.rect(surface, (255, 255, 0), obj_rect, 2)
-    #     self.draw_health_bar(surface, target)
-
     def update(self, player, surface, world):
         self.animation_handling()
         # pygame.draw.rect(Display.screen, (255, 0, 0), enemy.attack_vision,2)
@@ -632,8 +480,6 @@ class Group:
         for sprite in self.sprites:
             if hasattr(sprite, 'update'):
                 sprite.update(*args, **kwargs)
-                if sprite.remove and isinstance(sprite, Projectile):
-                    self.sprites.remove(sprite)
 
     # this is for images
     def draw(self, surface, target=None):

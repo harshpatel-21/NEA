@@ -1,7 +1,7 @@
 # EDIT FOR IMAGES: DIMENSIONS SHOULD BE 17x30
 # GET QUESTIONS: https://quizizz.com/admin/search/h446%20OCR%20computer%20science%201.2.1?queryId=5f6b05fd7c198b001b54c8de-1650744363792
 # if __name__ == 'Game_V4':
-from entity_class import Entity, Enemy, Projectile, Player, Group
+from entity_class import Entity, Enemy, Group
 import pygame, WINDOW, QuestionWindow, os, sys, random, csv
 from Tiles import AnimatedTile, Tile
 from transition import ScreenFade
@@ -28,7 +28,7 @@ class World:
     def process_data(self, tile_info, img_dict, player_img, enemy_img):
         data = self.game_level
         enemy_counter = 0
-        player = Player(500, 500, 'player', tile_info['player_scale'], melee_dps=50)
+        player = Entity(500, 500, 'player', tile_info['player_scale'], melee_dps=50)
         # iterate through each value in level data file
         decorations = []  # add in all the tiles that don't need to be checked for collision
         death_blocks = []
@@ -61,7 +61,7 @@ class World:
                         obj = Tile(img, *img_rect.topleft,'Death Block')
                         death_blocks.append(obj)
                     elif tile in tile_info['player'].split():  # create player if there's one on the map
-                        player = Player(img_rect.x, img_rect.y, player_img, tile_info['player_scale'], melee_dps=1000)
+                        player = Entity(img_rect.x, img_rect.y, player_img, tile_info['player_scale'], melee_dps=1000)
                     elif tile in tile_info['enemy'].split():
                         enemies += [Enemy(img_rect.x, img_rect.y, enemy_img, tile_info['enemy_scale'],
                                           all_animations=['Idle', 'Die', 'Running', 'Attack'],
@@ -250,7 +250,6 @@ def play_level(username, user_id, level):
 
     death_blocks_group = Group(*death_blocks)
     enemy_group = Group(*enemies)
-    arrow_group = Group()
     portal_group = Group(*portals)
 
     camera = Camera(player)
@@ -277,7 +276,7 @@ def play_level(username, user_id, level):
                     player.y_vel <= player.GRAVITY) and not start_fade # making sure player isn't in the air and is still alive
 
         attack_conditions = not (
-                player.sword_attack or player.bow_attack) and not start_fade  # only allow attacking if not already in attack animation -> ADD INTO ITERATIVE DEVELOPMENT
+                player.sword_attack) and not start_fade  # only allow attacking if not already in attack animation -> ADD INTO ITERATIVE DEVELOPMENT
 
         window.refresh(show_mouse_pos=False,back=True,pos=(10,10))
         world.draw(background, camera)
@@ -307,15 +306,6 @@ def play_level(username, user_id, level):
                 if (event.key == pygame.K_SPACE) and move_conditions and attack_conditions:
                     if player.current_weapon == 1:  # sword selected
                         player.sword_attack = True
-                    elif player.current_weapon == 2 and player.shoot_cooldown_timer == 0:  # bow selected
-                        player.bow_attack = True
-                        player.shoot_cooldown_timer = player.shoot_cooldown
-                        pass
-                # weapon selection
-                value = chr(event.key)
-                if value in ['1', '2']:
-                    player.current_weapon = int(value)
-                    pass
 
             # check for keys that are lifted/ no longer being pressed
             if event.type == pygame.KEYUP:
@@ -338,19 +328,13 @@ def play_level(username, user_id, level):
         moving_right = keys[pygame.K_d] and attack_conditions
 
         # player handling
-        add_arrow = player.animation_handling()
-        if add_arrow: arrow_group.sprites.append(add_arrow)
-
+        player.animation_handling()
         player.draw(window.screen, camera)
         player.update(moving_left, moving_right, world)
 
         # enemy handling
         enemy_group.update(player, window.screen, world)
         enemy_group.draw(window.screen, target=camera)
-
-        # arrow handling
-        arrow_group.update(window.screen, world, enemy_group, player, camera)
-        arrow_group.draw(window.screen, target=camera)
 
         death_blocks_group.draw(window.screen, target=camera)
         death_blocks_group.update(player, camera)  # do death block checking for player
