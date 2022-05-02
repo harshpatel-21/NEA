@@ -622,14 +622,18 @@ class Enemy(Entity):
         self.update_action(self.get_index('Idle'))
 
 
-class Group(pygame.sprite.Group):
+class Group:
     def __init__(self, *args):
-        super().__init__()
-        self.add(*args)
+        self.sprites = [*args]
+
+    def update(self, *args,**kwargs):
+        for sprite in self.sprites:
+            if hasattr(sprite,'update'):
+                sprite.update(*args,**kwargs)
 
     # this is for images
-    def draw(self, surface, scroll=0, target=None):
-        for sprite in self.sprites():
+    def draw(self, surface, target=None):
+        for sprite in self.sprites:
             # Check if the sprite has a `draw` method.
             if hasattr(sprite, 'draw'):
                 sprite.draw(surface, target=target)
@@ -637,15 +641,16 @@ class Group(pygame.sprite.Group):
                 surface.blit(sprite.image, sprite.rect)
 
     def regen(self):
-        for sprite in self.sprites():
+        for sprite in self.sprites:
             # Check if the sprite has a `regen` method.
             if hasattr(sprite, 'regen'):
                 sprite.regen()
 
     def check_death(self):
         ask_question = False
-        for obj in self.sprites():
+        for obj in self.sprites:
             if obj.remove:
                 ask_question = True
                 obj.kill()
+                self.sprites.remove(obj)
         return ask_question

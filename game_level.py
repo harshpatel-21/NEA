@@ -3,7 +3,7 @@
 # if __name__ == 'Game_V4':
 from entity_class import Entity, Enemy, Projectile, Player, Group
 import pygame, WINDOW, QuestionWindow, os, sys, random, csv
-from Items import AnimatedTile, Decoration, DeathBlock, Obstacle
+from Tiles import AnimatedTile, Tile
 from transition import ScreenFade
 
 pygame.init()
@@ -60,18 +60,14 @@ class World:
 
                     obj = None
                     if tile in tile_info['obstacle'].split():
-                        obj = Obstacle(img, img_rect)
+                        obj = Tile(img, *img_rect.topleft, 'Obstacle')
                         if ind != 0: self.obstacle_list.append(obj) # if it isn't the 1st layer (for no collisions)
                     elif tile in tile_info['decoration'].split():  # grass / no collision decoration
-                        obj = Decoration(img, img_rect)
+                        obj = Tile(img, *img_rect.topleft, 'Decoration')
                     elif tile in tile_info['kill_block'].split():  # water
-                        obj = DeathBlock(img, img_rect)
+                        obj = Tile(img, *img_rect.topleft,'Death Block')
                         death_blocks.append(obj)
-                    elif tile == tile_info['coin'].split():  # coin
-                        obj = AnimatedTile('coin', img_rect.x, img_rect.y, (32, 32))
-                        coins += [obj]
                     elif tile in tile_info['player'].split():  # create player if there's one on the map
-                        # print('player')
                         player = Player(img_rect.x, img_rect.y, player_img, tile_info['player_scale'], melee_dps=1000)
                     elif tile in tile_info['enemy'].split():
                         enemies += [Enemy(img_rect.x, img_rect.y, enemy_img, tile_info['enemy_scale'],
@@ -79,7 +75,7 @@ class World:
                                           max_health=100, x_vel=2, move_radius=tile_info['move_radii'][enemy_counter])]
                         enemy_counter += 1
                     elif tile == tile_info['portal']:
-                        portals += [AnimatedTile('portal', img_rect.x,img_rect.y, 2)]
+                        portals += [AnimatedTile(img, img_rect.x, img_rect.y, 'Portal')]
                     if obj: self.all_tiles.append(obj)
         return player, decorations, death_blocks, enemies, coins, portals
 
@@ -89,11 +85,7 @@ class World:
             window.screen.blit(background, ((i * background_width) - self.bg_scroll, 0))
 
         for tile in self.all_tiles:
-            temp = tile.rect.copy()
-            x, y = target.rect.topleft
-            temp.x = temp.x - x + window.WIDTH // 2
-            temp.y = temp.y - y + window.HEIGHT // 2
-            window.screen.blit(tile.image, temp)
+            tile.draw(window.screen, target)
             # pygame.draw.rect(window.screen, (255,0,0),temp,2)
 
 # noinspection PyAssignmentToLoopOrWithParameter
@@ -173,7 +165,7 @@ class Camera:
                 self.rect.bottomleft = target.rect.bottomleft
             else:
                 self.rect.bottomright = target.rect.bottomright
-
+            # self.rect.y = window.HEIGHT // 2 + 200
 
 # noinspection PyTypeChecker
 def get_questions(level, username):
@@ -239,7 +231,7 @@ def play_level(username, user_id, level):
     ENEMY = random.choice(['knight', 'samurai', 'stormy']) # pick a random enemy
     PLAYER = 'player'
 
-    LEVEL = 5 # random.randint(1,4) # choose a random map layout
+    LEVEL = 2 # random.randint(1,4) # choose a random map layout
     game_level = load_level(LEVEL)
     TILE_TYPES = os.listdir(f'level_config/{LEVEL}/Tiles') # get a list of all the tiles
     background = pygame.transform.scale(pygame.image.load(WINDOW.get_path(f'level_config/{LEVEL}/background.png')),window.SIZE).convert_alpha()
@@ -279,7 +271,7 @@ def play_level(username, user_id, level):
     streak = 0
     max_streak = 0
     portal_enter = False
-    questions = questions[:len(enemy_group.sprites())]
+    questions = questions[:len(enemy_group.sprites)]
     max_questions = len(questions)
     user_quit = False
     while run:
@@ -344,6 +336,7 @@ def play_level(username, user_id, level):
                         return
                     run = False # otherwise, save the user's attempts and don't add any points
                     user_quit = True
+
         keys = pygame.key.get_pressed()
 
         # group handling
@@ -366,18 +359,14 @@ def play_level(username, user_id, level):
         arrow_group.draw(window.screen, target=camera)
 
         death_blocks_group.draw(window.screen, target=camera)
-        death_blocks_group.update(player)  # do death block checking for player
-
-        # # coin handling
-        coin_group.draw(window.screen, target=camera)
-        coin_group.update(player, camera)  # check for player collision
+        death_blocks_group.update(player, camera)  # do death block checking for player
 
         # portal handling
         portal_group.draw(window.screen, target=camera)
         # if the user hasn't already entered the portal
-        for portal in portal_group.sprites():
-            portal_collision = portal.update(player,camera) and not portal_enter
-            if portal_collision and (not questions or not enemy_group.sprites()): # if all questions are answered or enemies are dead, then allow the user to enter the portal
+        for portal in portal_group.sprites:
+            portal_collision = portal.update(player) and not portal_enter
+            if portal_collision and (not questions or not enemy_group.sprites): # if all questions are answered or enemies are dead, then allow the user to enter the portal
                 start_fade = True # start the transition
                 fade.direction = -1
                 show_question = False # don't show a question
@@ -442,10 +431,10 @@ def play_level(username, user_id, level):
             x1 = pygame.time.get_ticks()
 
         # draw text and back button
-        # window.draw_text(text=f'Time: {WINDOW.convert_time_format(timer)}', pos=(670,3), size='MEDIUM', center=(True,False))
-        # window.draw_back()
-        # window.draw_text(f'Current Weapon: {["Sword", "Bow"][player.current_weapon - 1]}', (200, 5))
-        # window.draw_text(f'Points: {points}',(490,5))
+        window.draw_text(text=f'Time: {WINDOW.convert_time_format(timer)}', pos=(670,3), size='MEDIUM', center=(True,False))
+        window.draw_back()
+        window.draw_text(f'Current Weapon: {["Sword", "Bow"][player.current_weapon - 1]}', (200, 5))
+        window.draw_text(f'Points: {points}',(490,5))
 
         pygame.display.update()  # make all the changes
         clock.tick(FPS)
