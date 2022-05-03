@@ -8,7 +8,7 @@
         ],
         "feedback": " - The data bus retrieves data and instructions from main memory. \\n \\n - The address bus sends addresses to main memory. \\n \\n - The control bus sends read right signals to main memory.",
         "Testing1": [0, 0, 0],
-        "Harsh21": [0, 0, 0],
+        "Harsh21": [0, 1, 0.0],
         "Testing12": [0, 0, 0],
         "apatel6": [1, 2, 0.3333333333333333]
     },

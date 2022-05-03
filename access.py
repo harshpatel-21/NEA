@@ -262,8 +262,8 @@ def input_information(state):
         password_box.show(window.screen, center=True)
         continue_button.show(window.screen, center=True)
         window.draw_text(f'{state.title()} Page',(0,315),center=(True,False),size='MEDLARGE',underline=True)
-        window.draw_text(f'Press [tab] or [select using mouse] to switch input boxes',(0, 365),center=(True,False))
-        window.draw_text(f'Press Return key/ Enter as an alternative to clicking continue',(0,400),center=(True,False))
+        window.draw_text(f'Press [tab] or [select using mouse] to switch input boxes',(0, 370),center=(True,False),size='SMALL')
+        window.draw_text(f'Press Return key/ Enter as an alternative to clicking continue',(0,400),center=(True,False),size='SMALL')
 
         pygame.display.update()
         clock.tick(30)

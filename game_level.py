@@ -63,9 +63,10 @@ class World:
                     elif tile in tile_info['player'].split():  # create player if there's one on the map
                         player = Entity(img_rect.x, img_rect.y, player_img, tile_info['player_scale'], melee_dps=1000)
                     elif tile in tile_info['enemy'].split():
-                        enemies += [Enemy(img_rect.x, img_rect.y, enemy_img, tile_info['enemy_scale'],
+                        enemies += [Enemy(img_rect.x, img_rect.y, enemy_img,
+                                          tile_info['enemy_scale'],
                                           all_animations=['Idle', 'Die', 'Running', 'Attack'],
-                                          max_health=100, x_vel=2, move_radius=tile_info['move_radii'][enemy_counter])]
+                                          max_health=100, x_vel=2, move_radius=tile_info['move_radii'][enemy_counter],melee_dps=35)]
                         enemy_counter += 1
                     elif tile == tile_info['portal']:
                         portals += [AnimatedTile(img, img_rect.x, img_rect.y, 'Portal')]
@@ -79,7 +80,6 @@ class World:
 
         for tile in self.all_tiles:
             tile.draw(window.screen, target)
-            # pygame.draw.rect(window.screen, (255,0,0),temp,2)
 
     @staticmethod
     def load_level(level):
@@ -149,19 +149,28 @@ def show_summary(right, wrong, total_questions, accuracy, streak, points, timer,
 
 class Camera:
     def __init__(self, target):
+        assert hasattr(target, 'rect'), 'target needs a rect object'
+        self.target = target
         self.rect = target.rect.copy()
         self.x, self.y = target.rect.topleft
         self.rect.x = window.WIDTH//2
         self.rect.y = window.HEIGHT // 2
 
-    def update(self, target, world):
-        if target.current_action not in target.combat_animations:
-            # make sure the camera doesn't jitter after switching animations. Keeps the camera in place
-            if target.direction == 1:
-                self.rect.bottomleft = target.rect.bottomleft
+    def update(self):
+        assert hasattr(self.target, 'rect'), 'target needs a rect object'
+        if hasattr(self.target, 'combat_animations') and hasattr(self.target, 'current_action'):
+            if self.target.current_action not in self.target.combat_animations:
+                # make sure the camera doesn't jitter after switching animations. Keeps the camera in place
+                if self.target.direction == 1:
+                    self.rect.bottomleft = self.target.rect.bottomleft
+                else:
+                    self.rect.bottomright = self.target.rect.bottomright
+                # self.rect.y = window.HEIGHT // 2 + 200
+        else: #
+            if self.target.direction == 1:
+                self.rect.bottomleft = self.target.rect.bottomleft
             else:
-                self.rect.bottomright = target.rect.bottomright
-            # self.rect.y = window.HEIGHT // 2 + 200
+                self.rect.bottomright = self.target.rect.bottomright
 
 # noinspection PyTypeChecker
 def get_questions(level, username):
@@ -223,7 +232,7 @@ def update_data(question_data, questions, max_questions, level, username, points
     if len(questions) != max_questions and not user_quit: user_info[username]['points'].append(points) # adding points onto the player's history for graph plotting; if they answered questions
     write_json(user_info, f'user_info/users.json') # save all the changes
 
-def play_level(username, user_id, level):
+def play_level(username, level):
     ENEMY = random.choice(['knight', 'samurai', 'stormy']) # pick a random enemy
     PLAYER = 'player'
 
@@ -252,12 +261,12 @@ def play_level(username, user_id, level):
     enemy_group = Group(*enemies)
     portal_group = Group(*portals)
 
-    camera = Camera(player)
+
     fade = ScreenFade(1, (0, 0, 0))
     start_fade = True
     run=True
     show_question = False
-    x1 = pygame.time.get_ticks()
+    time1 = pygame.time.get_ticks()
     timer = 0
     points = 0
     total_right = total_wrong = total_accuracy = 0
@@ -267,18 +276,20 @@ def play_level(username, user_id, level):
     questions = questions[:len(enemy_group.sprites)]
     max_questions = len(questions)
     user_quit = False
+
+    camera = Camera(player)
     while run:
         player.check_alive()
-        camera.update(player, world)
+        camera.update()
 
         # only perform actions based on these conditions
-        move_conditions = not player.in_air and player.health and (
+        ground_conditions = not player.in_air and player.health and (
                     player.y_vel <= player.GRAVITY) and not start_fade # making sure player isn't in the air and is still alive
 
-        attack_conditions = not (
+        move_conditions = not (
                 player.sword_attack) and not start_fade  # only allow attacking if not already in attack animation -> ADD INTO ITERATIVE DEVELOPMENT
 
-        window.refresh(show_mouse_pos=False,back=True,pos=(10,10))
+        window.refresh(show_mouse_pos=False, back=True, pos=(10, 10))
         world.draw(background, camera)
 
         for event in pygame.event.get():
@@ -299,11 +310,11 @@ def play_level(username, user_id, level):
 
                 # jumping
                 # making sure the player is falling or jumping during
-                if event.key == pygame.K_w and move_conditions and attack_conditions and not player.in_air and player.y_vel <= 0.75:
+                if event.key == pygame.K_w and ground_conditions and move_conditions and not player.in_air:
                     player.jumping = True
 
                 # attacking
-                if (event.key == pygame.K_SPACE) and move_conditions and attack_conditions:
+                if (event.key == pygame.K_SPACE) and ground_conditions and move_conditions:
                     if player.current_weapon == 1:  # sword selected
                         player.sword_attack = True
 
@@ -324,11 +335,10 @@ def play_level(username, user_id, level):
         keys = pygame.key.get_pressed()
 
         # group handling
-        moving_left = keys[pygame.K_a] and attack_conditions
-        moving_right = keys[pygame.K_d] and attack_conditions
+        moving_left = keys[pygame.K_a] and move_conditions
+        moving_right = keys[pygame.K_d] and move_conditions
 
         # player handling
-        player.animation_handling()
         player.draw(window.screen, camera)
         player.update(moving_left, moving_right, world)
 
@@ -336,6 +346,7 @@ def play_level(username, user_id, level):
         enemy_group.update(player, window.screen, world)
         enemy_group.draw(window.screen, target=camera)
 
+        # death block handling
         death_blocks_group.draw(window.screen, target=camera)
         death_blocks_group.update(player, camera)  # do death block checking for player
 
@@ -369,7 +380,7 @@ def play_level(username, user_id, level):
         if show_question:
             if questions: # making sure there are still questions left to pop
                 current_question = questions.pop() # pop the question at the top of the stack
-                QuestionWindow_values = QuestionWindow.start_question(question=current_question, question_data=question_data, timer=timer,x1=x1)
+                QuestionWindow_values = QuestionWindow.start_question(question=current_question, question_data=question_data, timer=timer, time1=time1)
 
                 # extract current stats for the question and adjust them based on result of the user's choice
                 if isinstance(QuestionWindow_values, tuple): # if the result and timer was returned
@@ -377,6 +388,7 @@ def play_level(username, user_id, level):
                     user_right, user_wrong, user_accuracy = (question_data[current_question])[username]
                     if result:
                         user_right += 1; points += 10; total_right+=1; streak += 1 # if they got the question right, add 10 points
+                        player.health = min(player.health + 15, player.max_health)
                     else:
                         user_wrong += 1; total_wrong += 1; streak = 0
                     if user_wrong!=0 or user_right!=0:
@@ -404,14 +416,14 @@ def play_level(username, user_id, level):
             start_fade = True
             fade.direction = -1
 
-        if (pygame.time.get_ticks() - x1) > 1000 and not player.remove and not portal_enter: # 1 ticks == 1 millisecond, 1000 millisecond = 1 second
+        if (pygame.time.get_ticks() - time1) > 1000 and not player.remove and not portal_enter: # 1 ticks == 1 millisecond, 1000 millisecond = 1 second
             timer += 1  # account for the time in the question screen
-            x1 = pygame.time.get_ticks()
+            time1 = pygame.time.get_ticks()
 
         # draw text and back button
         window.draw_text(text=f'Time: {WINDOW.convert_time_format(timer)}', pos=(670,3), size='MEDIUM', center=(True,False))
         window.draw_back()
-        window.draw_text(f'Current Weapon: {["Sword", "Bow"][player.current_weapon - 1]}', (200, 5))
+        window.draw_text(f'Current Weapon: {["Sword"][player.current_weapon - 1]}', (200, 5))
         window.draw_text(f'Points: {points}',(490,5))
 
         pygame.display.update()  # make all the changes

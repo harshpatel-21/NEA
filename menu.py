@@ -200,7 +200,7 @@ def show_menu(username) -> None:
                 elif bool(clicked): # if something was returned
                     corresponding_num = get_topic_number(clicked.obj_type)
                     if corresponding_num: # if the clicked box is a topic
-                        game_level.play_level(username, 0, corresponding_num)
+                        game_level.play_level(username, corresponding_num)
                         # update user information after a change has been made by finishing a level don't do it constantly
                         user_data = WINDOW.read_json('user_info/users.json')
                         username_box.update_text(f'Username: {username} \\n Points: {sum(user_data[username]["points"])}')

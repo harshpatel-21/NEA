@@ -34,8 +34,7 @@ class Tile(pygame.sprite.Sprite):
         if hasattr(self, 'animation_handling'):
             self.animation_handling()
         # check for collision
-        self.collision = self.check_collision(obj)
-        collision = self.collision
+        collision = self.check_collision(obj)
         return collision
 
     def check_collision(self, objs):

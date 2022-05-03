@@ -20,14 +20,14 @@ def get_boxes(question_data, question, window):
     y_padding = (window.HEIGHT - question_box.rect.height - (2*option_h))//3
 
     # creating all the option instances, and positioning them respectively
-    option_1=AutoBox(question_box.rect.x + x1, question_box.rect.bottom + y_padding, (option_w, option_h), obj_type='option', text=options[0])
-    option_2=AutoBox(x2, question_box.rect.bottom + y_padding, (option_w, option_h), obj_type='option', text=options[1])
-    option_3=AutoBox(option_1.rect.left, option_1.rect.bottom + y_padding, (option_w, option_h), obj_type='option', text=options[2])
-    option_4=AutoBox(option_2.rect.left, option_2.rect.bottom + y_padding, (option_w, option_h), obj_type='option', text=options[3])
+    option_1 = AutoBox(question_box.rect.x + x1, question_box.rect.bottom + y_padding, (option_w, option_h), obj_type='option', text=options[0])
+    option_2 = AutoBox(x2, question_box.rect.bottom + y_padding, (option_w, option_h), obj_type='option', text=options[1])
+    option_3 = AutoBox(option_1.rect.left, option_1.rect.bottom + y_padding, (option_w, option_h), obj_type='option', text=options[2])
+    option_4 = AutoBox(option_2.rect.left, option_2.rect.bottom + y_padding, (option_w, option_h), obj_type='option', text=options[3])
     main_group = BoxGroup(option_1, option_2, option_3, option_4, question_box)
     return main_group
 
-def start_question(question, question_data, timer=0,x1=None):
+def start_question(question, question_data, timer=0,time1=None):
     # ---------- key variables -------------#
     pygame.init()
     x, y = WINDOW.x, WINDOW.y
@@ -55,7 +55,7 @@ def start_question(question, question_data, timer=0,x1=None):
     start_fade = True
     fade = ScreenFade(1, (0, 0, 0))
     going_back = False
-    x1 = x1
+    time1 = time1
     timer = timer
     paused = False
 
@@ -131,9 +131,9 @@ def start_question(question, question_data, timer=0,x1=None):
                 if going_back: # if they're exiting the question screen
                     return result, timer
 
-        if (pygame.time.get_ticks() - x1) >= 1000 and not paused: # 1 ticks == 1 millisecond, 1000 millisecond = 1 second, update timer every second
+        if (pygame.time.get_ticks() - time1) >= 1000 and not paused: # 1 ticks == 1 millisecond, 1000 millisecond = 1 second, update timer every second
             timer += 1  # account for the time in the question screen
-            x1 = pygame.time.get_ticks()
+            time1 = pygame.time.get_ticks()
 
         window.draw_text(text=f'Time: {WINDOW.convert_time_format(timer)}', pos=(670,3), size='MEDIUM',center=(True,False))
         pygame.display.update()

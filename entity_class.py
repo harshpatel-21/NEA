@@ -64,9 +64,9 @@ class Entity(pygame.sprite.Sprite):
         self.health_rect.center = self.rect.center
         self.health_rect.y -= self.rect.h // 2 + 10
         self.remove = False
-        self.collision_rect = self.rect
+        self.idle_rect = self.rect
 
-    def move(self, moving_left, moving_right, world):  # handle player movement
+    def move(self, moving_left: bool, moving_right: bool, world):  # handle player movement
         self.health_rect.y = self.rect.y - 10
         # reset movement variables
         dx = dy = 0
@@ -124,7 +124,7 @@ class Entity(pygame.sprite.Sprite):
                     self.rect.bottom = tile.rect.top
 
         # check if going off the sides
-        if self.rect.y > world.height * 46 - self.rect.h:  # if the player is off screen
+        if self.rect.y > world.height * Display.TILE_DIMENSION_Y - self.rect.h:  # if the player is off screen
             self.remove = True
             # self.kill()
             self.update_action(self.get_index('Die'))
@@ -135,15 +135,10 @@ class Entity(pygame.sprite.Sprite):
         self.rect.y += dy
         self.health_rect.x += dx
         self.health_rect.y += dy
-        self.collision_rect.bottom = self.rect.bottom
-
+        self.idle_rect.bottom = self.rect.bottom
 
     def draw_health_bar(self, surface, target):
-
-        # self.health_rect.center = self.rect.center
-        # self.health_rect.y -= self.rect.h//2 + 10
-        temp = self.collision_rect.copy()  # copy the rect of the current entity
-        # temp.y = self.collision_rect.y
+        temp = self.idle_rect.copy()  # copy the rect of the current entity
         temp.x = temp.x - target.rect.x + Display.WIDTH / 2.0
         temp.y = temp.y - target.rect.y + Display.HEIGHT // 2 - 10
 
@@ -156,7 +151,8 @@ class Entity(pygame.sprite.Sprite):
 
         health_colour = (16, 130, 0)
         lost_health_colour = (173, 181, 172)
-        if self.obj_type != 'player':
+
+        if self.obj_type != 'player': # enemy health bar colours
             health_colour = (255, 38, 0)
             lost_health_colour = (219, 182, 175)
 
@@ -172,7 +168,8 @@ class Entity(pygame.sprite.Sprite):
         cooldown_time = 90  # every 120 main game loops change animation frame
         if self.current_action == self.get_index('Idle'):
             cooldown_time = 120
-
+        if self.obj_type == 'stormy' and self.current_action in self.combat_animations:
+            cooldown_time = 70
         # update entity image
         self.image = self.animations[self.current_action][self.animation_pointer]
         image_rect = self.image.get_rect()
@@ -184,10 +181,10 @@ class Entity(pygame.sprite.Sprite):
                 image_rect.bottomright = self.rect.bottomright
 
         self.rect = image_rect
-        self.collision_rect.midbottom = image_rect.midbottom # move the collision rectangle
+        self.idle_rect.midbottom = image_rect.midbottom # move the collision rectangle
 
         if self.obj_type =='player': # only the player's hit box should be dynamic, for the rest it should be normal
-            self.collision_rect = image_rect
+            self.idle_rect = image_rect
             # this fixes the issue of after enemies attack near a tile, if there was some particle that collided with a tile,
             # it would check for collision and move them up even tho it shouldn't have
 
@@ -215,7 +212,7 @@ class Entity(pygame.sprite.Sprite):
 
             self.time1 = pygame.time.get_ticks()
 
-    def update_action(self, new_action, world=None):
+    def update_action(self, new_action: int, world=None):
         """ check if the new action is different to the new action
         # if the new action is the same as the old action, it would set animation pointer to 0 every time so only the
         # first frame of the animation would be shown. By adding this check, it makes it so that the animation pointer and animation is changed/reset
@@ -223,7 +220,7 @@ class Entity(pygame.sprite.Sprite):
         melee_index = self.get_index('Melee')
         if new_action == melee_index and world:
             images = self.animations[melee_index]
-            if any(self.check_image_collision(image, world) for image in
+            if any(self.frame_change_collision(image, world) for image in
                    images):  # if wall collisions have occured in any of the frames
                 self.sword_attack = False
                 return
@@ -234,8 +231,9 @@ class Entity(pygame.sprite.Sprite):
             self.animation_pointer = 0
             self.time1 = pygame.time.get_ticks()
 
-    def update(self, moving_right, moving_left, world):
+    def update(self, moving_right: bool, moving_left: bool, world):
         self.move(moving_right, moving_left, world)
+        self.animation_handling()
         # update player animations
         if self.obj_type == 'player' and self.health:
             if self.in_air or self.y_vel > self.GRAVITY:  # if jumping or falling the 0.75 is due to gravity
@@ -254,7 +252,7 @@ class Entity(pygame.sprite.Sprite):
                 self.update_action(self.get_index('Idle'))
             return
 
-    def check_image_collision(self, image, world):
+    def frame_change_collision(self, image, world):
         image_rect = image.get_rect()
         if self.direction == 1:
             image_rect.bottomleft = self.rect.bottomleft  # keep the entity on the ground
@@ -266,7 +264,7 @@ class Entity(pygame.sprite.Sprite):
                 return True
         return False
 
-    def get_animations(self, obj_type, animation, scale):  # add animations for this sprite into a list
+    def get_animations(self, obj_type: str, animation: str, scale: tuple):  # add animations for this sprite into a list
         animation_scale = {
             'player': {
                 'Bow': (scale[0] * 1.6, scale[1]),
@@ -322,24 +320,24 @@ class Entity(pygame.sprite.Sprite):
         temp.x = temp.x - target.rect.x + Display.WIDTH / 2.0
         temp.y = temp.y - target.rect.y + Display.HEIGHT // 2
         surface.blit(pygame.transform.flip(self.image, self.flip_image or self.direction == -1, False), temp.topleft)
-        # pygame.draw.rect(surface, self.border_colour, temp, 1)
-
+        # pygame.draw.rect(surface, (0,255,255), temp, 1)
         self.draw_health_bar(surface, target)
 
     def check_alive(self):  # check if the entity is alive
-        if self.health <= 0:  # if they've died
+        alive = self.health > 0
+        if not alive:  # if they've died
             self.health = 0  # health is back at 0
-            x = self.get_index('Die')  # get the index of where the 'Die' animation is
-            self.update_action(x)  # update the series of images that contain the death animation
-        return self.health > 0
+            death_index = self.get_index('Die')  # get the index of where the 'Die' animation is
+            self.update_action(death_index)  # update the series of images that contain the death animation
+        return alive
 
-    def get_index(self, animation):  # get the death index from the list of animations
+    def get_index(self, animation: str):  # get the death index from the list of animations
         index = None
         if animation in self.all_animations:
             index = self.all_animations.index(animation)
         return index
 
-    def sword_collision(self, obj):  # check for sword attack collision
+    def combat_collision(self, obj):  # check for sword attack collision
         if self.check_collision(obj) and obj.sword_attack:
             # self.collisions += 1 and obj.sword_attack and self.direction != obj.direction
             self.health -= obj.current_weapon_damage.get(obj.current_weapon) / 25
@@ -360,11 +358,6 @@ class Entity(pygame.sprite.Sprite):
         return bool(collision)
 
 
-class Player(Entity):
-    def __init__(self, *args, **kwargs):
-        Entity.__init__(self, *args, **kwargs)
-
-
 class Enemy(Entity):
     def __init__(self, x, y, obj_type, scale, max_health=100, x_vel=2, all_animations=None, attack_radius=150,
                  move_radius=3, melee_dps=30):
@@ -375,31 +368,30 @@ class Enemy(Entity):
         attack_animations = self.animations[self.get_index('Attack')]
         idle_image = self.animations[self.get_index('Idle')][0]
 
-        attack_radius = max(attack_animations, key=lambda image: image.get_width()).get_width() + 5
-        if self.obj_type == 'stormy':
-            attack_radius *= 0.3
-        else:
-            attack_radius -= idle_image.get_width() - 10
+        attack_radius = max(attack_animations, key=lambda image: image.get_width()).get_width() + 20
+
+        attack_radius -= idle_image.get_width() - 10
         self.attack_vision = pygame.Rect(0, 0, attack_radius, 3)
         self.combat_animations = [self.get_index('Attack')]
         self.attacked = False
         self.wait = 0
         self.change_direction = False
         self.wall_collision = False
-        self.move_radius = move_radius
+        self.move_radius = move_radius * Display.TILE_DIMENSION_X
 
     def rec_collision(self, obj):
+        # check if obj is within enemy's attack vision
         return self.attack_vision.colliderect(obj.rect)
 
     def start_attack(self, obj, world):
+        # if attack cooldown is over, obj within attack vision and enemy(self) on the ground
         if self.wait == 0 and self.rec_collision(obj) and self.check_alive() and (not self.in_air and self.y_vel >= self.GRAVITY):
-            self.sword_attack = True
+            self.sword_attack = True # change enemy state
             self.update_action(self.get_index('Attack'), world)  # change the animation to attack animation
-            self.wait = 100
-            return True
-        return False
+            self.wait = 100 # initiate cooldown
 
-    def AI(self, world, target):
+
+    def AI(self, world):
         if self.in_air or self.y_vel > self.GRAVITY:  # if the enemy is falling
             self.move(0, 0, world)  # don't move in any direction
             self.set_idling(world)
@@ -433,7 +425,6 @@ class Enemy(Entity):
                         self.direction *= -1
                         self.move_counter *= -1
 
-                    # self.health_rect.x += scroll
                 return  # don't attempt to move the player in idling animation
 
             if self.direction == 1:
@@ -445,11 +436,10 @@ class Enemy(Entity):
             self.move_counter += self.x_vel
 
             self.change_direction = False
-            if (self.move_counter > (self.move_radius * Display.TILE_DIMENSION_X) or self.wall_collision) and self.y_vel <= self.GRAVITY:
+            if (self.move_counter > (self.move_radius) or self.wall_collision) and self.y_vel <= self.GRAVITY:
                 self.change_direction = True
                 self.set_idling(world)
                 self.wall_collision = False
-            # self.health_rect.x += scroll
 
     def set_idling(self, world):
         self.idling = True
@@ -458,14 +448,15 @@ class Enemy(Entity):
 
     def update(self, player, surface, world):
         self.animation_handling()
-        # pygame.draw.rect(Display.screen, (255, 0, 0), enemy.attack_vision,2)
-        if self.health > 0:
-            if self.start_attack(player, world):  # check if player collision has occurred
-                pass
-            player.sword_collision(self) # check if self has dealt damage to player
-            self.sword_collision(player)  # check if player has dealt damage to self
 
-        self.AI(world, player)  # do enemy AI
+        # combat checking
+        if self.health > 0:
+
+            self.start_attack(player, world)  # check if player collision has
+            player.combat_collision(self) # check if self has dealt damage to player
+            self.combat_collision(player)  # check if player has dealt damage to self
+
+        self.AI(world)  # do enemy AI
 
     def regen(self):
         self.health = self.max_health
@@ -496,11 +487,11 @@ class Group:
             if hasattr(sprite, 'regen'):
                 sprite.regen()
 
-    def check_death(self):
-        ask_question = False
+    def check_death(self): # used to check if an entity has died to trigger a question
+        entity_died = False
         for obj in self.sprites:
-            if obj.remove:
-                ask_question = True
-                obj.kill()
-                self.sprites.remove(obj)
-        return ask_question
+            if obj.remove: # if the death animation was initiated and then finished:
+                entity_died = True
+                obj.kill() # free up memory space
+                self.sprites.remove(obj) # remove the obj from the array
+        return entity_died
