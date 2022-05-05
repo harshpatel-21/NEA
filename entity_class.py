@@ -290,7 +290,7 @@ class Entity(pygame.sprite.Sprite):
                 'Jumping': (46, 92),
                 'Falling': (46, 92),
                 'Running': (46 * 1.5, 92),
-                'Die': (135, 90)
+                'Die': (120, 80)
             },
             'stormy': {
                 'Idle':(scale[0]*0.4,scale[1]*0.9),
@@ -311,16 +311,15 @@ class Entity(pygame.sprite.Sprite):
         scale2 = [*map(int, (scale2[0] * 0.8, scale2[1] * 0.8))]
 
         for image in images:  # iterate through the images in this directory
-            image = pygame.image.load(os.path.join(img_path,image))
+            image = pygame.image.load(os.path.join(img_path, image))
             temp += [pygame.transform.scale(image,scale2).convert_alpha()]
         self.animations += [temp]
 
     def draw(self, surface, target):
         temp = self.rect.copy()
-        temp.x = temp.x - target.rect.x + Display.WIDTH / 2.0
+        temp.x = temp.x - target.rect.x + Display.WIDTH // 2
         temp.y = temp.y - target.rect.y + Display.HEIGHT // 2
         surface.blit(pygame.transform.flip(self.image, self.flip_image or self.direction == -1, False), temp.topleft)
-        # pygame.draw.rect(surface, (0,255,255), temp, 1)
         self.draw_health_bar(surface, target)
 
     def check_alive(self):  # check if the entity is alive
@@ -351,12 +350,12 @@ class Entity(pygame.sprite.Sprite):
                                                                   False))  # flips the mask of the image during collision detection
         offset_x = obj.rect.x - self.rect.x
         offset_y = obj.rect.y - self.rect.y
-        current_mask = pygame.mask.from_surface(pygame.transform.flip(self.image, self.direction == -1,
+        image = self.animations[self.get_index('Running')][0]
+        current_mask = pygame.mask.from_surface(pygame.transform.flip(image, self.direction == -1,
                                                                       False))  # flips the mask of the image during collision detection
         collision = current_mask.overlap(obj_mask, (
             offset_x, offset_y))  # making sure player is in sword animation
         return bool(collision)
-
 
 class Enemy(Entity):
     def __init__(self, x, y, obj_type, scale, max_health=100, x_vel=2, all_animations=None, attack_radius=150,
@@ -378,6 +377,7 @@ class Enemy(Entity):
         self.change_direction = False
         self.wall_collision = False
         self.move_radius = move_radius * Display.TILE_DIMENSION_X
+        self.idle_rect.width += 10
 
     def rec_collision(self, obj):
         # check if obj is within enemy's attack vision
@@ -389,7 +389,6 @@ class Enemy(Entity):
             self.sword_attack = True # change enemy state
             self.update_action(self.get_index('Attack'), world)  # change the animation to attack animation
             self.wait = 100 # initiate cooldown
-
 
     def AI(self, world):
         if self.in_air or self.y_vel > self.GRAVITY:  # if the enemy is falling

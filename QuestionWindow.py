@@ -8,14 +8,15 @@ def get_boxes(question_data, question, window):
 
     text = question
     options = question_data[question]['options']
+    options = random.sample(options, 4) # select a random order from the options, shuffling the order of options
 
     question_box = AutoBox(0, 0, (w, h*0.8), obj_type='question', text=text)
 
+    # calculate dimensions of the boxes.
     x_padding = 35
     x1 = x_padding
     x2 = (w//2) + x_padding
     width = (w//2) - (2*x_padding)
-    options = random.sample(options, 4) # select a random order from the options, shuffling the order of options
     option_w, option_h = (width,(window.HEIGHT-h)*0.47)
     y_padding = (window.HEIGHT - question_box.rect.height - (2*option_h))//3
 
@@ -27,7 +28,7 @@ def get_boxes(question_data, question, window):
     main_group = BoxGroup(option_1, option_2, option_3, option_4, question_box)
     return main_group
 
-def start_question(question, question_data, timer=0,time1=None):
+def start_question(question, question_data, timer=0):
     # ---------- key variables -------------#
     pygame.init()
     x, y = WINDOW.x, WINDOW.y
@@ -43,22 +44,19 @@ def start_question(question, question_data, timer=0,time1=None):
     feedback_text = question_data[question]['feedback']
     feedback = AutoBox(0,40,(window.SIZE[0],window.SIZE[1]-40),text=feedback_text, obj_type='feedback',font_size=29,center_text=(False,False),colour=Display.BACKGROUND)
 
-    main_continue = Textbox(100, 0.9*window.height,text='Continue',text_size='medlarge',padding=(10,10))
-    feedback_continue = Textbox(100, 0.9*window.height,text='Continue',text_size='medlarge',padding=(10,10))
+    continue_button = Textbox(100, 0.9*window.height,text='Continue',text_size='medlarge',padding=(10,10))
     options_screen = True
     result = None
     check_click = True
-    move_to_feedback = 6000 # the time to wait until moving onto feedback screen == 6 seconds
+    move_to_feedback = 3000 # the time to wait until moving onto feedback screen == 6 seconds
     time1 = 0
-    main_continue.create_rect()
-    feedback_continue.create_rect()
+    continue_button.create_rect()
     start_fade = True
     fade = ScreenFade(1, (0, 0, 0))
     going_back = False
     time1 = time1
     timer = timer
-    paused = False
-
+    pause_timer = False
     while True:
         window.refresh()
         for event in pygame.event.get():
@@ -72,15 +70,11 @@ def start_question(question, question_data, timer=0,time1=None):
             if event.type == pygame.MOUSEBUTTONDOWN:
                 # check for the continue button click on the main/ options screen
                 if pygame.time.get_ticks() - time1 > move_to_feedback and time1 and options_screen: # wait a bit of time
-                    if main_continue.check_click():
+                    if continue_button.check_click():
                         options_screen = False # don't display options anymore, signalling the feedback screen to show
-                        # if result: # if they were right, then go back immediately, don't go to feedback screen
-                        #     going_back = True
-                        #     start_fade = True
-                        #     options_screen = True
 
                 # check for continue button click on the feedback screen
-                if feedback_continue.check_click() and not options_screen:
+                if continue_button.check_click() and not options_screen and not move_to_feedback:
                     start_fade = True
                     going_back = True
 
@@ -92,36 +86,41 @@ def start_question(question, question_data, timer=0,time1=None):
 
                     # change the options' properties based on the outcome
                     for option in main_group.objects:
-                        if option.text != correct_answer and option.obj_type!='question':
-                            option.background_colour = option.incorrect_colour
-                            option.hover_colour = option.incorrect_colour
-                        else:
-                            option.background_colour = option.correct_colour
-                            option.hover_colour = option.correct_colour
+                        if option.obj_type=='question': # if the box is a question, then don't make any changes
+                            continue
+
+                        if option.text != correct_answer: # incorrect answer
+                            option.background = option.incorrect_colour
+                        else: # correct answer
+                            option.background = option.correct_colour
                             move_to_feedback //= 2 # if they're right, show the continue button faster
 
                         option.check_collision = False # don't check for collisions with the selected option/button anymore
-                    paused=True # don't continue the timer after the question has been answered to allow the user to absorb info without worrying about time
+                    pause_timer=True # don't continue the timer after the question has been answered to allow the user to absorb info without worrying about time
 
+                    clicked.border_colour = clicked.hover_border # highlight the selected colour so the user doesn't forget what they clicked
+                    clicked.border_radius = 7
         if options_screen: # if the user is still on the options screen
             main_group.update_boxes(window.screen) # update the boxes (draw them) onto the screen
 
         elif not options_screen: # if an option has been picked, and it was incorrect show the feedback text
             if not feedback.text:
                 going_back = True # go back
+
             if not going_back:
                 feedback.show(window.screen) # show the feedback
-                feedback_continue.check_hover(pygame.mouse.get_pos())
-                feedback_continue.show(window.screen, center=True)
+                continue_button.check_hover(pygame.mouse.get_pos())
+                continue_button.show(window.screen, center=True)
+                move_to_feedback = False
 
         # after a option is picked, and after a certain time, move to feedback screen, and display its continue button
         if pygame.time.get_ticks() - time1 > move_to_feedback and time1 and options_screen:
-            main_continue.check_hover(pygame.mouse.get_pos())
-            main_continue.show(window.screen, center=True)
+            continue_button.check_hover(pygame.mouse.get_pos())
+            continue_button.show(window.screen, center=True)
             for box in main_group.get_list():
-                if box.obj_type =='question':
+                if box.obj_type =='question': # keep the question opacity the same
                     continue
-                box.surface.set_alpha(60)
+                box.surface.set_alpha(60) # reduce the opacity of other options
 
         if start_fade: # do the fade animation
             if going_back:
@@ -131,7 +130,7 @@ def start_question(question, question_data, timer=0,time1=None):
                 if going_back: # if they're exiting the question screen
                     return result, timer
 
-        if (pygame.time.get_ticks() - time1) >= 1000 and not paused: # 1 ticks == 1 millisecond, 1000 millisecond = 1 second, update timer every second
+        if (pygame.time.get_ticks() - time1) >= 1000 and not pause_timer: # 1 ticks == 1 millisecond, 1000 millisecond = 1 second, update timer every second
             timer += 1  # account for the time in the question screen
             time1 = pygame.time.get_ticks()
 

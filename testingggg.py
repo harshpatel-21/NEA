@@ -299,13 +299,15 @@ os.environ['SDL_VIDEO_WINDOW_POS'] = f"{x},{y}"
 
 FPS = 60
 clock = pygame.time.Clock()
-window = WINDOW.Display(new_window=True,caption='Stopwatch',size=(500,250))
+window = WINDOW.Display(new_window=True,caption='Stopwatch',size=(200,160))
 time1 = pygame.time.get_ticks()
 timer=0
 pause = False
-pause_button = boxes.AutoBox(190,70,(120,40),'pause','Pause',font_size=20)
-reset_button = boxes.AutoBox(190,120,(120,40),'reset','Reset',font_size=20)
+y = 2
+pause_button = boxes.AutoBox(190,60+y,(120,40),'pause','Pause',font_size=20)
+reset_button = boxes.AutoBox(190,110+y,(120,40),'reset','Reset',font_size=20)
 clicked=False
+
 while 1:
     window.refresh()
     for event in pygame.event.get():
@@ -324,14 +326,15 @@ while 1:
         time1 = pygame.time.get_ticks()
 
     time = WINDOW.convert_time_format(timer)
-    window.draw_text(time,(window.HEIGHT//2,20),center=True,size='LARGE')
+    window.draw_text(time,(window.HEIGHT//2,y+18),center=(True,False),size='LARGE')
     if pause:
-        window.draw_text('Paused',(window.HEIGHT//2,2),center=True,size='SMALL',colour=(255,51,51))
+        window.draw_text('Paused',(window.HEIGHT//2, y),center=(True,False),size='SMALL',colour=(255,51,51))
 
+    reset_button.show(window.screen, center=(True, False))
     reset_button.check_hover()
-    reset_button.show(window.screen)
 
+    pause_button.show(window.screen, center=(True, False))
     pause_button.check_hover()
-    pause_button.show(window.screen)
+
     pygame.display.update()
-    clock.tick(FPS)
+    clock.tick(30)

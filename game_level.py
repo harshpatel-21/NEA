@@ -145,7 +145,7 @@ def show_summary(right, wrong, total_questions, accuracy, streak, points, timer,
         if pygame.time.get_ticks() - initial_time >= 2000 and not show_back: # if back button is not being shown and 2 seconds have passed
             show_back = True
         pygame.display.update()
-    pass
+
 
 class Camera:
     def __init__(self, target):
@@ -180,13 +180,13 @@ def get_questions(level, username):
     # quota = 4, 4, 4
     # sort the questions based on accuracy from largest -> smallest
     questions = WINDOW.bubble_sort2D([[question, question_data[question][username][2]] for question in question_data])
-
     # separate the questions based on which category they fit in
     green = []
     amber = []
     red = []
-    for question,accuracy in questions:
-        if accuracy >= 0.75 or (accuracy == 0 and type(accuracy)==int): # never attempted or strong knowledge
+    for question, accuracy in questions:
+        total_attempts = sum(question_data[question][username][:2]) # sum of right and wrong attempts
+        if accuracy >= 0.75 or (accuracy == 0 and total_attempts == 0): # never attempted or strong knowledge
             green.append(question)
         elif 0.5 <= accuracy < 0.75: # moderate knowledge
             amber.append(question)
@@ -194,11 +194,10 @@ def get_questions(level, username):
             red.append(question) # if the accuracy is less than 50%; absolute shit-housery
 
     final_list = [] # a list of the final questions
-    lists = sorted([green, red, amber], key=lambda i: len(i)) # smallest -> largest lists
 
+    lists = sorted([green, red, amber], key=lambda i: len(i)) # smallest -> largest lists
     max_quota = 4 # means, that in total there should be 9 questions because 3 * 3 -> (red, amber, green) == 9
-    quota = max_quota # set the current quota to the max quota
-    quotas = [max_quota]*3 # initially ,3 reds, 3 ambers, 3 greens
+    quotas = [max_quota]*3 # initially max_quota reds, max_quota ambers, and max_quota greens
 
     # find out how many of each category should be picked
     for index, category in enumerate(lists[:-1]): # loop until n-1
@@ -206,11 +205,11 @@ def get_questions(level, username):
             quotas[index+1] += quotas[index] - len(category) # carry over the remaining ones to the next category
             quotas[index] = len(category) # change the quota for the current category to it's length as it can only fit that much
 
-    quotas[-1] = min(quotas[-1], len(lists[-1])) # if everything has been carried over to the last one, it should only pick how ever much it can
+    quotas[-1] = min(quotas[-1], len(lists[-1])) # if everything has been carried over to the last one, it should only pick however much it can
 
     for index, category in enumerate(lists):
         current_quota = quotas[index] # get the quota that points to the current question
-        sample = random.sample(category, current_quota)# select a random order of (n = quota) questions from the current category
+        sample = random.sample(category, current_quota) # select a random order of (n = quota) questions from the current category
         final_list +=[*sample] # add the question to the final list of questions
 
     return final_list, question_data
@@ -260,7 +259,6 @@ def play_level(username, level):
     death_blocks_group = Group(*death_blocks)
     enemy_group = Group(*enemies)
     portal_group = Group(*portals)
-
 
     fade = ScreenFade(1, (0, 0, 0))
     start_fade = True
@@ -361,49 +359,34 @@ def play_level(username, level):
                 show_question = False # don't show a question
                 portal_enter = True # mark the portal as entered
 
-        # do fade animation
-        if start_fade:
-            if fade.fade(window.screen): # if the fade has completed
-                start_fade = False # don't show the intro fade anymore
-                if portal_enter and fade.direction == -1: # Once the fade animation is finished and the user entered a portal:
-                    run = False
-                    show_question = False
-
-                # if fading out, check if there are still questions and enemies left to show a question, otherwise its just a normal fade
-                elif fade.direction == -1 and not player.remove:
-                    show_question = True
-                # if the player has died, then don't update their best time
-                elif fade.direction == -1 and player.remove:
-                    run = False
-                    start_fade = False
-
         if show_question:
-            if questions: # making sure there are still questions left to pop
-                current_question = questions.pop() # pop the question at the top of the stack
-                QuestionWindow_values = QuestionWindow.start_question(question=current_question, question_data=question_data, timer=timer, time1=time1)
+            assert bool(questions), 'No more questions left' # making sure there are still questions left to pop
 
-                # extract current stats for the question and adjust them based on result of the user's choice
-                if isinstance(QuestionWindow_values, tuple): # if the result and timer was returned
-                    result = QuestionWindow_values[0] # the outcome of the question displayed
-                    user_right, user_wrong, user_accuracy = (question_data[current_question])[username]
-                    if result:
-                        user_right += 1; points += 10; total_right+=1; streak += 1 # if they got the question right, add 10 points
-                        player.health = min(player.health + 15, player.max_health)
-                    else:
-                        user_wrong += 1; total_wrong += 1; streak = 0
-                    if user_wrong!=0 or user_right!=0:
-                        user_accuracy = user_right/(user_right+user_wrong) # to ensure that the denominator is not 0
-                        total_accuracy = round(total_right/(total_right+total_wrong), 2)
-                    question_data[current_question][username] = [user_right, user_wrong, user_accuracy] # update statistics of the user on the question displayed
-                    timer = QuestionWindow_values[1]
+            current_question = questions.pop() # pop the question at the top of the stack
+            QuestionWindow_values = QuestionWindow.start_question(question=current_question, question_data=question_data, timer=timer)
+
+            # extract current stats for the question and adjust them based on result of the user's choice
+            if isinstance(QuestionWindow_values, tuple): # if the result and timer was returned
+                result = QuestionWindow_values[0] # the outcome of the question displayed
+                user_right, user_wrong, user_accuracy = (question_data[current_question])[username]
+                if result:
+                    user_right += 1; points += 10; total_right+=1; streak += 1 # if they got the question right, add 10 points, increase streak, and recover health
+                    player.health = min(player.health + 15, player.max_health)
                 else:
-                    timer = QuestionWindow_values
-                max_streak = max(streak, max_streak)
+                    user_wrong += 1; total_wrong += 1; streak = 0
+                if user_wrong!=0 or user_right!=0:
+                    user_accuracy = user_right/(user_right+user_wrong) # to ensure that the denominator is not 0
+                    total_accuracy = round(total_right/(total_right+total_wrong), 2)
+                question_data[current_question][username] = [user_right, user_wrong, user_accuracy] # update statistics of the user on the question displayed
+                timer = QuestionWindow_values[1]
+            else:
+                timer = QuestionWindow_values
+            max_streak = max(streak, max_streak)
 
-                # inwards fade
-                start_fade = True
-                fade.direction = 1
-                show_question = False
+            # inwards fade
+            start_fade = True
+            fade.direction = 1
+            show_question = False
 
         # start fade animation if player has died
         if player.remove and not start_fade:
@@ -425,6 +408,20 @@ def play_level(username, level):
         window.draw_back()
         window.draw_text(f'Current Weapon: {["Sword"][player.current_weapon - 1]}', (200, 5))
         window.draw_text(f'Points: {points}',(490,5))
+
+        # do fade animation
+        if start_fade:
+            if fade.fade(window.screen): # if the fade has completed
+                start_fade = False # don't show the intro fade anymore
+
+                if (portal_enter or player.remove) and fade.direction == -1:
+                    run = False
+                    show_question = False
+
+                # if fading out, check if there are still questions and enemies left to show a question, otherwise its just a normal fade
+                elif fade.direction == -1 and not player.remove:
+                    show_question = True
+
 
         pygame.display.update()  # make all the changes
         clock.tick(FPS)
