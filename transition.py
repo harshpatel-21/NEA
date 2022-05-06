@@ -40,3 +40,15 @@ class ScreenFade:
             self.fade_counter_x = 0
             self.fade_counter_y = 0
         return fade_complete
+
+class SurfaceFade:
+    def __init__(self, size):
+        self.fade_rect = pygame.Surface(size)
+        self.fade_rect.fill(0)
+        self.alpha_counter = 255
+
+    def fade(self, surface):
+        if self.alpha_counter > 0:
+            self.alpha_counter -= 4//0.6
+        self.fade_rect.set_alpha(self.alpha_counter)
+        surface.blit(self.fade_rect,(0,0))
