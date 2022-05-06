@@ -308,7 +308,7 @@ def play_level(username, level):
 
                 # jumping
                 # making sure the player is falling or jumping during
-                if event.key == pygame.K_w and ground_conditions and move_conditions and not player.in_air:
+                if (event.key == pygame.K_w or event.key == pygame.K_UP) and ground_conditions and move_conditions and not player.in_air:
                     player.jumping = True
 
                 # attacking
@@ -316,13 +316,6 @@ def play_level(username, level):
                     if player.current_weapon == 1:  # sword selected
                         player.sword_attack = True
 
-            # check for keys that are lifted/ no longer being pressed
-            if event.type == pygame.KEYUP:
-                if event.key == pygame.K_a:
-                    moving_left = False
-                if event.key == pygame.K_d:
-                    moving_right = False
-                pass
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if window.check_return():
                     if len(questions) == max_questions: # if they haven't answered any questions
@@ -333,8 +326,8 @@ def play_level(username, level):
         keys = pygame.key.get_pressed()
 
         # group handling
-        moving_left = keys[pygame.K_a] and move_conditions
-        moving_right = keys[pygame.K_d] and move_conditions
+        moving_left = (keys[pygame.K_a] or keys[pygame.K_LEFT]) and move_conditions
+        moving_right = (keys[pygame.K_d] or keys[pygame.K_RIGHT]) and move_conditions
 
         # player handling
         player.draw(window.screen, camera)
