@@ -261,7 +261,6 @@ def play_level(username, level):
     enemy_group = Group(*enemies)
     portal_group = Group(*portals)
 
-
     fade = ScreenFade(1, (0, 0, 0))
     start_fade = True
     run=True
@@ -388,7 +387,7 @@ def play_level(username, level):
                     user_right, user_wrong, user_accuracy = (question_data[current_question])[username]
                     if result:
                         user_right += 1; points += 10; total_right+=1; streak += 1 # if they got the question right, add 10 points
-                        player.health = min(player.health + 15, player.max_health)
+                        player.health = min(player.health + 25, player.max_health)
                     else:
                         user_wrong += 1; total_wrong += 1; streak = 0
                     if user_wrong!=0 or user_right!=0:

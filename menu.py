@@ -1,7 +1,7 @@
 import pygame, os, re, sys, WINDOW, game_level
 from boxes import Textbox
 from boxes import BoxGroup, AutoBox
-from transition import ScreenFade
+from transition import SurfaceFade
 import matplotlib.pyplot as plt
 pygame.init()
 
@@ -52,7 +52,7 @@ def get_graph(username) -> None:
     user_data = WINDOW.read_json('user_info/users.json')
     points = user_data[username]['points']
     start_x, end_x = 1, len(points)
-    plt.rcParams["figure.figsize"] = (9.4,6)
+    plt.rcParams["figure.figsize"] = (9.4, 6)
     if len(points) > 20:
 
         start_x = len(points) - 19
@@ -78,22 +78,20 @@ def get_graph(username) -> None:
     # plt.show()
 
 def get_accuracy(question_data, username) -> str:
-    total_attempted = 0
-    accuracy = 0
+    right = wrong = 0
+    accuracy = 'N/A' # default accuracy is non applicable if no questions are attempted
     for question in question_data:
         stats = question_data[question][username]
-        attempts = stats[0] + stats[1]
-        if attempts > 0: # if attempts were made
-            total_attempted += 1
-            accuracy += stats[2] # the index that points to the accuracy
+        right += stats[0]
+        wrong += stats[1]
 
-    if total_attempted: # making sure denominator is not 0, and that they have attempted questions
-        accuracy = (accuracy/total_attempted)*100
+    total_attempted = right + wrong
+
+    if total_attempted > 0: # making sure denominator is not 0, and that they have attempted questions
+        accuracy = (right/total_attempted)*100
 
     if total_attempted: # if they've answered at least one question and got it right/wrong
         accuracy = str(round(accuracy, 2))+'%'
-    else:
-        accuracy = 'N/A'
 
     return accuracy
 
@@ -164,8 +162,7 @@ def show_menu(username) -> None:
     instructions_box = AutoBox(leaderboard_box.rect.x - width - 200, 40, (width, topics[1].rect.h // 2), 'instructions',text='How-To-Play', center_text=(True,True))
     all_boxes = BoxGroup(*topics, username_box, leaderboard_box, instructions_box)
     leaderboards = False
-    fade = ScreenFade(1,(0,0,0))
-    screen_fade = True
+    fade = SurfaceFade(window.SIZE)
     graph = False
     instructions = False
     back_pos = None
@@ -227,7 +224,7 @@ def show_menu(username) -> None:
             show_instructions(window)
         else:
             all_boxes.update_boxes(window.screen)
-
+        fade.fade(window.screen)
         window.draw_back(back_pos)
         pygame.display.update()
         clock.tick(FPS)
