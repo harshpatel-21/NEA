@@ -224,6 +224,7 @@ def show_menu(username) -> None:
             show_instructions(window)
         else:
             all_boxes.update_boxes(window.screen)
+
         fade.fade(window.screen)
         window.draw_back(back_pos)
         pygame.display.update()

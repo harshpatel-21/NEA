@@ -378,6 +378,7 @@ class Enemy(Entity):
         self.change_direction = False
         self.wall_collision = False
         self.move_radius = move_radius * Display.TILE_DIMENSION_X
+        self.idle_rect.w += 20
 
     def rec_collision(self, obj):
         # check if obj is within enemy's attack vision
@@ -389,7 +390,6 @@ class Enemy(Entity):
             self.sword_attack = True # change enemy state
             self.update_action(self.get_index('Attack'), world)  # change the animation to attack animation
             self.wait = 100 # initiate cooldown
-
 
     def AI(self, world):
         if self.in_air or self.y_vel > self.GRAVITY:  # if the enemy is falling
