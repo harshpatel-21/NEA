@@ -9,6 +9,19 @@ read_json = WINDOW.read_json
 write_json = WINDOW.write_json
 # laptop
 x, y = WINDOW.x, WINDOW.y
+try:
+    import pygame,os
+    from WINDOW import Display
+    from boxes import Textbox, Inputbox
+    import re,json
+    from access import input_information
+    import WINDOW
+    import Game_V4
+except ImportError as error:
+    print(error)
+
+# lapto
+x,y = WINDOW.x,WINDOW.y
 # school computer
 # x,y = 50,80
 os.environ['SDL_VIDEO_WINDOW_POS'] = f"{x},{y}"
