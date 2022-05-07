@@ -1,13 +1,13 @@
-import pygame,os,WINDOW
+import pygame,os,Window
 import pygame.freetype
 pygame.init()
-
+from Window import StopRunning
 pygame.freetype.init()
-x,y = WINDOW.x,WINDOW.y
-os.environ['SDL_VIDEO_WINDOW_POS'] = f"{x},{y}"
-Display = WINDOW.Display
+x,y = Window.x,Window.y
+os.environ['SDL_VIDEO_Window_POS'] = f"{x},{y}"
+Display = Window.Display
 
-class Textbox(WINDOW.Display):
+class Textbox(Window.Display):
     rect: object
     default_background = (68, 71, 68)
     default_border = (207, 234, 255)
@@ -96,33 +96,32 @@ class Textbox(WINDOW.Display):
 
 # noinspection PyArgumentList
 class AutoBox(Textbox):
-    default_background = (68, 71, 68)
+    default_background = Textbox.default_background
     incorrect_colour = (204, 51, 0)
     correct_colour = (51, 153, 51)
     hover_colour = (65, 114, 191)
     hover_border = (207, 234, 255)
-    def __init__(self, x, y, size, obj_type, text='', font_size=None,center_text=(True,True),colour=default_background,padding=None):
-        if colour is not None:
-            self.background_colour = colour
-        else:
-            self.background_colour = Textbox.default_background
+    border_radius = 2
 
+    def __init__(self, x, y, size, obj_type, text='', font_size='MEDIUM',center_text=(True,True),colour=default_background):
+        self.background_colour = colour
         self.border_colour = None
 
-        if font_size is None:
-            font_size = 'MEDIUM'
-
-        if isinstance(font_size, int):
+        if isinstance(font_size, int): # if a custom font size is passed in
             self.font = pygame.font.SysFont('Sans', font_size)
 
-        elif font_size in 'MEDIUM LARGE MEDLARGE SMALL':
+        elif font_size.upper() in 'MEDIUM LARGE MEDLARGE SMALL'.split():
             self.font = eval(f'self.{font_size}_FONT')
+
+        else:
+            StopRunning('Invalid text size passed in')
 
         self.obj_type = obj_type
         self.x, self.y = x, y
         self.rect = pygame.Rect(x, y, *size)
         self.surface = pygame.Surface(self.rect.size)
         text_rect_size = [0.9*self.rect.w,0.9*self.rect.h] # create a padding for where the text will be placed
+
         # calculate the offset to place the text rectangle in the center of the main box rectangle
         self.dx = (self.rect.w - text_rect_size[0])//2
         self.dy = (self.rect.h - text_rect_size[1])//2
@@ -134,26 +133,27 @@ class AutoBox(Textbox):
         self.background = self.background_colour
         self.check_collision = True
 
-    def show(self, surface):
-        # self.surface.fill(self.background)
-        pygame.draw.rect(self.surface, self.background, (0, 0, self.rect.w, self.rect.h))
+    def show(self, surface, center=(False,False)):
+        self.surface.fill(self.background)
+        center_x,center_y = center
+        # if self.background: pygame.draw.rect(self.surface, self.background, (0, 0, self.rect.w, self.rect.h))
         if self.border_colour: # if there is a border colour
-            pygame.draw.rect(self.surface, self.border_colour, (0, 0, self.rect.w, self.rect.h), 3)
-        # pygame.draw.rect(self.surface, self.border_colour, (self.text_rect.x-self.rect.x, self.text_rect.y-self.rect.y, self.text_rect.w,self.text_rect.h),1)
-        surface.blit(self.surface, self.rect.topleft)
-        if self.surf:
-            # pygame.draw.rect(surface,(255,0,0),(self.rect.x + (self.rect.w-self.text_rect.w)//2, self.rect.y + (self.rect.h-self.text_rect.h)//2, self.text_rect.w, self.text_rect.h),1)
-            x, y = self.dx, 0
-            if self.center_text[0]:
-                x = (self.rect.w-self.text_rect.w)//2
-            if self.center_text[1]:
-                y = (self.rect.h-self.text_rect.h)//2
-            self.surface.blit(self.surf, (x, y, self.text_rect.w, self.text_rect.h))
+            pygame.draw.rect(self.surface, self.border_colour, (0, 0, self.rect.w, self.rect.h), self.border_radius)
+
+        x, y = self.dx, 0
+        if self.center_text[0]:
+            x = (self.rect.w-self.text_rect.w)//2
+        if self.center_text[1]:
+            y = (self.rect.h-self.text_rect.h)//2
+        self.surface.blit(self.surf, (x, y, self.text_rect.w, self.text_rect.h))
         # blit everything onto the specified surface
-        surface.blit(self.surface,(self.x,self.y))
+        if center_x: self.x = (surface.get_width() - self.rect.w)//2
+        if center_y: self.y = (surface.get_height() - self.rect.h)//2
+        self.rect.topleft = (self.x, self.y)
+        surface.blit(self.surface, self.rect.topleft)
 
     # this allows text to fit in a box.
-    def add_text(self, text, delay=False):
+    def add_text(self, text):
         """
         \\n = newline
         break up the text and try to blit each word individually; if at any point any of the letters for a word goes out,
@@ -233,11 +233,11 @@ class AutoBox(Textbox):
         self.text_rect.h = (add_y+1) * font_letters[0].get_height()
         self.text_rect.w = max_x
 
-    def update_text(self,text):
-        # self.surf.fill(0,0,0)
+    def update_text(self, text):
         self.add_text(text)
 
     def check_hover(self, mouse_pos=0):
+        self.surface.set_alpha(220)
         # if the mouse position is over the rectangle, change colour, otherwise change it back to normal
         if self.obj_type != 'question':
             mouse_pos = pygame.mouse.get_pos()
@@ -251,6 +251,7 @@ class AutoBox(Textbox):
     def check_click(self, mouse_pos=0):
         if (not self.check_collision) or (self.obj_type == 'question'): return
         mouse_pos = pygame.mouse.get_pos()
+        self.rect.x = self.x; self.rect.y = self.y
         if self.rect.collidepoint(mouse_pos) and (pygame.mouse.get_pressed()[0]):
             return self
 
@@ -260,26 +261,23 @@ class BoxGroup:
         self.objects = [*args]
 
     def update_boxes(self, surface):
-        obj = False
+        box_clicked = False
         for box in self.objects:
             if hasattr(box, 'show'):
                 box.show(surface)
-            if hasattr(box, 'check_hover'):
+            if hasattr(box, 'check_hover') and box.check_collision:
                 box.check_hover()
-            if hasattr(box, 'check_click') and not obj:  # if a box hasn't already been clicked
+            if hasattr(box, 'check_click') and not box_clicked:  # if a box hasn't already been clicked
                 if box.check_click():
-                    obj = box
-
-    def set_background(self, colour):
-        pass
+                    box_clicked = True # a box has been clicked
 
     def check_clicks(self):
-        obj = False
+        box_clicked = False
         for box in self.objects:
-            if hasattr(box, 'check_click') and not obj:
+            if hasattr(box, 'check_click') and not box_clicked:
                 if box.check_click():
-                    obj = box
-        return obj
+                    box_clicked = box
+        return box_clicked
 
     def get_list(self):
         return self.objects

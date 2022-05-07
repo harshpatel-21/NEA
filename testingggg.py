@@ -1,16 +1,16 @@
 import os, sys, csv, json
-from WINDOW import get_path
+from Window import get_path
 from openpyxl import load_workbook
 from boxes import Textbox
-# from entity_class import Entity, Enemy, Projectile, Group
-import pygame, WINDOW, random, boxes
+# from entities import Entity, Enemy, Projectile, Group
+import pygame, Window, random, boxes
 # from Items import Item, Decoration, DeathBlock
 # from level_editor import load_level, draw_grid
 #
 # pygame.init()
 #
-# x, y = WINDOW.x, WINDOW.y
-# os.environ['SDL_VIDEO_WINDOW_POS'] = f"{x},{y}"
+# x, y = Window.x, Window.y
+# os.environ['SDL_VIDEO_Window_POS'] = f"{x},{y}"
 #
 # current_path = os.path.dirname(__file__)  # Where your .py file is located
 # image_path = os.path.join(current_path, 'images')  # The image folder path
@@ -18,7 +18,7 @@ import pygame, WINDOW, random, boxes
 #
 # FPS = 60
 # clock = pygame.time.Clock()
-# window = WINDOW.Display(new_window=True)
+# window = Window.Display(new_window=True)
 # LEVEL = 2
 # TILE_TYPES = os.listdir(f'images/tiles/{2}')
 # img_list = []
@@ -28,7 +28,7 @@ import pygame, WINDOW, random, boxes
 # # entities = [17, 18]
 # img_list = {}
 # for i in TILE_TYPES:
-#     img = pygame.transform.scale(pygame.image.load(WINDOW.get_path(f'images/tiles/{LEVEL}/{i}')).convert_alpha(), TILE_SCALE)
+#     img = pygame.transform.scale(pygame.image.load(Window.get_path(f'images/tiles/{LEVEL}/{i}')).convert_alpha(), TILE_SCALE)
 #     # if i in flip_images: img = pygame.transform.flip(img, False, True)
 #     # if i in entities: img = pygame.transform.scale(img, (46,92))
 #     name = i[:i.index('.')]
@@ -122,12 +122,12 @@ import pygame, WINDOW, random, boxes
 # --------------------------- text boxes -----------------------------------
 # pygame.init()
 #
-# x, y = WINDOW.x, WINDOW.y
-# os.environ['SDL_VIDEO_WINDOW_POS'] = f"{x},{y}"
+# x, y = Window.x, Window.y
+# os.environ['SDL_VIDEO_Window_POS'] = f"{x},{y}"
 #
 # FPS = 60
 # clock = pygame.time.Clock()
-# window = WINDOW.Display(new_window=True,caption='Question Display',size=(1000,500))
+# window = Window.Display(new_window=True,caption='Question Display',size=(1000,500))
 #
 # class QuestionBox(Textbox):
 #     LARGE_FONT = pygame.font.SysFont('Sans', 35)
@@ -294,18 +294,20 @@ import pygame, WINDOW, random, boxes
 # ------------------------------------------------- STOPWATCH ------------------------------------------------
 pygame.init()
 
-x, y = WINDOW.x, WINDOW.y
-os.environ['SDL_VIDEO_WINDOW_POS'] = f"{x},{y}"
+x, y = Window.x, Window.y
+os.environ['SDL_VIDEO_Window_POS'] = f"{x},{y}"
 
 FPS = 60
 clock = pygame.time.Clock()
-window = WINDOW.Display(new_window=True,caption='Stopwatch',size=(500,250))
+window = Window.Display(new_window=True,caption='Stopwatch',size=(200,160))
 time1 = pygame.time.get_ticks()
 timer=0
 pause = False
-pause_button = boxes.AutoBox(190,70,(120,40),'pause','Pause',font_size=20)
-reset_button = boxes.AutoBox(190,120,(120,40),'reset','Reset',font_size=20)
+y = 2
+pause_button = boxes.AutoBox(190,60+y,(120,40),'pause','Pause',font_size=20)
+reset_button = boxes.AutoBox(190,110+y,(120,40),'reset','Reset',font_size=20)
 clicked=False
+
 while 1:
     window.refresh()
     for event in pygame.event.get():
@@ -323,15 +325,16 @@ while 1:
         timer += 1*(not pause)
         time1 = pygame.time.get_ticks()
 
-    time = WINDOW.convert_time_format(timer)
-    window.draw_text(time,(window.HEIGHT//2,20),center=True,size='LARGE')
+    time = Window.convert_time_format(timer)
+    window.draw_text(time,(window.HEIGHT//2,y+18),center=(True,False),size='LARGE')
     if pause:
-        window.draw_text('Paused',(window.HEIGHT//2,2),center=True,size='SMALL',colour=(255,51,51))
+        window.draw_text('Paused',(window.HEIGHT//2, y),center=(True,False),size='SMALL',colour=(255,51,51))
 
+    reset_button.show(window.screen, center=(True, False))
     reset_button.check_hover()
-    reset_button.show(window.screen)
 
+    pause_button.show(window.screen, center=(True, False))
     pause_button.check_hover()
-    pause_button.show(window.screen)
+
     pygame.display.update()
-    clock.tick(FPS)
+    clock.tick(30)

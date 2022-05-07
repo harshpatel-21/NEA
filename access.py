@@ -1,12 +1,12 @@
 
-import pygame, os, WINDOW
-from WINDOW import Display, NoIndent, read_json, write_json
+import pygame, os, Window
+from Window import Display, NoIndent, read_json, write_json
 from boxes import Textbox
 import re, json
 
 # --------------------- Main Game stuff -------------------------------#
-x,y = WINDOW.x,WINDOW.y
-os.environ['SDL_VIDEO_WINDOW_POS'] = f"{x},{y}"
+x,y = Window.x,Window.y
+os.environ['SDL_VIDEO_Window_POS'] = f"{x},{y}"
 pygame.init()
 clock = pygame.time.Clock()
 
@@ -25,7 +25,7 @@ def presence_in_file(username: str, data: dict):
     return data.get(username)
 
 def check_details(username, password, state):
-    data = read_json('user_info/users.json') # extract user details
+    data = read_json('users.json') # extract user details
     username_data = presence_in_file(username, data) # .get checks if the key exists, and if it does, it returns the value, else None
 
     if state=='login':
@@ -50,7 +50,7 @@ def add_info(data, username, password):
         for question in file_info:
             file_info[question][username] = NoIndent([0, 0, 0])
         write_json(file_info, f'Questions/{file}') # write to all question files
-    write_json(data, 'user_info/users.json') # if username was added to all question files, officially add em
+    write_json(data, 'users.json') # if username was added to all question files, officially add em
 
 def validate_character(string, click, character):
     # Only allow characters, numbers and certain symbols
@@ -63,7 +63,7 @@ def validate_username(username):
     # length error, not unique error
     if not(4 <= len(username) <= 15):
         return 1, 0
-    if presence_in_file(username, WINDOW.read_json('user_info/users.json')):
+    if presence_in_file(username, Window.read_json('users.json')):
         return 0, 1
     if not(re.findall('([A-Za-z]+)', username)):
         return 0, 0
@@ -102,7 +102,7 @@ def input_information(state):
     delete_counter = 0
 
     while True:
-        data = read_json('user_info/users.json')
+        data = read_json('users.json')
         window.refresh(back=True, pos=(435,500))
         username_box.text=fill_text
         password_box.text=fillpass_text

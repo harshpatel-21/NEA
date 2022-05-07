@@ -1,17 +1,30 @@
 #---------------------------------- Imports ----------------------------------#
 
-import pygame, os, re, json, menu, WINDOW
+import pygame, os, re, json, menu, Window
 from boxes import Textbox
 from access import input_information
 
-Display = WINDOW.Display
-read_json = WINDOW.read_json
-write_json = WINDOW.write_json
+Display = Window.Display
+read_json = Window.read_json
+write_json = Window.write_json
 # laptop
-x, y = WINDOW.x, WINDOW.y
+x, y = Window.x, Window.y
+try:
+    import pygame,os
+    from Window import Display
+    from boxes import Textbox, Inputbox
+    import re,json
+    from access import input_information
+    import Window
+    import Game_V4
+except ImportError as error:
+    print(error)
+
+# lapto
+x,y = Window.x,Window.y
 # school computer
 # x,y = 50,80
-os.environ['SDL_VIDEO_WINDOW_POS'] = f"{x},{y}"
+os.environ['SDL_VIDEO_Window_POS'] = f"{x},{y}"
 #--------------------------------- Setting Up --------------------------------#
 clock = pygame.time.Clock()
 
@@ -29,7 +42,7 @@ pygame.init()
 #------------------------------ update details ------------------------------#
 def update_details():
     # fill in missing user data in question files. ie when a new question is added, don't have to do it manually
-    for user in read_json('user_info/users.json'):
+    for user in read_json('users.json'):
         for topic_name in os.listdir('Questions'):
             question_path = f'Questions/{topic_name}'
             topic_data = read_json(question_path)

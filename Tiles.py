@@ -1,8 +1,8 @@
 import pygame, sys
 import os
 
-from WINDOW import Display
-from entity_class import Group
+from Window import Display
+from entities import Group
 
 current_path = os.path.dirname(__file__)  # Where your .py file is located
 image_path = os.path.join(current_path, 'images', 'items') # The image folder path
