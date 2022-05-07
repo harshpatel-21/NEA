@@ -134,9 +134,9 @@ class AutoBox(Textbox):
         self.check_collision = True
 
     def show(self, surface, center=(False,False)):
-        # self.surface.fill(self.background)
+        self.surface.fill(self.background)
         center_x,center_y = center
-        pygame.draw.rect(self.surface, self.background, (0, 0, self.rect.w, self.rect.h))
+        # if self.background: pygame.draw.rect(self.surface, self.background, (0, 0, self.rect.w, self.rect.h))
         if self.border_colour: # if there is a border colour
             pygame.draw.rect(self.surface, self.border_colour, (0, 0, self.rect.w, self.rect.h), self.border_radius)
 
@@ -237,7 +237,7 @@ class AutoBox(Textbox):
         self.add_text(text)
 
     def check_hover(self, mouse_pos=0):
-        self.surface.set_alpha(190)
+        self.surface.set_alpha(220)
         # if the mouse position is over the rectangle, change colour, otherwise change it back to normal
         if self.obj_type != 'question':
             mouse_pos = pygame.mouse.get_pos()

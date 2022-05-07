@@ -323,7 +323,7 @@ class Entity(pygame.sprite.Sprite):
         temp = self.idle_rect.copy()
         temp.x = temp.x - target.rect.x + Display.WIDTH // 2
         temp.y = temp.y - target.rect.y + Display.HEIGHT // 2
-        pygame.draw.rect(surface, (255,15,64), temp, 2)
+        # pygame.draw.rect(surface, (255,15,64), temp, 2)
         self.draw_health_bar(surface, target)
 
     def check_alive(self):  # check if the entity is alive
@@ -352,18 +352,6 @@ class Entity(pygame.sprite.Sprite):
             return
         return self.idle_rect.colliderect(obj.idle_rect)
 
-        # obj_mask = pygame.mask.from_surface(pygame.transform.flip(obj.image, obj.direction == -1,
-        #                                                           False))  # flips the mask of the image during collision detection
-        # offset_x = obj.rect.x - self.rect.x
-        # offset_y = obj.rect.y - self.rect.y
-        # image = self.animations[self.get_index('Running')][0]
-        # current_mask = pygame.mask.from_surface(pygame.transform.flip(image, self.direction == -1,
-        #                                                               False))  # flips the mask of the image during collision detection
-        # collision = current_mask.overlap(obj_mask, (
-        #     offset_x, offset_y))  # making sure player is in sword
-        # if collision:
-        #     print('collision')
-        # return bool(collision)
 
 class Enemy(Entity):
     def __init__(self, x, y, obj_type, scale, max_health=100, x_vel=2, all_animations=None, attack_radius=150,
@@ -460,7 +448,7 @@ class Enemy(Entity):
         if self.health > 0:
 
             self.start_attack(player, world)  # check if player collision has
-            # player.combat_collision(self) # check if self has dealt damage to player
+            player.combat_collision(self) # check if self has dealt damage to player
             self.combat_collision(player)  # check if player has dealt damage to self
 
         self.AI(world)  # do enemy AI
