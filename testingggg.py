@@ -2,7 +2,7 @@ import os, sys, csv, json
 from Window import get_path
 from openpyxl import load_workbook
 from boxes import Textbox
-# from entity_class import Entity, Enemy, Projectile, Group
+# from entities import Entity, Enemy, Projectile, Group
 import pygame, Window, random, boxes
 # from Items import Item, Decoration, DeathBlock
 # from level_editor import load_level, draw_grid

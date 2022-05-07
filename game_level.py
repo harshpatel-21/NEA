@@ -1,8 +1,8 @@
 # EDIT FOR IMAGES: DIMENSIONS SHOULD BE 17x30
 # GET QUESTIONS: https://quizizz.com/admin/search/h446%20OCR%20computer%20science%201.2.1?queryId=5f6b05fd7c198b001b54c8de-1650744363792
 # if __name__ == 'Game_V4':
-from entity_class import Entity, Enemy, Group
-import pygame, Window, QuestionWindow, os, sys, random, csv
+from entities import Entity, Enemy, Group
+import pygame, Window, question_window, os, sys, random, csv
 from Tiles import AnimatedTile, Tile
 from transition import ScreenFade
 
@@ -356,11 +356,11 @@ def play_level(username, level):
             assert bool(questions), 'No more questions left' # making sure there are still questions left to pop
 
             current_question = questions.pop() # pop the question at the top of the stack
-            QuestionWindow_values = QuestionWindow.start_question(question=current_question, question_data=question_data, timer=timer)
+            question_window_values = question_window.start_question(question=current_question, question_data=question_data, timer=timer)
 
             # extract current stats for the question and adjust them based on result of the user's choice
-            if isinstance(QuestionWindow_values, tuple): # if the result and timer was returned
-                result = QuestionWindow_values[0] # the outcome of the question displayed
+            if isinstance(question_window_values, tuple): # if the result and timer was returned
+                result = question_window_values[0] # the outcome of the question displayed
                 user_right, user_wrong, user_accuracy = (question_data[current_question])[username]
                 if result:
                     user_right += 1; points += 10; total_right+=1; streak += 1 # if they got the question right, add 10 points, increase streak, and recover health
@@ -371,9 +371,9 @@ def play_level(username, level):
                     user_accuracy = user_right/(user_right+user_wrong) # to ensure that the denominator is not 0
                     total_accuracy = round(total_right/(total_right+total_wrong), 2)
                 question_data[current_question][username] = [user_right, user_wrong, user_accuracy] # update statistics of the user on the question displayed
-                timer = QuestionWindow_values[1]
+                timer = question_window_values[1]
             else:
-                timer = QuestionWindow_values
+                timer = question_window_values
             max_streak = max(streak, max_streak)
 
             # inwards fade
