@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="04890d85-8abc-44ea-8f03-953bdc0c633d" name="Default Changelist" comment="minor changes to files.">
+      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/Magic-Cliffs-Environment/PNG/clouds.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/Magic-Cliffs-Environment/PNG/far-grounds.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/Magic-Cliffs-Environment/PNG/sea.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/Magic-Cliffs-Environment/PNG/sky.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/Magic-Cliffs-Environment/PNG/tileset.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/Magic-Cliffs-Environment/PREVIEWS/100x100x1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/Magic-Cliffs-Environment/PREVIEWS/magic-cliffs-PREVIEWx1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/Magic-Cliffs-Environment/PREVIEWS/magic-cliffs-preview-detail.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/Magic-Cliffs-Environment/PREVIEWS/magic-cliffs-preview-detailx1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/Magic-Cliffs-Environment/PSD/magic-cliffs.psd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/Magic-Cliffs-Environment/magic cliffs music/magic cliffs.mp3" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/Magic-Cliffs-Environment/magic cliffs music/magic cliffs.ogg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/Magic-Cliffs-Environment/magic cliffs music/magic cliffs.wav" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/Magic-Cliffs-Environment/public-license.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/__MACOSX/Magic-Cliffs-Environment/._public-license.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/__MACOSX/Magic-Cliffs-Environment/PNG/._clouds.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/__MACOSX/Magic-Cliffs-Environment/PNG/._far-grounds.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/__MACOSX/Magic-Cliffs-Environment/PNG/._sea.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/__MACOSX/Magic-Cliffs-Environment/PNG/._sky.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/__MACOSX/Magic-Cliffs-Environment/PNG/._tileset.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/__MACOSX/Magic-Cliffs-Environment/PREVIEWS/._100x100x1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/__MACOSX/Magic-Cliffs-Environment/PREVIEWS/._magic-cliffs-PREVIEWx1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/__MACOSX/Magic-Cliffs-Environment/PREVIEWS/._magic-cliffs-preview-detail.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/__MACOSX/Magic-Cliffs-Environment/PREVIEWS/._magic-cliffs-preview-detailx1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/__MACOSX/Magic-Cliffs-Environment/PSD/._magic-cliffs.psd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/__MACOSX/Magic-Cliffs-Environment/magic cliffs music/._magic cliffs.mp3" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/__MACOSX/Magic-Cliffs-Environment/magic cliffs music/._magic cliffs.ogg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/__MACOSX/Magic-Cliffs-Environment/magic cliffs music/._magic cliffs.wav" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/cave.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/country-platform-files/country-platform-preview.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/country-platform-files/layers/country-platform-back.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/country-platform-files/layers/country-platform-forest.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/country-platform-files/layers/country-platform-tiles-example.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/country-platform-files/layers/country-platform-tileset.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Demo/demo.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Background/cloud.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Background/mountain2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Background/pine1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Background/pine2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Background/sky.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Background/sky_cloud.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Decor/Bush/bush_1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Decor/Bush/bush_2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Decor/Rock/rock_1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Decor/Rock/rock_2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Decor/Tree/tree.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Decor/Tree/tree_dead.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Tile/Grass/grass_1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Tile/Grass/grass_2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Tile/Grass/grass_3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Tile/Grass/grass_4.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Tile/Grass/grass_5.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Tile/Ground/ground_1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Tile/Ground/ground_10.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Tile/Ground/ground_11.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Tile/Ground/ground_2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Tile/Ground/ground_3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Tile/Ground/ground_4.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Tile/Ground/ground_5.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Tile/Ground/ground_6.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Tile/Ground/ground_7.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Tile/Ground/ground_8.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Tile/Ground/ground_9.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/parallax_mountain_pack/layers/parallax-mountain-bg.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/parallax_mountain_pack/layers/parallax-mountain-foreground-trees.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/parallax_mountain_pack/layers/parallax-mountain-montain-far.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/parallax_mountain_pack/layers/parallax-mountain-mountains.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backgrounds/parallax_mountain_pack/layers/parallax-mountain-trees.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/Arrow04.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/mobs/knight/Falling/0.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/mobs/knight/Falling/1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/mobs/knight/Falling/2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/mobs/knight/Jumping/0.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/mobs/knight/Jumping/1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/mobs/knight/Jumping/2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/mobs/samurai/Hurt/1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/mobs/samurai/Hurt/2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/mobs/samurai/Hurt/3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/mobs/samurai/Martial Hero 2/License.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/mobs/samurai/Martial Hero 2/Sprites/Attack1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/mobs/samurai/Martial Hero 2/Sprites/Attack2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/mobs/samurai/Martial Hero 2/Sprites/Death.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/mobs/samurai/Martial Hero 2/Sprites/Fall.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/mobs/samurai/Martial Hero 2/Sprites/Idle.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/mobs/samurai/Martial Hero 2/Sprites/Jump.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/mobs/samurai/Martial Hero 2/Sprites/Run.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/mobs/samurai/Martial Hero 2/Sprites/Take hit.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/mobs/samurai/default.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/mobs/samurai/temp/sprite_0.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/mobs/samurai/temp/sprite_1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/mobs/samurai/temp/sprite_2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/mobs/samurai/temp/sprite_3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/mobs/x.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/mobs/y.png" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
+  </component>
+  <component name="ProjectId" id="27FOSo4wvbAG7xABEmQfWnn8uv4" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+    <option name="showMembers" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="preferences.editor" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Harsh\Desktop\1.MAIN_NEA\images" />
+      <recent name="C:\Users\Harsh\Desktop\1.MAIN_NEA\levels\level2" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Python.main">
+    <configuration name="QuestionWindow" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
+      <module name="1.Main NEA" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Users\Harsh\AppData\Local\Programs\Python\Python38\python.exe" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/QuestionWindow.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
+      <module name="1.Main NEA" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Users\Harsh\AppData\Local\Programs\Python\Python38\python.exe" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="menu" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
+      <module name="1.Main NEA" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Users\Harsh\AppData\Local\Programs\Python\Python38\python.exe" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/menu.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="testingggg" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
+      <module name="1.Main NEA" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Users\Harsh\AppData\Local\Programs\Python\Python38\python.exe" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/testingggg.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Python.menu" />
+      <item itemvalue="Python.QuestionWindow" />
+      <item itemvalue="Python.testingggg" />
+      <item itemvalue="Python.main" />
+    </list>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="04890d85-8abc-44ea-8f03-953bdc0c633d" name="Default Changelist" comment="" />
+      <created>1648912376801</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1648912376801</updated>
+    </task>
+    <task id="LOCAL-00001" summary="minor changes to files.">
+      <created>1650836518059</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1650836518059</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
+    <servers />
+  </component>
+  <component name="Vcs.Log.History.Properties">
+    <option name="COLUMN_ID_ORDER">
+      <list>
+        <option value="Default.Root" />
+        <option value="Default.Author" />
+        <option value="Default.Date" />
+        <option value="Default.Subject" />
+      </list>
+    </option>
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="minor changes to files." />
+    <option name="LAST_COMMIT_MESSAGE" value="minor changes to files." />
+  </component>
+</project>
