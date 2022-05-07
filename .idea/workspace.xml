@@ -2,100 +2,18 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="04890d85-8abc-44ea-8f03-953bdc0c633d" name="Default Changelist" comment="minor changes to files.">
-      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/Magic-Cliffs-Environment/PNG/clouds.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/Magic-Cliffs-Environment/PNG/far-grounds.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/Magic-Cliffs-Environment/PNG/sea.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/Magic-Cliffs-Environment/PNG/sky.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/Magic-Cliffs-Environment/PNG/tileset.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/Magic-Cliffs-Environment/PREVIEWS/100x100x1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/Magic-Cliffs-Environment/PREVIEWS/magic-cliffs-PREVIEWx1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/Magic-Cliffs-Environment/PREVIEWS/magic-cliffs-preview-detail.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/Magic-Cliffs-Environment/PREVIEWS/magic-cliffs-preview-detailx1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/Magic-Cliffs-Environment/PSD/magic-cliffs.psd" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/Magic-Cliffs-Environment/magic cliffs music/magic cliffs.mp3" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/Magic-Cliffs-Environment/magic cliffs music/magic cliffs.ogg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/Magic-Cliffs-Environment/magic cliffs music/magic cliffs.wav" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/Magic-Cliffs-Environment/public-license.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/__MACOSX/Magic-Cliffs-Environment/._public-license.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/__MACOSX/Magic-Cliffs-Environment/PNG/._clouds.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/__MACOSX/Magic-Cliffs-Environment/PNG/._far-grounds.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/__MACOSX/Magic-Cliffs-Environment/PNG/._sea.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/__MACOSX/Magic-Cliffs-Environment/PNG/._sky.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/__MACOSX/Magic-Cliffs-Environment/PNG/._tileset.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/__MACOSX/Magic-Cliffs-Environment/PREVIEWS/._100x100x1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/__MACOSX/Magic-Cliffs-Environment/PREVIEWS/._magic-cliffs-PREVIEWx1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/__MACOSX/Magic-Cliffs-Environment/PREVIEWS/._magic-cliffs-preview-detail.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/__MACOSX/Magic-Cliffs-Environment/PREVIEWS/._magic-cliffs-preview-detailx1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/__MACOSX/Magic-Cliffs-Environment/PSD/._magic-cliffs.psd" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/__MACOSX/Magic-Cliffs-Environment/magic cliffs music/._magic cliffs.mp3" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/__MACOSX/Magic-Cliffs-Environment/magic cliffs music/._magic cliffs.ogg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/Magic-Cliffs-Environment/__MACOSX/Magic-Cliffs-Environment/magic cliffs music/._magic cliffs.wav" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/cave.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/country-platform-files/country-platform-preview.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/country-platform-files/layers/country-platform-back.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/country-platform-files/layers/country-platform-forest.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/country-platform-files/layers/country-platform-tiles-example.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/country-platform-files/layers/country-platform-tileset.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Demo/demo.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Background/cloud.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Background/mountain2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Background/pine1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Background/pine2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Background/sky.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Background/sky_cloud.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Decor/Bush/bush_1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Decor/Bush/bush_2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Decor/Rock/rock_1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Decor/Rock/rock_2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Decor/Tree/tree.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Decor/Tree/tree_dead.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Tile/Grass/grass_1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Tile/Grass/grass_2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Tile/Grass/grass_3.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Tile/Grass/grass_4.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Tile/Grass/grass_5.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Tile/Ground/ground_1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Tile/Ground/ground_10.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Tile/Ground/ground_11.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Tile/Ground/ground_2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Tile/Ground/ground_3.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Tile/Ground/ground_4.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Tile/Ground/ground_5.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Tile/Ground/ground_6.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Tile/Ground/ground_7.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Tile/Ground/ground_8.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/forest_tileset_lite/Sprites/Tile/Ground/ground_9.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/parallax_mountain_pack/layers/parallax-mountain-bg.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/parallax_mountain_pack/layers/parallax-mountain-foreground-trees.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/parallax_mountain_pack/layers/parallax-mountain-montain-far.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/parallax_mountain_pack/layers/parallax-mountain-mountains.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backgrounds/parallax_mountain_pack/layers/parallax-mountain-trees.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/images/Arrow04.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/images/mobs/knight/Falling/0.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/images/mobs/knight/Falling/1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/images/mobs/knight/Falling/2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/images/mobs/knight/Jumping/0.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/images/mobs/knight/Jumping/1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/images/mobs/knight/Jumping/2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/images/mobs/samurai/Hurt/1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/images/mobs/samurai/Hurt/2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/images/mobs/samurai/Hurt/3.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/images/mobs/samurai/Martial Hero 2/License.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/images/mobs/samurai/Martial Hero 2/Sprites/Attack1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/images/mobs/samurai/Martial Hero 2/Sprites/Attack2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/images/mobs/samurai/Martial Hero 2/Sprites/Death.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/images/mobs/samurai/Martial Hero 2/Sprites/Fall.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/images/mobs/samurai/Martial Hero 2/Sprites/Idle.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/images/mobs/samurai/Martial Hero 2/Sprites/Jump.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/images/mobs/samurai/Martial Hero 2/Sprites/Run.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/images/mobs/samurai/Martial Hero 2/Sprites/Take hit.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/images/mobs/samurai/default.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/images/mobs/samurai/temp/sprite_0.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/images/mobs/samurai/temp/sprite_1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/images/mobs/samurai/temp/sprite_2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/images/mobs/samurai/temp/sprite_3.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/images/mobs/x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/images/mobs/y.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Items.py" beforeDir="false" afterPath="$PROJECT_DIR$/Items.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Tiles.py" beforeDir="false" afterPath="$PROJECT_DIR$/Tiles.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/items/portal/0.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/items/portal/1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/items/portal/2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/items/portal/3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/items/portal/4.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/items/portal/5.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/items/portal/6.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/items/portal/7.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/points.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/points.png" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -138,7 +56,7 @@
       <recent name="C:\Users\Harsh\Desktop\1.MAIN_NEA\levels\level2" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.main">
+  <component name="RunManager" selected="Python.menu">
     <configuration name="QuestionWindow" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="1.Main NEA" />
       <option name="INTERPRETER_OPTIONS" value="" />

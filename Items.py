@@ -8,7 +8,7 @@ import os
 from Window import Display
 
 current_path = os.path.dirname(__file__)  # Where your .py file is located
-image_path = os.path.join(current_path, 'images','items') # The image folder path
+image_path = os.path.join(current_path, 'images','') # The image folder path
 # print(image_path)
 pygame.init()
 

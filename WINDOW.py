@@ -7,7 +7,7 @@ x,y = 50,80
 
 os.environ['SDL_VIDEO_Window_POS'] = f"{x},{y}"
 from _ctypes import PyObj_FromPtr
-# https://stackoverflow.com/a/15012814/355230 for adding lists to json no indent
+# https://stackoverflow.com/questions/42710879/write-two-dimensional-list-to-json-file for adding lists to json no indent
 # --------------- modules to add lists/tuples to .json without indentation ---------------------- #
 class NoIndent(object):
     """ Value wrapper. """
