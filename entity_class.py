@@ -3,7 +3,7 @@ import pygame, sys, os, random, inspect
 x = '\\'.join(os.path.abspath(__file__).split('\\')[:-2])  # allow imports from main folder
 sys.path.insert(1, x)
 
-from WINDOW import Display, StopRunning
+from Window import Display, StopRunning
 
 # websites:
 # https://www.piskelapp.com/

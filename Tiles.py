@@ -1,7 +1,7 @@
 import pygame, sys
 import os
 
-from WINDOW import Display
+from Window import Display
 from entity_class import Group
 
 current_path = os.path.dirname(__file__)  # Where your .py file is located

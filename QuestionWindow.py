@@ -1,4 +1,4 @@
-import os, sys, pygame, WINDOW, random
+import os, sys, pygame, Window, random
 from boxes import Textbox, AutoBox
 from boxes import BoxGroup
 from transition import ScreenFade
@@ -31,12 +31,12 @@ def get_boxes(question_data, question, window):
 def start_question(question, question_data, timer=0):
     # ---------- key variables -------------#
     pygame.init()
-    x, y = WINDOW.x, WINDOW.y
-    Display = WINDOW.Display
-    os.environ['SDL_VIDEO_WINDOW_POS'] = f"{x},{y}"
+    x, y = Window.x, Window.y
+    Display = Window.Display
+    os.environ['SDL_VIDEO_Window_POS'] = f"{x},{y}"
     FPS = 60
     clock = pygame.time.Clock()
-    window = WINDOW.Display(new_window=True, caption='Question Display')
+    window = Window.Display(new_window=True, caption='Question Display')
     correct_answer = question_data[question]['options'][0] # correct answer will always be at first index of options
     main_group = get_boxes(question_data, question, window)
 
@@ -134,7 +134,7 @@ def start_question(question, question_data, timer=0):
             timer += 1  # account for the time in the question screen
             time1 = pygame.time.get_ticks()
 
-        window.draw_text(text=f'Time: {WINDOW.convert_time_format(timer)}', pos=(670,3), size='MEDIUM',center=(True,False))
+        window.draw_text(text=f'Time: {Window.convert_time_format(timer)}', pos=(670,3), size='MEDIUM',center=(True,False))
         pygame.display.update()
         clock.tick(FPS)
 

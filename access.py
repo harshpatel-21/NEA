@@ -1,12 +1,12 @@
 
-import pygame, os, WINDOW
-from WINDOW import Display, NoIndent, read_json, write_json
+import pygame, os, Window
+from Window import Display, NoIndent, read_json, write_json
 from boxes import Textbox
 import re, json
 
 # --------------------- Main Game stuff -------------------------------#
-x,y = WINDOW.x,WINDOW.y
-os.environ['SDL_VIDEO_WINDOW_POS'] = f"{x},{y}"
+x,y = Window.x,Window.y
+os.environ['SDL_VIDEO_Window_POS'] = f"{x},{y}"
 pygame.init()
 clock = pygame.time.Clock()
 
@@ -63,7 +63,7 @@ def validate_username(username):
     # length error, not unique error
     if not(4 <= len(username) <= 15):
         return 1, 0
-    if presence_in_file(username, WINDOW.read_json('users.json')):
+    if presence_in_file(username, Window.read_json('users.json')):
         return 0, 1
     if not(re.findall('([A-Za-z]+)', username)):
         return 0, 0

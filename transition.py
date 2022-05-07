@@ -1,5 +1,5 @@
 import pygame
-from WINDOW import Display as window
+from Window import Display as window
 
 class ScreenFade:
     def __init__(self, direction, colour, time=0.6):

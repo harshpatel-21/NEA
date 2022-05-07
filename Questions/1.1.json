@@ -13,7 +13,8 @@
         "apatel6": [1, 2, 0.3333333333333333],
         "Harsh12": [0, 0, 0],
         "mpor": [1, 0, 1.0],
-        "aaaa": [0, 0, 0]
+        "aaaa": [0, 0, 0],
+        "efwef": [0, 0, 0]
     },
     "What is the purpose of the Accumulator?": {
         "options": [
@@ -29,7 +30,8 @@
         "apatel6": [0, 1, 0.0],
         "Harsh12": [0, 0, 0],
         "mpor": [0, 0, 0],
-        "aaaa": [0, 0, 0]
+        "aaaa": [0, 0, 0],
+        "efwef": [0, 0, 0]
     },
     "Which of the following can be adjusted to improve the performance of a CPU?": {
         "options": [
@@ -45,7 +47,8 @@
         "apatel6": [0, 1, 0.0],
         "Harsh12": [0, 0, 0],
         "mpor": [0, 0, 0],
-        "aaaa": [0, 0, 0]
+        "aaaa": [0, 0, 0],
+        "efwef": [0, 0, 0]
     },
     "Which two CPU registers will regularly store the same value?": {
         "options": [
@@ -61,7 +64,8 @@
         "apatel6": [0, 1, 0.0],
         "Harsh12": [0, 0, 0],
         "mpor": [0, 0, 0],
-        "aaaa": [0, 0, 0]
+        "aaaa": [0, 0, 0],
+        "efwef": [0, 0, 0]
     },
     "Which of these components exists outside of the CPU?": {
         "options": [
@@ -77,7 +81,8 @@
         "apatel6": [2, 1, 0.6666666666666666],
         "Harsh12": [0, 0, 0],
         "mpor": [0, 1, 0.0],
-        "aaaa": [0, 0, 0]
+        "aaaa": [0, 0, 0],
+        "efwef": [0, 0, 0]
     },
     "Which of the following devices is an example of an embedded system?": {
         "options": [
@@ -93,7 +98,8 @@
         "apatel6": [0, 1, 0.0],
         "Harsh12": [0, 0, 0],
         "mpor": [0, 0, 0],
-        "aaaa": [0, 0, 0]
+        "aaaa": [0, 0, 0],
+        "efwef": [0, 0, 0]
     },
     "How many blocks of memory are used in the Von Neumann architecture": {
         "options": [
@@ -109,7 +115,8 @@
         "apatel6": [0, 0, 0],
         "Harsh12": [0, 0, 0],
         "mpor": [0, 0, 0],
-        "aaaa": [0, 0, 0]
+        "aaaa": [0, 0, 0],
+        "efwef": [0, 0, 0]
     },
     "Which type of processor has a large instruction set built into it": {
         "options": [
@@ -125,7 +132,8 @@
         "apatel6": [1, 1, 0.5],
         "Harsh12": [0, 0, 0],
         "mpor": [0, 0, 0],
-        "aaaa": [0, 0, 0]
+        "aaaa": [0, 0, 0],
+        "efwef": [0, 0, 0]
     },
     "Which of the following is True?": {
         "options": [
@@ -141,7 +149,8 @@
         "apatel6": [1, 0, 1.0],
         "Harsh12": [0, 0, 0],
         "mpor": [0, 0, 0],
-        "aaaa": [0, 0, 0]
+        "aaaa": [0, 0, 0],
+        "efwef": [0, 0, 0]
     },
     "What is the fastest form of storage from these?": {
         "options": [
@@ -157,7 +166,8 @@
         "apatel6": [0, 2, 0.0],
         "Harsh12": [0, 0, 0],
         "mpor": [0, 0, 0],
-        "aaaa": [0, 0, 0]
+        "aaaa": [0, 0, 0],
+        "efwef": [0, 0, 0]
     },
     "What are the two parts of a computer instruction?": {
         "options": [
@@ -173,7 +183,8 @@
         "apatel6": [1, 0, 1.0],
         "Harsh12": [0, 0, 0],
         "mpor": [0, 0, 0],
-        "aaaa": [0, 0, 0]
+        "aaaa": [0, 0, 0],
+        "efwef": [0, 0, 0]
     },
     "What is the most suitable storage device for: A Travel Agent backing up 800GB of data with medium costs": {
         "options": [
@@ -189,7 +200,8 @@
         "apatel6": [1, 0, 1.0],
         "Harsh12": [0, 0, 0],
         "mpor": [0, 0, 0],
-        "aaaa": [0, 0, 0]
+        "aaaa": [0, 0, 0],
+        "efwef": [0, 0, 0]
     },
     "What is the name given to the areas on a CD's surface which have burned into grooves by a laser?": {
         "options": [
@@ -205,7 +217,8 @@
         "apatel6": [1, 1, 0.5],
         "Harsh12": [0, 0, 0],
         "mpor": [0, 0, 0],
-        "aaaa": [0, 0, 0]
+        "aaaa": [0, 0, 0],
+        "efwef": [0, 0, 0]
     },
     "This form of memory is volatile": {
         "options": [
@@ -221,7 +234,8 @@
         "apatel6": [0, 0, 0],
         "Harsh12": [0, 0, 0],
         "mpor": [0, 0, 0],
-        "aaaa": [0, 0, 0]
+        "aaaa": [0, 0, 0],
+        "efwef": [0, 0, 0]
     },
     "What is a disadvantage of Solid State Drives": {
         "options": [
@@ -237,6 +251,7 @@
         "apatel6": [1, 0, 1.0],
         "Harsh12": [0, 0, 0],
         "mpor": [0, 0, 0],
-        "aaaa": [0, 0, 0]
+        "aaaa": [0, 0, 0],
+        "efwef": [0, 0, 0]
     }
 }

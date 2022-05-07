@@ -1,15 +1,15 @@
-import pygame, os, re, sys, WINDOW, game_level
+import pygame, os, re, sys, Window, game_level
 from boxes import BoxGroup, AutoBox
 from transition import SurfaceFade
 import matplotlib.pyplot as plt
 pygame.init()
 
-x, y = WINDOW.x, WINDOW.y
-os.environ['SDL_VIDEO_WINDOW_POS'] = f"{x},{y}"
+x, y = Window.x, Window.y
+os.environ['SDL_VIDEO_Window_POS'] = f"{x},{y}"
 
 FPS = 60
 clock = pygame.time.Clock()
-window = WINDOW.Display(new_window=True)
+window = Window.Display(new_window=True)
 
 topic_num = {
         'Systems Architecture':"1.1",
@@ -25,7 +25,7 @@ def get_topic_number(topic):
 def show_leaderboards(surface, user_data) -> None:
     # extract username and points as an array for each user, forming a 2D array
     user_points = [[username, sum(user_data[username]['points'])] for username in user_data] # create a 2D array with [[username,points] for each user]
-    top_ten = WINDOW.bubble_sort2D(user_points)[:10] # highest -> lowest of the top 10
+    top_ten = Window.bubble_sort2D(user_points)[:10] # highest -> lowest of the top 10
     font = pygame.font.SysFont('Sans', 30)
     longest_name = font.render('W'*15, 1, (255, 255, 255)).get_rect()  # longest name's data
     padding_y = 20
@@ -48,7 +48,7 @@ def show_leaderboards(surface, user_data) -> None:
         surface.blit(rendered_points, (start_x + padding_x, (padding_y * i) + (longest_name.height * i) + start_y))
 
 def get_graph(username):
-    user_data = WINDOW.read_json('users.json')
+    user_data = Window.read_json('users.json')
     points = user_data[username]['points']
     # the first and last x values
     start_x, end_x = 1, len(points)
@@ -132,13 +132,13 @@ def get_topic_boxes(username, user_data) -> list:
     accuracy_1 = [] # first row's accuracies
     for topic in row_1:
         topic_number = get_topic_number(topic)
-        question_data = WINDOW.read_json(f'Questions/{topic_number}.json')
+        question_data = Window.read_json(f'Questions/{topic_number}.json')
         accuracy_1.append(get_accuracy(question_data,username))
 
     accuracy_2 = [] # second row's accuracies
     for topic in row_2:
         topic_number = get_topic_number(topic)
-        question_data = WINDOW.read_json(f'Questions/{topic_number}.json')
+        question_data = Window.read_json(f'Questions/{topic_number}.json')
         accuracy_2.append(get_accuracy(question_data, username))
 
     # arrange topic selection
@@ -150,7 +150,7 @@ def get_topic_boxes(username, user_data) -> list:
         if current_time == -1:
             current_time = default_message
         else:
-            current_time = WINDOW.convert_time_format(current_time)
+            current_time = Window.convert_time_format(current_time)
         topics.append(
             # create a box at suitable position with padding
             AutoBox(padding1 * i + (width1 * i) + padding1, 200, (width1, 0.4 * width1), row_1[i], text=row_1[i]+f' \\n \\n Accuracy: {accuracy_1[i]}  \\n Best Time: {current_time}',center_text=(False,True),font_size=22))
@@ -165,7 +165,7 @@ def get_topic_boxes(username, user_data) -> list:
         if current_time == -1:
             current_time = default_message
         else:
-            current_time = WINDOW.convert_time_format(current_time)
+            current_time = Window.convert_time_format(current_time)
         # create a box at suitable position with padding
         topics.append(AutoBox(padding2 * j + (width2 * j) + padding2, topics[1].rect.h + padding_y + padding1,(width2, 0.35 * width2), row_2[j], text=row_2[j]+f' \\n \\n Accuracy: {accuracy_2[j]}  \\n Best Time: {current_time}',center_text=(False,True),font_size=22))
     return topics
@@ -179,7 +179,7 @@ def show_instructions(surface):
     surface.screen.blit(instructions, (0, 0))
 
 def show_menu(username) -> None:
-    user_data = WINDOW.read_json('users.json')
+    user_data = Window.read_json('users.json')
     topics = get_topic_boxes(username, user_data)
     rec = topics[1].rect # the 2nd topic's rect
     rec2 = topics[2].rect # the 3rd topic's rect
@@ -207,7 +207,7 @@ def show_menu(username) -> None:
     leaderboards = graph = instructions = False
     get_graph(username)
     while True:
-        window.refresh(back=True, show_mouse_pos=True)
+        window.refresh(back=True, show_mouse_pos=False)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -243,7 +243,7 @@ def show_menu(username) -> None:
                     if corresponding_num: # if the clicked box is a topic
                         game_level.play_level(username, corresponding_num)
                         # update user information after a change has been made by finishing a level don't do it constantly
-                        user_data = WINDOW.read_json('users.json')
+                        user_data = Window.read_json('users.json')
                         username_box.update_text(f'Username: {username} \\n Points: {sum(user_data[username]["points"])}')
                         topics = get_topic_boxes(username,user_data) # updates the text_box size and text after user completes a level
                         all_boxes = BoxGroup(*topics, username_box, leaderboard_box, instructions_box)
@@ -283,5 +283,5 @@ def show_menu(username) -> None:
 
 if __name__ == '__main__':
     import random
-    # show_menu(random.choice(list(WINDOW.read_json('users.json'))))
+    # show_menu(random.choice(list(Window.read_json('users.json'))))
     show_menu('Harsh21')

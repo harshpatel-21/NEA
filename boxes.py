@@ -1,13 +1,13 @@
-import pygame,os,WINDOW
+import pygame,os,Window
 import pygame.freetype
 pygame.init()
-from WINDOW import StopRunning
+from Window import StopRunning
 pygame.freetype.init()
-x,y = WINDOW.x,WINDOW.y
-os.environ['SDL_VIDEO_WINDOW_POS'] = f"{x},{y}"
-Display = WINDOW.Display
+x,y = Window.x,Window.y
+os.environ['SDL_VIDEO_Window_POS'] = f"{x},{y}"
+Display = Window.Display
 
-class Textbox(WINDOW.Display):
+class Textbox(Window.Display):
     rect: object
     default_background = (68, 71, 68)
     default_border = (207, 234, 255)

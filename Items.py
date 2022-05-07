@@ -5,7 +5,7 @@ import os
 # print(x)
 # sys.path.insert(1,x)
 
-from WINDOW import Display
+from Window import Display
 
 current_path = os.path.dirname(__file__)  # Where your .py file is located
 image_path = os.path.join(current_path, 'images','items') # The image folder path

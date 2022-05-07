@@ -2,26 +2,26 @@
 # GET QUESTIONS: https://quizizz.com/admin/search/h446%20OCR%20computer%20science%201.2.1?queryId=5f6b05fd7c198b001b54c8de-1650744363792
 # if __name__ == 'Game_V4':
 from entity_class import Entity, Enemy, Group
-import pygame, WINDOW, QuestionWindow, os, sys, random, csv
+import pygame, Window, QuestionWindow, os, sys, random, csv
 from Tiles import AnimatedTile, Tile
 from transition import ScreenFade
 
 pygame.init()
-read_json = WINDOW.read_json # using the pre-coded read and write methods to json files
-write_json = WINDOW.write_json
-x, y = WINDOW.x, WINDOW.y
-os.environ['SDL_VIDEO_WINDOW_POS'] = f"{x},{y}"
+read_json = Window.read_json # using the pre-coded read and write methods to json files
+write_json = Window.write_json
+x, y = Window.x, Window.y
+os.environ['SDL_VIDEO_Window_POS'] = f"{x},{y}"
 
 FPS = 60
 clock = pygame.time.Clock()
-window = WINDOW.Display(new_window=True)
+window = Window.Display(new_window=True)
 
 class World:
     def __init__(self, level):
         self.obstacle_list = []
         self.bg_scroll = 0
         self.no_collide = []  # blocks that shouldn't be checked for collision
-        self.height = WINDOW.Display.MAX_BLOCKS_Y
+        self.height = Window.Display.MAX_BLOCKS_Y
         self.all_tiles = []
         self.game_level = self.load_level(level)
 
@@ -114,7 +114,7 @@ def get_time_units(timer):
     return units
 
 def show_summary(right, wrong, total_questions, accuracy, streak, points, timer, player_died, portal_enter):
-    timer = WINDOW.convert_time_format(timer)
+    timer = Window.convert_time_format(timer)
     accuracy = str(accuracy)+'%'
     units = get_time_units(timer)
     timer = str(timer) + units
@@ -179,7 +179,7 @@ def get_questions(level, username):
     # green = > 75, amber = 50 < x < 75, red = < 50
     # quota = 4, 4, 4
     # sort the questions based on accuracy from largest -> smallest
-    questions = WINDOW.bubble_sort2D([[question, question_data[question][username][2]] for question in question_data])
+    questions = Window.bubble_sort2D([[question, question_data[question][username][2]] for question in question_data])
     # separate the questions based on which category they fit in
     green = []
     amber = []
@@ -238,12 +238,12 @@ def play_level(username, level):
     LEVEL = 2 # random.randint(1,4) # choose a random map layout
     world = World(LEVEL)
     TILE_TYPES = os.listdir(f'level_config/{LEVEL}/Tiles') # get a list of all the tiles
-    background = pygame.transform.scale(pygame.image.load(WINDOW.get_path(f'level_config/{LEVEL}/background.png')),window.SIZE).convert_alpha()
+    background = pygame.transform.scale(pygame.image.load(Window.get_path(f'level_config/{LEVEL}/background.png')),window.SIZE).convert_alpha()
 
     # load in game data
     img_dict = {}
     for i in TILE_TYPES:
-        img = pygame.image.load(WINDOW.get_path(f'level_config/{LEVEL}/Tiles/{i}')).convert_alpha()
+        img = pygame.image.load(Window.get_path(f'level_config/{LEVEL}/Tiles/{i}')).convert_alpha()
         name = i[:i.index('.')]
         img_dict[name] = img
 
@@ -252,7 +252,7 @@ def play_level(username, level):
     questions, question_data = get_questions(level, username)
     questions = random.sample(questions, len(questions)) # shuffle the order of selected questions
     # questions will be treated as a stack. Last in is first out
-    tile_info = WINDOW.read_json(f'level_config/{LEVEL}/tile_info.json')
+    tile_info = Window.read_json(f'level_config/{LEVEL}/tile_info.json')
     # sprite groups
     player, decorations, death_blocks, enemies, portals = world.process_data(tile_info, img_dict, PLAYER, ENEMY)
 
@@ -397,7 +397,7 @@ def play_level(username, level):
             time1 = pygame.time.get_ticks()
 
         # draw text and back button
-        window.draw_text(text=f'Time: {WINDOW.convert_time_format(timer)}', pos=(670,3), size='MEDIUM', center=(True,False))
+        window.draw_text(text=f'Time: {Window.convert_time_format(timer)}', pos=(670,3), size='MEDIUM', center=(True,False))
         window.draw_back()
         window.draw_text(f'Current Weapon: {["Sword"][player.current_weapon - 1]}', (200, 5))
         window.draw_text(f'Points: {points}',(490,5))
