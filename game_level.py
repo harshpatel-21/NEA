@@ -217,7 +217,7 @@ def get_questions(level, username):
 def update_data(question_data, questions, max_questions, level, username, points, timer, portal_enter, total_accuracy, user_quit):
     # update question data and user data when/ if run == False, if they just finished level/died
     write_json(question_data, f'Questions/{level}.json')
-    user_info = read_json(f'user_info/users.json')
+    user_info = read_json(f'users.json')
     current_best = user_info[username][level]
 
     # only update the completion time if the user answered all the questions/ defeated all enemies and they made it to the portal
@@ -229,7 +229,7 @@ def update_data(question_data, questions, max_questions, level, username, points
 
     user_info[username][level] = current_best # update time if it was lower
     if len(questions) != max_questions and not user_quit: user_info[username]['points'].append(points) # adding points onto the player's history for graph plotting; if they answered questions
-    write_json(user_info, f'user_info/users.json') # save all the changes
+    write_json(user_info, f'users.json') # save all the changes
 
 def play_level(username, level):
     ENEMY = random.choice(['knight', 'samurai', 'stormy']) # pick a random enemy

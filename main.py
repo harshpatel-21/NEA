@@ -42,7 +42,7 @@ pygame.init()
 #------------------------------ update details ------------------------------#
 def update_details():
     # fill in missing user data in question files. ie when a new question is added, don't have to do it manually
-    for user in read_json('user_info/users.json'):
+    for user in read_json('users.json'):
         for topic_name in os.listdir('Questions'):
             question_path = f'Questions/{topic_name}'
             topic_data = read_json(question_path)

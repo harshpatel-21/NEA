@@ -78,6 +78,11 @@ def write_json(data, path, cls=MyEncoder):
         file.seek(0)
         json.dump(data, file, indent=4, cls=cls)
 
+def convert_time_format(time):
+    h, r = divmod(time, 3600) # calculate how many hours, and the remainder is the number of minutes (in seconds)
+    m, s = divmod(r, 60) # convert the remaining seconds into minutes, and the remainder is the amount of seconds
+    return f'{h:02}:{m:02}:{s:02}' # format each value by filling in missing number(s) of maximum 2 numbers with leading 0s.
+
 def delete_json_key(path, cls=MyEncoder, key=None, depth=1):
     details_path = get_path(path)
     data = read_json(details_path)
@@ -94,19 +99,14 @@ def delete_json_key(path, cls=MyEncoder, key=None, depth=1):
 
     write_json(data, path)
 
-def convert_time_format(time):
-    h, r = divmod(time, 3600) # calculate how many hours, and the remainder is the number of minutes (in seconds)
-    m, s = divmod(r, 60) # convert the remaining seconds into minutes, and the remainder is the amount of seconds
-    return f'{h:02}:{m:02}:{s:02}' # format each value by filling in missing number(s) of maximum 2 numbers with leading 0s.
-
 def delete_user(username):
-     # To remove a user and maintain referential integrity by deleting all records of the user everywhere.
+    # To remove a user and maintain referential integrity by deleting all records of the user everywhere.
     for file in os.listdir('Questions'):
         delete_json_key(f'Questions/{file}', key=username, depth=2)
-    delete_json_key(f'user_info/users.json',key=username)
+    delete_json_key(f'users.json',key=username)
 
 def delete_users():
-    users = read_json('user_info/users.json')
+    users = read_json('users.json')
     for user in users:
         delete_user(user)
 

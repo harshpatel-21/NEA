@@ -1,5 +1,4 @@
 import pygame, os, re, sys, WINDOW, game_level
-from boxes import Textbox
 from boxes import BoxGroup, AutoBox
 from transition import SurfaceFade
 import matplotlib.pyplot as plt
@@ -49,7 +48,7 @@ def show_leaderboards(surface, user_data) -> None:
         surface.blit(rendered_points, (start_x + padding_x, (padding_y * i) + (longest_name.height * i) + start_y))
 
 def get_graph(username):
-    user_data = WINDOW.read_json('user_info/users.json')
+    user_data = WINDOW.read_json('users.json')
     points = user_data[username]['points']
     # the first and last x values
     start_x, end_x = 1, len(points)
@@ -101,7 +100,8 @@ def get_graph(username):
 def show_graph(surface):
     graph_img = pygame.image.load('images/points.png')
     img_rect = graph_img.get_rect()
-    surface.screen.blit(graph_img, ((surface.WIDTH - img_rect.w)//2, (surface.HEIGHT - img_rect.h)//2))
+    # centre the image
+    surface.blit(graph_img, ((window.WIDTH - img_rect.w)//2, (window.HEIGHT - img_rect.h)//2))
 
 
 def get_accuracy(question_data, username) -> str:
@@ -179,7 +179,7 @@ def show_instructions(surface):
     surface.screen.blit(instructions, (0, 0))
 
 def show_menu(username) -> None:
-    user_data = WINDOW.read_json('user_info/users.json')
+    user_data = WINDOW.read_json('users.json')
     topics = get_topic_boxes(username, user_data)
     rec = topics[1].rect # the 2nd topic's rect
     rec2 = topics[2].rect # the 3rd topic's rect
@@ -243,7 +243,7 @@ def show_menu(username) -> None:
                     if corresponding_num: # if the clicked box is a topic
                         game_level.play_level(username, corresponding_num)
                         # update user information after a change has been made by finishing a level don't do it constantly
-                        user_data = WINDOW.read_json('user_info/users.json')
+                        user_data = WINDOW.read_json('users.json')
                         username_box.update_text(f'Username: {username} \\n Points: {sum(user_data[username]["points"])}')
                         topics = get_topic_boxes(username,user_data) # updates the text_box size and text after user completes a level
                         all_boxes = BoxGroup(*topics, username_box, leaderboard_box, instructions_box)
@@ -263,7 +263,7 @@ def show_menu(username) -> None:
             show_leaderboards(window.screen, user_data)
 
         elif graph: # display the graph
-            show_graph(window)
+            show_graph(window.screen)
 
         elif instructions: # display the instructions
             show_instructions(window)
@@ -272,6 +272,7 @@ def show_menu(username) -> None:
             all_boxes.update_boxes(window.screen)
             text = 'Click the box above to view progress graph'
             rendered_text = window.SMALL_FONT.render(text,1,(255,255,255))
+            # position it so that the center of the text == center of the username box
             pos = (username_box.rect.x + (username_box.rect.width - rendered_text.get_width())//2, username_box.rect.bottom + 10)
             window.draw_text(text, pos, size='SMALL')
         fade.fade(window.screen)
@@ -282,5 +283,5 @@ def show_menu(username) -> None:
 
 if __name__ == '__main__':
     import random
-    # show_menu(random.choice(list(WINDOW.read_json('user_info/users.json'))))
+    # show_menu(random.choice(list(WINDOW.read_json('users.json'))))
     show_menu('Harsh21')

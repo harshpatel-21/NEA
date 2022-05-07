@@ -48,7 +48,9 @@ class SurfaceFade:
         self.alpha_counter = 255
 
     def fade(self, surface):
-        if self.alpha_counter > 0:
-            self.alpha_counter -= 4//0.6
+        if self.alpha_counter > 0: # if the screen isn't fully transparent yet
+            self.alpha_counter -= 6
+        else: # if it's transparent don't waste resources changing alpha and blitting
+            return
         self.fade_rect.set_alpha(self.alpha_counter)
         surface.blit(self.fade_rect,(0,0))
