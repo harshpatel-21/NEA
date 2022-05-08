@@ -355,22 +355,8 @@ def play_level(username, level):
         if show_question:
             assert bool(questions), 'No more questions left' # making sure there are still questions left to pop
             # extract current stats for the question and adjust them based on result of the user's choice
-            if isinstance(question_window_values, tuple): # if the result and timer was returned
-                result = question_window_values[0] # the outcome of the question displayed
-                user_right, user_wrong, user_accuracy = (question_data[current_question])[username]
-                if result:
-                    user_right += 1; points += 10; total_right+=1; streak += 1 # if they got the question right, add 10 points
-                    player.health = min(player.health + 25, player.max_health)
-                else:
-                    user_wrong += 1; total_wrong += 1; streak = 0
-                if user_wrong!=0 or user_right!=0:
-                    user_accuracy = user_right/(user_right+user_wrong) # to ensure that the denominator is not 0
-                    total_accuracy = round(total_right/(total_right+total_wrong), 2)
-                question_data[current_question][username] = [user_right, user_wrong, user_accuracy] # update statistics of the user on the question displayed
-                timer = question_window_values[1]
-            current_question = questions.pop() # pop the question at the top of the stack
-            question_window_values = question_window.start_question(question=current_question, question_data=question_data, timer=timer)
-
+            current_question = questions.pop()
+            question_window_values = question_window.start_question(current_question, question_data, timer)
             # extract current stats for the question and adjust them based on result of the user's choice
             if isinstance(question_window_values, tuple): # if the result and timer was returned
                 result = question_window_values[0] # the outcome of the question displayed
