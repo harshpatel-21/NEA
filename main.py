@@ -24,7 +24,7 @@ except ImportError as error:
 x,y = Window.x,Window.y
 # school computer
 # x,y = 50,80
-os.environ['SDL_VIDEO_Window_POS'] = f"{x},{y}"
+os.environ['SDL_VIDEO_CENTERED'] = '1'
 #--------------------------------- Setting Up --------------------------------#
 clock = pygame.time.Clock()
 

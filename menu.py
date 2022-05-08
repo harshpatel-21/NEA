@@ -48,6 +48,7 @@ def show_leaderboards(surface, user_data) -> None:
         surface.blit(rendered_points, (start_x + padding_x, (padding_y * i) + (longest_name.height * i) + start_y))
 
 def get_graph(username):
+
     user_data = Window.read_json('users.json')
     points = user_data[username]['points']
     # the first and last x values
@@ -88,7 +89,7 @@ def get_graph(username):
 
     # plot the points array against an array of the x values (the x_range)
     # also set a marker to make it easier to locate (x, y) values
-    plt.plot(list(x_range), points, marker='o',color='#1f77b4')
+    plt.plot(list(x_range), points, marker='o', color='#1f77b4')
 
     # create labels for the axes and graph
     plt.xlabel('Session', color=color)
@@ -96,6 +97,7 @@ def get_graph(username):
     plt.title('Points gained in the last 20 attempts')
 
     plt.savefig('images/points.png') # save the image of the graph in a png file, which will then be loaded and blitted
+    # plt.cla(); plt.clf()
 
 def show_graph(surface):
     graph_img = pygame.image.load('images/points.png')
@@ -284,4 +286,4 @@ def show_menu(username) -> None:
 if __name__ == '__main__':
     import random
     # show_menu(random.choice(list(Window.read_json('users.json'))))
-    show_menu('Harsh212')
+    # show_menu('Harsh212')
