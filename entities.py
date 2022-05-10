@@ -373,8 +373,7 @@ class Enemy(Entity):
         self.change_direction = False
         self.wall_collision = False
         self.move_radius = move_radius * Display.TILE_DIMENSION_X
-        self.idle_rect.w += 20
-
+        self.idle_rect.w += 13
 
     def rec_collision(self, obj):
         # check if obj is within enemy's attack vision

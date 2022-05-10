@@ -1,12 +1,12 @@
 {
-    "obstacle": "0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 22 23",
-    "decoration": "21 28",
-    "kill_block": "26 27",
+    "obstacle": "0 1 2 3 4 5 6 7 8 9 17",
+    "decoration": "10 16",
+    "kill_block": "11 12",
     "coin": "",
-    "player": "24",
-    "portal": "30",
-    "enemy": "25",
+    "player": "14",
+    "portal": "18",
+    "enemy": "15",
     "enemy_scale": [168, 92],
     "player_scale": [50, 83],
-    "move_radii": [3, 1, 2, 2, 0, 2, 0, 0, 1, 0, 1, 1]
+    "move_radii": [1, 0.5, 1.2, 1.2, 1, 0.5, 2, 1, 0.5, 1, 1, 1, 1, 1, 1]
 }

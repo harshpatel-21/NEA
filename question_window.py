@@ -57,13 +57,14 @@ def start_question(question, question_data, timer=0):
     time1 = time1
     timer = timer
     pause_timer = False
+    debug = 1
     while True:
         window.refresh()
         for event in pygame.event.get():
             if event.type == pygame.QUIT and result is None:
                 return timer
                 # sys.exit()
-            if event.type == pygame.KEYDOWN:
+            if event.type == pygame.KEYDOWN and debug:
                 if event.key == pygame.K_ESCAPE:
                     return timer
 
@@ -104,7 +105,8 @@ def start_question(question, question_data, timer=0):
             main_group.update_boxes(window.screen) # update the boxes (draw them) onto the screen
 
         elif not options_screen: # if an option has been picked, and it was incorrect show the feedback text
-            if not feedback.text:
+            if not feedback.text: # checks if there is feedback for the question
+                start_fade = True
                 going_back = True # go back
 
             if not going_back:

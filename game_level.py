@@ -59,7 +59,7 @@ class World:
                         obj = Tile(img, *img_rect.topleft, 'Decoration')
                     elif tile in tile_info['kill_block'].split():  # water
                         obj = Tile(img, *img_rect.topleft,'Death Block')
-                        death_blocks.append(obj)
+                        if ind != 0: death_blocks.append(obj)
                     elif tile in tile_info['player'].split():  # create player if there's one on the map
                         player = Entity(img_rect.x, img_rect.y, player_img, tile_info['player_scale'], melee_dps=1000)
                     elif tile in tile_info['enemy'].split():
@@ -235,7 +235,7 @@ def play_level(username, level):
     ENEMY = random.choice(['knight', 'samurai', 'stormy']) # pick a random enemy
     PLAYER = 'player'
 
-    LEVEL = random.randint(2, 2) # choose a random map layout
+    LEVEL = 2 #random.randint(1, 5) # choose a random map layout
     world = World(LEVEL)
     TILE_TYPES = os.listdir(f'level_config/{LEVEL}/Tiles') # get a list of all the tiles
     background = pygame.transform.scale(pygame.image.load(Window.get_path(f'level_config/{LEVEL}/background.png')),window.SIZE).convert_alpha()
@@ -363,7 +363,7 @@ def play_level(username, level):
                 user_right, user_wrong, user_accuracy = (question_data[current_question])[username]
                 if result:
                     user_right += 1; points += 10; total_right+=1; streak += 1 # if they got the question right, add 10 points, increase streak, and recover health
-                    player.health = min(player.health + 15, player.max_health)
+                    player.health = min(player.health + 0.2*player.max_health, player.max_health)
                 else:
                     user_wrong += 1; total_wrong += 1; streak = 0
                 if user_wrong!=0 or user_right!=0:

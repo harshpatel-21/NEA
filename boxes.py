@@ -162,7 +162,8 @@ class AutoBox(Textbox):
         if this does occur, don't try to add that word forever, just break out of the loop and if the word is missing, the user
         should know that it couldn't fit in the box.
         """
-        text = text.split() # split all the words
+        text = text.strip()
+        text = text.strip().split() # remove the white spaces on the left and right sides and split all the words
         # modification variables
         add_y = 0
         widths = 0
@@ -230,7 +231,7 @@ class AutoBox(Textbox):
                 pointer += 1 # once a word has finished blitting, move onto the next one
                 self.surf = temp.copy() # if a word was fully blitted, then add it onto the main canvas/surface of this box
 
-        self.text_rect.h = (add_y+1) * font_letters[0].get_height()
+        self.text_rect.h = (add_y+1) * height
         self.text_rect.w = max_x
 
     def update_text(self, text):
