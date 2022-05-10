@@ -100,7 +100,7 @@ def get_graph(username):
     # plt.cla(); plt.clf()
 
 def show_graph(surface):
-    graph_img = pygame.image.load('images/points.png')
+    graph_img = pygame.image.load('images/points.png').convert_alpha()
     img_rect = graph_img.get_rect()
     # centre the image
     surface.blit(graph_img, ((window.WIDTH - img_rect.w)//2, (window.HEIGHT - img_rect.h)//2))
@@ -174,7 +174,7 @@ def get_topic_boxes(username, user_data) -> list:
 
 
 def show_instructions(surface):
-    instructions = pygame.image.load('images/instructions.png')
+    instructions = pygame.image.load('images/instructions.png').convert_alpha()
     # scale up the image to fit the window size
     instructions = pygame.transform.scale(instructions, surface.SIZE)
     # draw the image on the topleft of the surface

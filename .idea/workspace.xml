@@ -3,80 +3,16 @@
   <component name="ChangeListManager">
     <list default="true" id="04890d85-8abc-44ea-8f03-953bdc0c633d" name="Default Changelist" comment="minor changes to files.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Questions/1.1.json" beforeDir="false" afterPath="$PROJECT_DIR$/Questions/1.1.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Questions/1.2.json" beforeDir="false" afterPath="$PROJECT_DIR$/Questions/1.2.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Questions/1.3.json" beforeDir="false" afterPath="$PROJECT_DIR$/Questions/1.3.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Questions/1.4.json" beforeDir="false" afterPath="$PROJECT_DIR$/Questions/1.4.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Questions/2.json" beforeDir="false" afterPath="$PROJECT_DIR$/Questions/2.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/boxes.py" beforeDir="false" afterPath="$PROJECT_DIR$/boxes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Items.py" beforeDir="false" afterPath="$PROJECT_DIR$/Items.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Tiles.py" beforeDir="false" afterPath="$PROJECT_DIR$/Tiles.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/access.py" beforeDir="false" afterPath="$PROJECT_DIR$/access.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/entities.py" beforeDir="false" afterPath="$PROJECT_DIR$/entities.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game_level.py" beforeDir="false" afterPath="$PROJECT_DIR$/game_level.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/images/points.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/points.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/1/0.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/1/1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/1/13.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/1/14.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/1/15.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/1/16.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/1/17.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/1/18.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/1/19.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/1/2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/1/3.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/1/4.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/1/5.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/1/6.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/1/7.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/1/8.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/1/9.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/level_config/2/2.tmx" beforeDir="false" afterPath="$PROJECT_DIR$/level_config/2/2.tmx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/3/3.tmx" beforeDir="false" afterPath="$PROJECT_DIR$/level_config/3/3.tmx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/3/Tiles/0.png" beforeDir="false" afterPath="$PROJECT_DIR$/level_config/3/Tiles/0.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/3/Tiles/1.png" beforeDir="false" afterPath="$PROJECT_DIR$/level_config/3/Tiles/1.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/3/Tiles/10.png" beforeDir="false" afterPath="$PROJECT_DIR$/level_config/3/Tiles/10.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/3/Tiles/11.png" beforeDir="false" afterPath="$PROJECT_DIR$/level_config/3/Tiles/11.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/3/Tiles/12.png" beforeDir="false" afterPath="$PROJECT_DIR$/level_config/3/Tiles/12.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/3/Tiles/13.png" beforeDir="false" afterPath="$PROJECT_DIR$/level_config/3/Tiles/13.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/3/Tiles/14.png" beforeDir="false" afterPath="$PROJECT_DIR$/level_config/3/Tiles/14.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/3/Tiles/15.png" beforeDir="false" afterPath="$PROJECT_DIR$/level_config/3/Tiles/15.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/3/Tiles/16.png" beforeDir="false" afterPath="$PROJECT_DIR$/level_config/3/Tiles/16.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/3/Tiles/17.png" beforeDir="false" afterPath="$PROJECT_DIR$/level_config/3/Tiles/17.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/3/Tiles/18.png" beforeDir="false" afterPath="$PROJECT_DIR$/level_config/3/Tiles/18.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/3/Tiles/19.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/3/Tiles/2.png" beforeDir="false" afterPath="$PROJECT_DIR$/level_config/3/Tiles/2.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/3/Tiles/20.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/3/Tiles/21.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/3/Tiles/22.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/3/Tiles/23.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/3/Tiles/24.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/3/Tiles/25.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/3/Tiles/26.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/3/Tiles/27.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/3/Tiles/28.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/3/Tiles/29.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/3/Tiles/3.png" beforeDir="false" afterPath="$PROJECT_DIR$/level_config/3/Tiles/3.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/3/Tiles/30.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/3/Tiles/4.png" beforeDir="false" afterPath="$PROJECT_DIR$/level_config/3/Tiles/4.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/3/Tiles/5.png" beforeDir="false" afterPath="$PROJECT_DIR$/level_config/3/Tiles/5.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/3/Tiles/6.png" beforeDir="false" afterPath="$PROJECT_DIR$/level_config/3/Tiles/6.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/3/Tiles/7.png" beforeDir="false" afterPath="$PROJECT_DIR$/level_config/3/Tiles/7.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/3/Tiles/8.png" beforeDir="false" afterPath="$PROJECT_DIR$/level_config/3/Tiles/8.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/3/Tiles/9.png" beforeDir="false" afterPath="$PROJECT_DIR$/level_config/3/Tiles/9.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/3/background.png" beforeDir="false" afterPath="$PROJECT_DIR$/level_config/3/background.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/3/tile_info.json" beforeDir="false" afterPath="$PROJECT_DIR$/level_config/3/tile_info.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/3/wasteland.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/5/5.tmx" beforeDir="false" afterPath="$PROJECT_DIR$/level_config/5/5.tmx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/5/background.png" beforeDir="false" afterPath="$PROJECT_DIR$/level_config/5/background.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/level_config/5/tile_info.json" beforeDir="false" afterPath="$PROJECT_DIR$/level_config/5/tile_info.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/levels/3/_1.csv" beforeDir="false" afterPath="$PROJECT_DIR$/levels/3/_1.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/levels/3/_2.csv" beforeDir="false" afterPath="$PROJECT_DIR$/levels/3/_2.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/levels/3/_3.csv" beforeDir="false" afterPath="$PROJECT_DIR$/levels/3/_3.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/levels/5/_1.csv" beforeDir="false" afterPath="$PROJECT_DIR$/levels/5/_1.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/levels/5/_2.csv" beforeDir="false" afterPath="$PROJECT_DIR$/levels/5/_2.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/levels/5/_3.csv" beforeDir="false" afterPath="$PROJECT_DIR$/levels/5/_3.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/levels/2/_1.csv" beforeDir="false" afterPath="$PROJECT_DIR$/levels/2/_1.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/levels/2/_2.csv" beforeDir="false" afterPath="$PROJECT_DIR$/levels/2/_2.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/levels/2/_3.csv" beforeDir="false" afterPath="$PROJECT_DIR$/levels/2/_3.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/menu.py" beforeDir="false" afterPath="$PROJECT_DIR$/menu.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/question_window.py" beforeDir="false" afterPath="$PROJECT_DIR$/question_window.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/users.json" beforeDir="false" afterPath="$PROJECT_DIR$/users.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

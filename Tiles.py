@@ -74,7 +74,7 @@ class AnimatedTile(Tile):
 
         images = os.listdir(item_path)  # get a list of the image names for the animation
         for image in images:
-            image = pygame.image.load(os.path.join(item_path, image))
+            image = pygame.image.load(os.path.join(item_path, image)).convert_alpha()
             self.animations += [image]
 
     def animation_handling(self):

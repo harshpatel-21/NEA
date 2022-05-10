@@ -67,5 +67,5 @@ class Item(pygame.sprite.Sprite):
         animation_scale = {'coin': (int(32 * 0.8), int(32 * 0.9))}
         images = os.listdir(item_path)  # get a list of the image names for the animation
         for image in images:
-            image = pygame.image.load(os.path.join(item_path, image))
+            image = pygame.image.load(os.path.join(item_path, image)).convert_alpha()
             self.animation += [pygame.transform.scale(image, animation_scale.get(self.item_type))]

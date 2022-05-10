@@ -162,7 +162,7 @@ class Display:
             pygame.display.set_caption(caption)
 
         self.background=background
-        self.back_image = pygame.transform.scale(pygame.image.load(get_path('images/go_back.png')), (100, 38))
+        self.back_image = pygame.transform.scale(pygame.image.load(get_path('images/go_back.png')), (100, 38)).convert_alpha()
         self.back_rect = pygame.Rect(self.BACK_X, self.BACK_Y, *self.back_image.get_size())
 
     def draw_back(self, pos=None):

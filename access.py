@@ -17,7 +17,7 @@ def get_path(path):
 
 background = get_path('images/logo2.png')
 window = Display(caption='Main Menu')
-image = pygame.image.load(background)
+image = pygame.image.load(background).convert_alpha()
 background = pygame.transform.scale(image,(1426, 690))
 window.background = background
 #----------------------------------- Login -----------------------------------#

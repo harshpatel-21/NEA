@@ -311,7 +311,7 @@ class Entity(pygame.sprite.Sprite):
         scale2 = [*map(int, (scale2[0] * 0.8, scale2[1] * 0.8))]
 
         for image in images:  # iterate through the images in this directory
-            image = pygame.image.load(os.path.join(img_path, image))
+            image = pygame.image.load(os.path.join(img_path, image)).convert_alpha()
             temp += [pygame.transform.scale(image,scale2).convert_alpha()]
         self.animations += [temp]
 
