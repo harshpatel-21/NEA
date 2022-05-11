@@ -235,7 +235,7 @@ def play_level(username, level):
     ENEMY = random.choice(['knight', 'samurai', 'stormy']) # pick a random enemy
     PLAYER = 'player'
 
-    LEVEL = 2 #random.randint(1, 5) # choose a random map layout
+    LEVEL = random.choice([2, 3, 5]) # choose a random map layout
     world = World(LEVEL)
     TILE_TYPES = os.listdir(f'level_config/{LEVEL}/Tiles') # get a list of all the tiles
     background = pygame.transform.scale(pygame.image.load(Window.get_path(f'level_config/{LEVEL}/background.png')),window.SIZE).convert_alpha()

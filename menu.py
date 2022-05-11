@@ -97,7 +97,7 @@ def get_graph(username):
     plt.title('Points gained in the last 20 attempts')
 
     plt.savefig('images/points.png') # save the image of the graph in a png file, which will then be loaded and blitted
-    # plt.cla(); plt.clf()
+    plt.cla(); plt.clf()
 
 def show_graph(surface):
     graph_img = pygame.image.load('images/points.png').convert_alpha()
@@ -286,4 +286,4 @@ def show_menu(username) -> None:
 if __name__ == '__main__':
     import random
     # show_menu(random.choice(list(Window.read_json('users.json'))))
-    show_menu('Harsh21')
+    show_menu('Testing1')
