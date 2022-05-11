@@ -22,7 +22,8 @@
         "Testing1": [0, 0, 0],
         "Testing1234": [0, 0, 0],
         "Testing12345": [0, 0, 0],
-        "Testing123456": [0, 0, 0]
+        "Testing123456": [0, 0, 0],
+        "harrykane10": [0, 0, 0]
     },
     "When is lossy compression used?": {
         "options": [
@@ -47,7 +48,8 @@
         "Testing1": [0, 0, 0],
         "Testing1234": [0, 0, 0],
         "Testing12345": [0, 0, 0],
-        "Testing123456": [0, 0, 0]
+        "Testing123456": [0, 0, 0],
+        "harrykane10": [0, 0, 0]
     },
     "Encryption...": {
         "options": [
@@ -72,7 +74,8 @@
         "Testing1": [0, 0, 0],
         "Testing1234": [0, 0, 0],
         "Testing12345": [0, 0, 0],
-        "Testing123456": [0, 0, 0]
+        "Testing123456": [0, 0, 0],
+        "harrykane10": [0, 0, 0]
     },
     "Symmetrical encryption techniques...": {
         "options": [
@@ -97,7 +100,8 @@
         "Testing1": [0, 0, 0],
         "Testing1234": [0, 0, 0],
         "Testing12345": [0, 0, 0],
-        "Testing123456": [0, 0, 0]
+        "Testing123456": [0, 0, 0],
+        "harrykane10": [0, 0, 0]
     },
     "Asymmetrical encryption techniques...": {
         "options": [
@@ -122,7 +126,8 @@
         "Testing1": [0, 0, 0],
         "Testing1234": [0, 0, 0],
         "Testing12345": [0, 0, 0],
-        "Testing123456": [0, 0, 0]
+        "Testing123456": [0, 0, 0],
+        "harrykane10": [0, 0, 0]
     },
     "Which of these is FALSE about Run-length encoding": {
         "options": [
@@ -147,7 +152,8 @@
         "Testing1": [0, 0, 0],
         "Testing1234": [0, 0, 0],
         "Testing12345": [0, 0, 0],
-        "Testing123456": [0, 0, 0]
+        "Testing123456": [0, 0, 0],
+        "harrykane10": [0, 0, 0]
     },
     "Which of these is TRUE about dictionary encoding": {
         "options": [
@@ -172,7 +178,8 @@
         "Testing1": [0, 0, 0],
         "Testing1234": [0, 0, 0],
         "Testing12345": [0, 0, 0],
-        "Testing123456": [0, 0, 0]
+        "Testing123456": [0, 0, 0],
+        "harrykane10": [0, 0, 0]
     },
     "A database is...": {
         "options": [
@@ -197,7 +204,8 @@
         "Testing1": [0, 0, 0],
         "Testing1234": [0, 0, 0],
         "Testing12345": [0, 0, 0],
-        "Testing123456": [0, 0, 0]
+        "Testing123456": [0, 0, 0],
+        "harrykane10": [0, 0, 0]
     },
     "What is True about the operating system": {
         "options": [],
@@ -217,7 +225,8 @@
         "Testing1": [0, 0, 0],
         "Testing1234": [0, 0, 0],
         "Testing12345": [0, 0, 0],
-        "Testing123456": [0, 0, 0]
+        "Testing123456": [0, 0, 0],
+        "harrykane10": [0, 0, 0]
     },
     "Which of these entity relationships is not valid": {
         "options": [
@@ -242,7 +251,8 @@
         "Testing1": [0, 0, 0],
         "Testing1234": [0, 0, 0],
         "Testing12345": [0, 0, 0],
-        "Testing123456": [0, 0, 0]
+        "Testing123456": [0, 0, 0],
+        "harrykane10": [0, 0, 0]
     },
     "In a hospital system, the relationship between a consultant and a patient would be": {
         "options": [
@@ -267,7 +277,8 @@
         "Testing1": [0, 0, 0],
         "Testing1234": [0, 0, 0],
         "Testing12345": [0, 0, 0],
-        "Testing123456": [0, 0, 0]
+        "Testing123456": [0, 0, 0],
+        "harrykane10": [0, 0, 0]
     },
     "In a hospital system, the relationship between a nurse to a word would be": {
         "options": [
@@ -292,7 +303,8 @@
         "Testing1": [0, 0, 0],
         "Testing1234": [0, 0, 0],
         "Testing12345": [0, 0, 0],
-        "Testing123456": [0, 0, 0]
+        "Testing123456": [0, 0, 0],
+        "harrykane10": [0, 0, 0]
     },
     "A primary key is...": {
         "options": [
@@ -317,7 +329,8 @@
         "Testing1": [0, 0, 0],
         "Testing1234": [0, 0, 0],
         "Testing12345": [0, 0, 0],
-        "Testing123456": [0, 0, 0]
+        "Testing123456": [0, 0, 0],
+        "harrykane10": [0, 0, 0]
     },
     "A foreign key is...": {
         "options": [
@@ -342,7 +355,8 @@
         "Testing1": [0, 0, 0],
         "Testing1234": [0, 0, 0],
         "Testing12345": [0, 0, 0],
-        "Testing123456": [0, 0, 0]
+        "Testing123456": [0, 0, 0],
+        "harrykane10": [0, 0, 0]
     },
     "What is the purpose of the wildcard '%' in SELECT * FROM Table WHERE ID like '1%'": {
         "options": [
@@ -367,7 +381,8 @@
         "Testing1": [0, 0, 0],
         "Testing1234": [0, 0, 0],
         "Testing12345": [0, 0, 0],
-        "Testing123456": [0, 0, 0]
+        "Testing123456": [0, 0, 0],
+        "harrykane10": [0, 0, 0]
     },
     "Which of these is NOT TRUE for a database to be in 1NF (First Normal Form)": {
         "options": [
@@ -392,7 +407,8 @@
         "Testing1": [0, 0, 0],
         "Testing1234": [0, 0, 0],
         "Testing12345": [0, 0, 0],
-        "Testing123456": [0, 0, 0]
+        "Testing123456": [0, 0, 0],
+        "harrykane10": [0, 0, 0]
     },
     "What is TRUE for a database in 2NF (Second Normal Form)": {
         "options": [
@@ -417,7 +433,8 @@
         "Testing1": [0, 0, 0],
         "Testing1234": [0, 0, 0],
         "Testing12345": [0, 0, 0],
-        "Testing123456": [0, 0, 0]
+        "Testing123456": [0, 0, 0],
+        "harrykane10": [0, 0, 0]
     },
     "What is TRUE for a database in 3NF (Third Normal Form)": {
         "options": [
@@ -442,7 +459,8 @@
         "Testing1": [0, 0, 0],
         "Testing1234": [0, 0, 0],
         "Testing12345": [0, 0, 0],
-        "Testing123456": [0, 0, 0]
+        "Testing123456": [0, 0, 0],
+        "harrykane10": [0, 0, 0]
     },
     "A network is a collection of <missing word> computers": {
         "options": [
@@ -467,7 +485,8 @@
         "Testing1": [0, 0, 0],
         "Testing1234": [0, 0, 0],
         "Testing12345": [0, 0, 0],
-        "Testing123456": [0, 0, 0]
+        "Testing123456": [0, 0, 0],
+        "harrykane10": [0, 0, 0]
     },
     "Which of the following is TRUE of networks": {
         "options": [
@@ -492,7 +511,8 @@
         "Testing1": [0, 0, 0],
         "Testing1234": [0, 0, 0],
         "Testing12345": [0, 0, 0],
-        "Testing123456": [0, 0, 0]
+        "Testing123456": [0, 0, 0],
+        "harrykane10": [0, 0, 0]
     },
     "What is a disadvantage of a Client-Server model": {
         "options": [
@@ -517,7 +537,8 @@
         "Testing1": [0, 0, 0],
         "Testing1234": [0, 0, 0],
         "Testing12345": [0, 0, 0],
-        "Testing123456": [0, 0, 0]
+        "Testing123456": [0, 0, 0],
+        "harrykane10": [0, 0, 0]
     },
     "What is an advantage of a peer-to-peer model": {
         "options": [
@@ -542,6 +563,7 @@
         "Testing1": [0, 0, 0],
         "Testing1234": [0, 0, 0],
         "Testing12345": [0, 0, 0],
-        "Testing123456": [0, 0, 0]
+        "Testing123456": [0, 0, 0],
+        "harrykane10": [0, 0, 0]
     }
 }

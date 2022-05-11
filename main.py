@@ -12,11 +12,10 @@ x, y = Window.x, Window.y
 try:
     import pygame,os
     from Window import Display
-    from boxes import Textbox, Inputbox
+    from boxes import Textbox
     import re,json
     from access import input_information
     import Window
-    import Game_V4
 except ImportError as error:
     print(error)
 

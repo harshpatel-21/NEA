@@ -22,7 +22,8 @@
         "Testing1": [0, 0, 0],
         "Testing1234": [0, 0, 0],
         "Testing12345": [0, 0, 0],
-        "Testing123456": [0, 0, 0]
+        "Testing123456": [0, 0, 0],
+        "harrykane10": [0, 0, 0]
     },
     "Which of these tasks is the operating system NOT responsible for performing": {
         "options": [
@@ -47,7 +48,8 @@
         "Testing1": [0, 0, 0],
         "Testing1234": [0, 0, 0],
         "Testing12345": [0, 0, 0],
-        "Testing123456": [0, 0, 0]
+        "Testing123456": [0, 0, 0],
+        "harrykane10": [0, 0, 0]
     },
     "Which of these options matches the definition: \\n memory is split up into equal-sized sections known as pages. These can then be swapped between main memory and the hard disk as needed.": {
         "options": [
@@ -72,7 +74,8 @@
         "Testing1": [0, 0, 0],
         "Testing1234": [0, 0, 0],
         "Testing12345": [0, 0, 0],
-        "Testing123456": [0, 0, 0]
+        "Testing123456": [0, 0, 0],
+        "harrykane10": [0, 0, 0]
     },
     "Using Virtual Memory too much can result in...": {
         "options": [
@@ -97,7 +100,8 @@
         "Testing1": [0, 0, 0],
         "Testing1234": [0, 0, 0],
         "Testing12345": [0, 0, 0],
-        "Testing123456": [0, 0, 0]
+        "Testing123456": [0, 0, 0],
+        "harrykane10": [0, 0, 0]
     },
     "Select the False statement about memory paging:": {
         "options": [
@@ -122,7 +126,8 @@
         "Testing1": [0, 0, 0],
         "Testing1234": [0, 0, 0],
         "Testing12345": [0, 0, 0],
-        "Testing123456": [0, 0, 0]
+        "Testing123456": [0, 0, 0],
+        "harrykane10": [0, 0, 0]
     },
     "The role of scheduling is...": {
         "options": [
@@ -147,7 +152,8 @@
         "Testing1": [0, 1, 0.0],
         "Testing1234": [0, 0, 0],
         "Testing12345": [0, 0, 0],
-        "Testing123456": [0, 0, 0]
+        "Testing123456": [0, 0, 0],
+        "harrykane10": [0, 0, 0]
     },
     "What is the definition of Utility Software": {
         "options": [
@@ -172,7 +178,8 @@
         "heungMinSon7": [0, 0, 0],
         "Testing123": [0, 0, 0],
         "Testing1": [0, 0, 0],
-        "Testing1234": [0, 0, 0]
+        "Testing1234": [0, 0, 0],
+        "harrykane10": [0, 0, 0]
     },
     "What are the two method of linking external modules and libraries": {
         "options": [
@@ -197,7 +204,8 @@
         "Testing1": [0, 0, 0],
         "Testing1234": [0, 0, 0],
         "Testing12345": [0, 0, 0],
-        "Testing123456": [0, 0, 0]
+        "Testing123456": [0, 0, 0],
+        "harrykane10": [0, 0, 0]
     },
     "What is one advantage of an Interpreter over a Compiler": {
         "options": [
@@ -222,7 +230,8 @@
         "Testing1": [0, 0, 0],
         "Testing1234": [0, 0, 0],
         "Testing12345": [0, 0, 0],
-        "Testing123456": [0, 0, 0]
+        "Testing123456": [0, 0, 0],
+        "harrykane10": [0, 0, 0]
     },
     "Which of these occurs during Lexical analysis": {
         "options": [
@@ -247,7 +256,8 @@
         "Testing1": [0, 0, 0],
         "Testing1234": [0, 0, 0],
         "Testing12345": [0, 0, 0],
-        "Testing123456": [0, 0, 0]
+        "Testing123456": [0, 0, 0],
+        "harrykane10": [0, 0, 0]
     },
     "Which of these best defines open source software": {
         "options": [
@@ -272,7 +282,8 @@
         "Testing1": [0, 0, 0],
         "Testing1234": [0, 0, 0],
         "Testing12345": [0, 0, 0],
-        "Testing123456": [0, 0, 0]
+        "Testing123456": [0, 0, 0],
+        "harrykane10": [0, 0, 0]
     },
     "What is the purpose of Defragmentation": {
         "options": [
@@ -297,7 +308,8 @@
         "Testing1": [0, 0, 0],
         "Testing1234": [0, 0, 0],
         "Testing12345": [0, 0, 0],
-        "Testing123456": [0, 0, 0]
+        "Testing123456": [0, 0, 0],
+        "harrykane10": [0, 0, 0]
     },
     "This form of Backup backs up only the changes made since the last backup": {
         "options": [
@@ -322,7 +334,8 @@
         "Testing1": [0, 0, 0],
         "Testing1234": [0, 0, 0],
         "Testing12345": [0, 0, 0],
-        "Testing123456": [0, 0, 0]
+        "Testing123456": [0, 0, 0],
+        "harrykane10": [0, 0, 0]
     },
     "Device Drivers allow...": {
         "options": [
@@ -347,7 +360,8 @@
         "Testing1": [0, 0, 0],
         "Testing1234": [0, 0, 0],
         "Testing12345": [0, 0, 0],
-        "Testing123456": [0, 0, 0]
+        "Testing123456": [0, 0, 0],
+        "harrykane10": [0, 0, 0]
     },
     "A processor company who need to develop high-quality code with minimal errors should use...": {
         "options": [
@@ -372,7 +386,8 @@
         "Testing1": [0, 0, 0],
         "Testing1234": [0, 0, 0],
         "Testing12345": [0, 0, 0],
-        "Testing123456": [0, 0, 0]
+        "Testing123456": [0, 0, 0],
+        "harrykane10": [0, 0, 0]
     },
     "This sequential development methodology heavily focuses on paperwork and documentation of the development": {
         "options": [
@@ -397,7 +412,8 @@
         "Testing1": [0, 0, 0],
         "Testing1234": [0, 0, 0],
         "Testing12345": [0, 0, 0],
-        "Testing123456": [0, 0, 0]
+        "Testing123456": [0, 0, 0],
+        "harrykane10": [0, 0, 0]
     },
     "A company who needs to manage a lot of risks should use": {
         "options": [
@@ -422,7 +438,8 @@
         "Testing1": [0, 0, 0],
         "Testing1234": [0, 0, 0],
         "Testing12345": [0, 0, 0],
-        "Testing123456": [0, 0, 0]
+        "Testing123456": [0, 0, 0],
+        "harrykane10": [0, 0, 0]
     },
     "Most software companies use": {
         "options": [
@@ -447,7 +464,8 @@
         "Testing1": [0, 0, 0],
         "Testing1234": [0, 0, 0],
         "Testing12345": [0, 0, 0],
-        "Testing123456": [0, 0, 0]
+        "Testing123456": [0, 0, 0],
+        "harrykane10": [0, 0, 0]
     },
     "A small start-up who want to get a prototype onto the market for testing should use:": {
         "options": [
@@ -472,7 +490,8 @@
         "Testing1": [0, 0, 0],
         "Testing1234": [0, 0, 0],
         "Testing12345": [0, 0, 0],
-        "Testing123456": [0, 0, 0]
+        "Testing123456": [0, 0, 0],
+        "harrykane10": [0, 0, 0]
     },
     "Iterative development methodology which values the speed of development": {
         "options": [
@@ -497,6 +516,7 @@
         "Testing1": [0, 0, 0],
         "Testing1234": [0, 0, 0],
         "Testing12345": [0, 0, 0],
-        "Testing123456": [0, 0, 0]
+        "Testing123456": [0, 0, 0],
+        "harrykane10": [0, 0, 0]
     }
 }
